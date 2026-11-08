@@ -153,11 +153,9 @@ def _patient_sample_labels(
     the actual sample_id field and the INCOVxxx-BL/AC suffix variants.
     """
     clinical_samples = {
-        normalized_patient_sample(value): value
+        normalized_patient_sample(value) or str(value).casefold(): value
         for value in clinical["Sample ID"]
     }
-    if None in clinical_samples:
-        raise ValueError("Clinical Sample ID could not be normalized")
     if len(clinical_samples) != len(clinical):
         raise ValueError("Ambiguous clinical Sample ID normalization")
     matched = {}
@@ -168,7 +166,10 @@ def _patient_sample_labels(
             (assay_id, "assay_sample_id"),
             (label, "assay_label"),
         ):
-            key = normalized_patient_sample(candidate)
+            raw = as_id(candidate)
+            key = normalized_patient_sample(candidate) or (
+                raw.casefold() if raw is not None else None
+            )
             if key in clinical_samples:
                 hits.add((clinical_samples[key], source))
         samples = {sample for sample, _ in hits}
@@ -237,6 +238,10 @@ def prepare(workbook: Path, output_dir: Path) -> dict:
             "metab": round(float(metab[metab_features].isna().to_numpy().mean()), 5),
         },
         "clinical_sample_matches": {"protein": len(p_labels), "metab": len(m_labels)},
+        "exact_clinical_label_matches": {
+            "protein": p_sources["assay_label"],
+            "metab": m_sources["assay_label"],
+        },
         "match_sources": {"protein": p_sources, "metab": m_sources},
         "clinical_bridge_candidates": {"protein": p_candidates, "metab": m_candidates},
         "selected_bridge_columns": {"protein": p_col, "metab": m_col},
