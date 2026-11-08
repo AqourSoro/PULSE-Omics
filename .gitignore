@@ -1,0 +1,15 @@
+# Local Python state
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+*.egg-info/
+
+# Project data is stored separately on F:\datasets\pulse-omics
+/data/
+/raw/
+/processed/
+/synthetic/
+/results/
+/download_logs/
+/ckpts/
