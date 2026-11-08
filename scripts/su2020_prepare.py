@@ -39,6 +39,8 @@ def main() -> None:
         print(f"  Linked clinical draws: {report['linked_clinical_draws']}")
         print(f"  With both assays: {report['linked_paired_draws']}")
         print(f"  Linked patients with T1/T2: {report['linked_patients_with_two_draws']}")
+        print(f"  Patients with BOTH assays at BOTH visits: "
+              f"{report['patients_with_two_paired_omics_visits']}")
     print(f"  Result status: {report['status']}")
     print(f"  Report: {output / 'preparation_report.json'}")
 
