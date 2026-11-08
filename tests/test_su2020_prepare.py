@@ -9,7 +9,7 @@ from openpyxl import Workbook
 from omics.su2020 import prepare
 
 
-def fixture(path: Path, bridge: bool) -> None:
+def fixture(path: Path, bridge: bool, direct_labels: bool = False) -> None:
     wb = Workbook()
     clinical = wb.active
     clinical.title = "S1.1 Patient Clinical Data"
@@ -31,8 +31,9 @@ def fixture(path: Path, bridge: bool) -> None:
             if bridge:
                 row += [protein_id, metab_id]
             clinical.append(row)
-            proteins.append(["COVID19 sample", protein_id, float(i), float(visit)])
-            metabolites.append(["COVID19 sample", metab_id, float(i + visit), None if i == 0 else 3.0])
+            label = blood if direct_labels else "COVID19 sample"
+            proteins.append([label, protein_id, float(i), float(visit)])
+            metabolites.append([label.lower() if direct_labels else label, metab_id, float(i + visit), None if i == 0 else 3.0])
     for i in range(4):
         proteins.append(["Healthy Donor", str(30000 + i), 10.0, 11.0])
         metabolites.append(["Healthy Donor", str(30000 + i), 3.0, 4.0])
@@ -60,6 +61,20 @@ class Su2020PreparationTests(unittest.TestCase):
             self.assertEqual(len(metab), 50)
             self.assertEqual(set(subjects.visit_order), {1, 2})
             self.assertEqual(int(metab["metabolite B"].isna().sum()), 2)
+
+    def test_explicit_covid_labels_connect_without_numeric_bridge(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            path = root / "table_s1.xlsx"
+            fixture(path, bridge=False, direct_labels=True)
+            report = prepare(path, root / "processed")
+            self.assertEqual(report["exact_clinical_label_matches"], {"protein": 50, "metab": 50})
+            self.assertEqual(report["linked_clinical_draws"], 50)
+            self.assertEqual(report["linked_paired_draws"], 50)
+            self.assertEqual(report["linked_patients_with_two_draws"], 25)
+            mapping = pd.read_csv(root / "processed" / "assay_mapping.csv")
+            self.assertEqual(len(mapping), 50)
+            self.assertEqual(set(mapping["Study Subject ID"].unique()), {f"p{i:03d}" for i in range(25)})
 
     def test_no_bridge_never_invents_patient_links(self):
         with tempfile.TemporaryDirectory() as folder:
