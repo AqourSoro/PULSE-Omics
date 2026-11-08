@@ -34,20 +34,24 @@ def norm(value: object) -> str | None:
 
 def inspect_sheet(sheet, max_preview_rows: int = 12, max_preview_cols: int = 24) -> dict:
     """Read only the first few columns of each sheet for ID inference."""
-    id_scan_cols = min(sheet.max_column, 12)
+    id_scan_cols = sheet.max_column if "Patient Clinical Data" in sheet.title else min(sheet.max_column, 2)
     max_rows = min(sheet.max_row, 600)
     rows = list(sheet.iter_rows(
         min_row=1, max_row=max_rows, max_col=id_scan_cols, values_only=True
     ))
     candidates = []
-    for header_row in range(min(8, len(rows) - 1)):
+    for header_row in range(min(1, len(rows) - 1)):
         for col in range(id_scan_cols):
             entries = [norm(row[col]) for row in rows[header_row + 1:]]
             nonempty = [value for value in entries if value is not None]
             distinct = set(nonempty)
             if len(nonempty) < 15 or len(distinct) < 15:
                 continue
-            if len(distinct) / len(nonempty) < 0.85:
+            is_assay_patient_label = (
+                col == 0
+                and str(rows[header_row][col]).strip() == "Healthy donor sample or COVID19 sample"
+            )
+            if len(distinct) / len(nonempty) < 0.85 and not is_assay_patient_label:
                 continue
             header = rows[header_row][col]
             candidates.append({
@@ -108,9 +112,11 @@ def clinical_group_candidates(info: dict) -> list[dict]:
     """Look for recurring patient identifiers, separately from unique sample IDs."""
     rows = info["first_columns"]
     choices = []
-    for header_row in range(min(8, len(rows) - 1)):
-        for col in range(min(12, len(rows[0]))):
+    for header_row in range(min(1, len(rows) - 1)):
+        for col in range(len(rows[0])):
             label = "" if rows[header_row][col] is None else str(rows[header_row][col])
+            if label.strip().casefold() not in {"study subject id", "patient_id"}:
+                continue
             values = [norm(row[col]) for row in rows[header_row + 1:]]
             counts = Counter(value for value in values if value is not None)
             n_repeated = sum(number > 1 for number in counts.values())
