@@ -84,3 +84,31 @@ This uses the three actual sheets `S1.1 Patient Clinical Data`, `S1.3 Plasma Pro
 `/mnt/f/datasets/pulse-omics/processed/su2020/schema_profile.json`
 
 The diagnostics distinguish assay-row identities from patient identities; matching candidates are **not** automatically promoted into confirmed longitudinal links. The report contains top-left sheet previews to support explicit schema mapping, so review before sharing it outside the local machine. No training/validation split or omics matrix has been generated at this stage.
+
+## Extract the actual Su2020 assays (without invented ID joins)
+
+The initial schema profiler was too permissive about header rows and too restrictive about assay label columns. It is now corrected to read **row 1 as the header**, inspect all **31 clinical columns**, and include the assay column `Healthy donor sample or COVID19 sample` in overlap checks.
+
+Use the dedicated extractor:
+
+```bash
+cd ~/projects/PULSE-Omics
+git pull --ff-only
+python scripts/su2020_prepare.py
+```
+
+It reads the actual headers in three worksheets, exports **all raw assay measurements** (including observed NaNs) into:
+
+- `processed/su2020/protein_raw_by_assay_id.csv`
+- `processed/su2020/metab_raw_by_assay_id.csv`
+
+It first matches the assay's `Healthy donor sample or COVID19 sample` value **exactly** to the clinical `Sample ID`. This is independent of the numeric `sample_id` identifying an assay row. The latter can be joined against another assay by exact sample ID but must not be treated as a patient identifier. If the assay labels are not direct clinical sample IDs, an explicit matching column elsewhere in the clinical table can be used only when the match is one-to-one and non-ambiguous.
+
+When verified links exist, the extractor additionally writes:
+- `subjects.csv`: the original clinical `Sample ID`, `Study Subject ID`, and observed T1/T2 order.
+- `proteomics.csv` and `metabolomics.csv`: each assay's real feature values indexed by the corresponding clinical sample.
+- `assay_mapping.csv`: the exact links between clinical sample IDs and the two assay-row IDs.
+
+The extractor records all counts, candidate joins, actual label matches, feature missingness, and whether canonical exports were possible in `processed/su2020/preparation_report.json`. If no clinical linkage can be verified, it exports only raw assay matrices and reports `raw_assays_exported_no_verified_patient_join` without fabricating visits.
+
+**Important:** Missing feature measurements are preserved as NaN, not replaced with zeros or global means. These canonical CSV files are raw linked matrices and are **not yet training-ready**; handling partial missingness, training-only normalization, and a patient-level train/test split are the next preprocessing stage.
