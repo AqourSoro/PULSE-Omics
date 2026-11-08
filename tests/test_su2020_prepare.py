@@ -76,6 +76,42 @@ class Su2020PreparationTests(unittest.TestCase):
             self.assertEqual(len(mapping), 50)
             self.assertEqual(set(mapping["Study Subject ID"].unique()), {f"p{i:03d}" for i in range(25)})
 
+    def test_incov_clinical_and_bl_ac_omics_ids(self):
+        """Scientific source uses INCOV001-1/2 and INCOV001-BL/AC."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            path = root / "su2020.xlsx"
+            wb = Workbook()
+            clinical = wb.active
+            clinical.title = "S1.1 Patient Clinical Data"
+            clinical.append(["Study Subject ID", "Sample ID", "Blood draw time point"])
+            prot = wb.create_sheet("S1.3 Plasma Proteomic Data")
+            metab = wb.create_sheet("S1.4 Plasma Metabolomic Data")
+            for sheet, feature in ((prot, "protein A"), (metab, "metabolite A")):
+                sheet.append(["Healthy donor sample or COVID19 sample", "sample_id", feature])
+                sheet.append(["Healthy Donor", 1065558, 5.0])
+            for p in range(1, 5):
+                for visit in (1, 2):
+                    clinical.append([f"INCOV{p:03d}", f"INCOV{p:03d}-{visit}", f"T{visit}"])
+                    suffix = "BL" if visit == 1 else "AC"
+                    prot.append(["COVID19 sample", f"INCOV{p:03d}-{suffix}", 3.0 * p])
+                    metab.append(["COVID19 sample", f"COVID_{p}_T{visit}", 4.0 * p])
+            wb.save(path)
+            report = prepare(path, root / "processed")
+            self.assertEqual(report["clinical_sample_matches"], {"protein": 8, "metab": 8})
+            self.assertEqual(report["exact_clinical_label_matches"], {"protein": 0, "metab": 0})
+            self.assertEqual(report["linked_clinical_draws"], 8)
+            self.assertEqual(report["linked_paired_draws"], 8)
+            self.assertEqual(report["linked_patients_with_two_draws"], 4)
+            mapping = pd.read_csv(root / "processed" / "assay_mapping.csv")
+            self.assertEqual(set(mapping["protein_assay_id"]),
+                             {f"INCOV{p:03d}-{s}" for p in range(1, 5) for s in ("BL", "AC")})
+
+    def test_numeric_donor_ids_are_not_converted_into_patient_ids(self):
+        self.assertIsNone(
+            __import__("omics.su2020", fromlist=["normalized_patient_sample"]).normalized_patient_sample(1065558)
+        )
+
     def test_no_bridge_never_invents_patient_links(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
