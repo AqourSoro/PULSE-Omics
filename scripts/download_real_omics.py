@@ -379,10 +379,7 @@ class Downloader:
         )
 
     def ipop(self) -> None:
-        processed = self.root / "raw/ipop/seasonal/Multi_Omics_Seasonal.RData"
         self.figshare_article("ipop", 12376508, "seasonal")
-        if processed.exists():
-            self.https("ipop", "seasonal/Multi_Omics_Seasonal.RData", IPOP_SEASONAL_URL)
         try:
             import boto3
             from botocore import UNSIGNED
@@ -599,8 +596,20 @@ def main() -> None:
             runner.covaar_all_geo()
             runner.figshare()
         elif dataset == "p100":
+            runner.mark_discovery(
+                "p100", "https://doi.org/10.1038/nbt.3870",
+                len(P100),
+            )
             for name, url in P100.items():
                 runner.https("p100", name, url)
+            # Public publisher supplements have been enumerated, but individual
+            # participant-level P100 omics are a separate controlled dbGaP release.
+            runner.incomplete.add("p100")
+            runner.record("p100", {
+                "status": "controlled_access_not_downloaded",
+                "source": "https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs001363.v1.p1",
+                "detail": "Individual-level omics require dbGaP authorization",
+            })
         elif dataset == "csiro":
             runner.csiro()
         runner.flush(dataset)
