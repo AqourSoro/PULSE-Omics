@@ -6,6 +6,7 @@ A numeric assay sample identifier must never be assumed to be a patient ID.
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -71,11 +72,12 @@ def _assay(frame: pd.DataFrame, name: str) -> tuple[pd.DataFrame, list[str]]:
     features = [name for name in df.columns if name not in ASSAY_COLUMNS]
     if not features:
         raise ValueError(f"{name}: no measured features")
-    for col in features:
-        df[col] = pd.to_numeric(df[col], errors="raise")
-    if np.isinf(df[features].to_numpy(dtype=np.float64)).any():
+    numeric = df.loc[:, features].apply(pd.to_numeric, errors="raise")
+    if np.isinf(numeric.to_numpy(dtype=np.float64)).any():
         raise ValueError(f"{name}: infinite assay abundance")
-    df = df.set_index("sample_id", verify_integrity=True)
+    # One concat prevents fragmentation in wide metabolomics tables.
+    df = pd.concat([df.loc[:, list(ASSAY_COLUMNS)], numeric], axis=1)
+    df = df.set_index("sample_id")
     return df, features
 
 
@@ -106,46 +108,81 @@ def _bridge_candidates(
 
 
 def _choose_bridge(candidates: list[dict], modality: str) -> str | None:
-    """Only promote an unambiguous, substantial direct value match to a join."""
-    if not candidates:
+    """Allow only explicitly named clinical-to-assay ID fields as a fallback."""
+    token = "prot" if modality == "protein" else "metab"
+    named = [
+        candidate for candidate in candidates
+        if token in candidate["column"].casefold()
+        and "sample" in candidate["column"].casefold()
+    ]
+    if not named or named[0]["matched_clinical_rows"] < 10:
         return None
-    top = candidates[0]
-    if top["matched_clinical_rows"] < 20:
+    ranked = sorted(named, key=lambda item: item["matched_clinical_rows"], reverse=True)
+    if len(ranked) > 1 and ranked[0]["matched_clinical_rows"] == ranked[1]["matched_clinical_rows"]:
         return None
-    # A tie between distinct clinical fields cannot be resolved without knowing
-    # what those fields measure; fail closed instead of selecting by row position.
-    if len(candidates) > 1 and top["matched_clinical_rows"] == candidates[1]["matched_clinical_rows"]:
-        if candidates[0]["column"].casefold() != candidates[1]["column"].casefold():
-            return None
-    return top["column"]
+    return ranked[0]["column"]
+
+
+def normalized_patient_sample(value: object) -> str | None:
+    """Use the documented INCOV BL/AC -> T1/T2 naming convention.
+
+    Reproduced from ByronSyun/DIVAS_COVID19_CaseStudy's process_bulk scripts.
+    This function NEVER converts numeric assay/donor IDs to patient IDs.
+    """
+    value = as_id(value)
+    if value is None:
+        return None
+    match = re.fullmatch(
+        r"(?:INCOV|COVID[_-])0*([0-9]+)[_-](BL|AC|T1|T2|1|2)",
+        value, flags=re.IGNORECASE,
+    )
+    if not match:
+        return None
+    subject = int(match.group(1))
+    time = match.group(2).upper()
+    visit = 1 if time in {"1", "BL", "T1"} else 2
+    return f"INCOV{subject:03d}-{visit}"
 
 
 def _patient_sample_labels(
     clinical: pd.DataFrame, assay: pd.DataFrame, name: str
-) -> dict[str, str]:
-    """Exact match from assay's COVID19-sample label to clinical Sample ID.
+) -> tuple[dict[str, str], dict[str, int]]:
+    """Match clinical samples against BOTH assay label and assay sample_id.
 
-    Healthy donor labels repeat and do not match any clinical sample ID.
-    A separate numeric 'sample_id' is an assay identity, not a patient identity.
+    Earlier implementation checked only the assay group/label column, missing
+    the actual sample_id field and the INCOVxxx-BL/AC suffix variants.
     """
     clinical_samples = {
-        str(value).casefold(): value for value in clinical["Sample ID"]
+        normalized_patient_sample(value): value
+        for value in clinical["Sample ID"]
     }
-    mapped = {}
+    if None in clinical_samples:
+        raise ValueError("Clinical Sample ID could not be normalized")
+    if len(clinical_samples) != len(clinical):
+        raise ValueError("Ambiguous clinical Sample ID normalization")
+    matched = {}
+    sources = {"assay_sample_id": 0, "assay_label": 0}
     for assay_id, label in assay[ASSAY_COLUMNS[0]].items():
-        candidate = as_id(label)
-        if candidate is None:
+        hits = set()
+        for candidate, source in (
+            (assay_id, "assay_sample_id"),
+            (label, "assay_label"),
+        ):
+            key = normalized_patient_sample(candidate)
+            if key in clinical_samples:
+                hits.add((clinical_samples[key], source))
+        samples = {sample for sample, _ in hits}
+        if len(samples) > 1:
+            raise ValueError(f"{name}: conflicting sample identities for assay row {assay_id!r}")
+        if not samples:
             continue
-        key = candidate.casefold()
-        if key not in clinical_samples:
-            continue
-        clinical_sample = clinical_samples[key]
-        if clinical_sample in mapped:
-            raise ValueError(
-                f"{name}: duplicate COVID19 sample label {clinical_sample!r}"
-            )
-        mapped[clinical_sample] = assay_id
-    return mapped
+        clinical_sample = samples.pop()
+        if clinical_sample in matched:
+            raise ValueError(f"{name}: two assay rows map to {clinical_sample!r}")
+        matched[clinical_sample] = assay_id
+        for _, source in hits:
+            sources[source] += 1
+    return matched, sources
 
 
 def _atomic_csv(frame: pd.DataFrame, path: Path) -> None:
@@ -176,8 +213,8 @@ def prepare(workbook: Path, output_dir: Path) -> dict:
         original = data.reset_index().loc[:, ["sample_id", *features]]
         _atomic_csv(original, output_dir / f"{name}_raw_by_assay_id.csv")
 
-    p_labels = _patient_sample_labels(clinical, protein, "protein")
-    m_labels = _patient_sample_labels(clinical, metab, "metab")
+    p_labels, p_sources = _patient_sample_labels(clinical, protein, "protein")
+    m_labels, m_sources = _patient_sample_labels(clinical, metab, "metab")
     p_candidates = _bridge_candidates(clinical, protein)
     m_candidates = _bridge_candidates(clinical, metab)
     p_col = _choose_bridge(p_candidates, "protein")
@@ -199,7 +236,8 @@ def prepare(workbook: Path, output_dir: Path) -> dict:
             "protein": round(float(protein[protein_features].isna().to_numpy().mean()), 5),
             "metab": round(float(metab[metab_features].isna().to_numpy().mean()), 5),
         },
-        "exact_clinical_label_matches": {"protein": len(p_labels), "metab": len(m_labels)},
+        "clinical_sample_matches": {"protein": len(p_labels), "metab": len(m_labels)},
+        "match_sources": {"protein": p_sources, "metab": m_sources},
         "clinical_bridge_candidates": {"protein": p_candidates, "metab": m_candidates},
         "selected_bridge_columns": {"protein": p_col, "metab": m_col},
         "status": "raw_assays_exported_no_verified_patient_join",
@@ -207,8 +245,14 @@ def prepare(workbook: Path, output_dir: Path) -> dict:
 
     if p_labels or m_labels or p_col or m_col:
         linked = clinical.loc[:, [*CLINICAL_COLUMNS, "visit_order"]].copy()
-        linked["protein_assay_id"] = clinical["Sample ID"].map(p_labels)
-        linked["metab_assay_id"] = clinical["Sample ID"].map(m_labels)
+        linked["protein_assay_id"] = pd.Series(
+            [p_labels.get(value) for value in clinical["Sample ID"]],
+            index=clinical.index, dtype="object",
+        )
+        linked["metab_assay_id"] = pd.Series(
+            [m_labels.get(value) for value in clinical["Sample ID"]],
+            index=clinical.index, dtype="object",
+        )
         for name, bridge_col in (("protein", p_col), ("metab", m_col)):
             if bridge_col:
                 target = f"{name}_assay_id"
@@ -222,7 +266,8 @@ def prepare(workbook: Path, output_dir: Path) -> dict:
                     raise ValueError(
                         f"{name}: clinical bridge disagrees with explicit COVID19 label"
                     )
-                linked[target] = linked[target].fillna(fallback)
+                unset = linked[target].isna() & fallback.notna()
+                linked.loc[unset, target] = fallback.loc[unset].astype(object)
         for name, assay in (("protein", protein), ("metab", metab)):
             col = f"{name}_assay_id"
             linked[col] = linked[col].where(linked[col].isin(assay.index), None)
