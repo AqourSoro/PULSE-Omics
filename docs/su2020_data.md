@@ -70,3 +70,17 @@ print(len(dataset), {k: len(v) for k, v in features.items()})
 ```
 
 The adapter rejects duplicate sample IDs, contradictory visit assignments, unmatched assay IDs, and partially missing/nonfinite feature vectors; an entire missing assay uses PULSE mask 2. It does not preprocess or normalize measurements. The three canonical CSVs are **not created by the workbook inspector**; that extraction step must be implemented after examining the real workbook layout.
+
+## Identify the actual patient and assay join keys
+
+After the Table S1 download and workbook inspection succeed, run:
+
+```bash
+python scripts/su2020_schema.py
+```
+
+This uses the three actual sheets `S1.1 Patient Clinical Data`, `S1.3 Plasma Proteomic Data`, and `S1.4 Plasma Metabolomic Data`. It reports unique-ID overlaps between tables and potential repeating patient IDs, then saves a **local-only** diagnostic:
+
+`/mnt/f/datasets/pulse-omics/processed/su2020/schema_profile.json`
+
+The diagnostics distinguish assay-row identities from patient identities; matching candidates are **not** automatically promoted into confirmed longitudinal links. The report contains top-left sheet previews to support explicit schema mapping, so review before sharing it outside the local machine. No training/validation split or omics matrix has been generated at this stage.
