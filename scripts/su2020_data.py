@@ -45,7 +45,8 @@ def validate_workbook(path: Path) -> None:
             if "xl/workbook.xml" not in names or "[Content_Types].xml" not in names:
                 raise ValueError("File is a ZIP but not an XLSX workbook")
     except BadZipFile as exc:
-        preview = path.open("rb").read(100)
+        with path.open("rb") as handle:
+            preview = handle.read(100)
         if b"<html" in preview.lower() or b"<!doctype" in preview.lower():
             raise ValueError("Server returned an HTML page instead of an XLSX file") from exc
         raise ValueError(f"Not a valid XLSX: {path}") from exc
@@ -59,8 +60,8 @@ def obtain_workbook(source_path: Path, target: Path) -> None:
             raise ValueError("Workbook exceeds the 64 MiB safety limit")
         shutil.copyfile(source_path, target)
         return
-    except ValueError as workbook_error:
-        pass
+    except ValueError as exc:
+        workbook_error = str(exc)
     try:
         with ZipFile(source_path) as archive:
             choices = [
@@ -93,7 +94,8 @@ def install_workbook(source_file: Path, destination: Path, provenance: str, over
     tmp.unlink(missing_ok=True)
     try:
         obtain_workbook(source_file, tmp)
-        sha = hashlib.file_digest(tmp.open("rb"), "sha256").hexdigest()
+        with tmp.open("rb") as handle:
+            sha = hashlib.file_digest(handle, "sha256").hexdigest()
         size = tmp.stat().st_size
         tmp.replace(destination)
         manifest = {
@@ -165,7 +167,8 @@ def inspect(workbook: Path, output: Path, preview_rows: int, preview_cols: int) 
     except ImportError as exc:
         raise SystemExit("Install: python -m pip install -r requirements-omics.txt") from exc
     validate_workbook(workbook)
-    sha = hashlib.file_digest(workbook.open("rb"), "sha256").hexdigest()
+    with workbook.open("rb") as handle:
+        sha = hashlib.file_digest(handle, "sha256").hexdigest()
     report = {
         "source_file": str(workbook),
         "source_sha256": sha,
