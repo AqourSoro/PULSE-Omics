@@ -3,6 +3,31 @@
 Patient Unified Longitudinal Signal Engine for
 longitudinal multimodal clinical data with missing visits and modalities.
 
+## Public longitudinal multi-omics data (F: drive)
+
+The original Su2020 workbook and all subsequent real data are stored under
+`/mnt/f/datasets/pulse-omics/`, outside the Git repository.
+
+```bash
+conda activate pulse-omics
+python -m pip install -r requirements-data.txt
+python scripts/download_real_omics.py --datasets ipop hmp2 covaar p100
+python scripts/profile_real_omics.py
+```
+
+The downloader uses anonymous public-data endpoints, keeps resumable partial files
+and saves a per-dataset SHA-256 download manifest. The CSIRO collection requires
+separate endpoint discovery:
+
+```bash
+python scripts/download_real_omics.py --datasets csiro
+```
+
+See [real dataset access and data format research](docs/real_omics_data.md)
+for source details, modality definitions, sample joins and the standardized
+patient/visit/specimen/assay schema. Download status is determined by manifests
+written on the data drive; Git commits do not imply the data were downloaded.
+
 ## Installation
 
 ```bash
