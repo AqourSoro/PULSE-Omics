@@ -1,0 +1,77 @@
+"""Su2020 extraction checks using a tiny workbook with known IDs."""
+import tempfile
+import unittest
+from pathlib import Path
+
+import pandas as pd
+from openpyxl import Workbook
+
+from omics.su2020 import prepare
+
+
+def fixture(path: Path, bridge: bool) -> None:
+    wb = Workbook()
+    clinical = wb.active
+    clinical.title = "S1.1 Patient Clinical Data"
+    headings = ["Study Subject ID", "Sample ID", "Blood draw time point"]
+    if bridge:
+        headings += ["Plasma protein sample", "Plasma metab sample"]
+    clinical.append(headings)
+    proteins = wb.create_sheet("S1.3 Plasma Proteomic Data")
+    proteins.append(["Healthy donor sample or COVID19 sample", "sample_id", "protein A", "protein B"])
+    metabolites = wb.create_sheet("S1.4 Plasma Metabolomic Data")
+    metabolites.append(["Healthy donor sample or COVID19 sample", "sample_id", "metabolite A", "metabolite B"])
+    for i in range(25):
+        for visit in (1, 2):
+            p = f"p{i:03d}"
+            blood = f"{p}-{visit}"
+            protein_id = f"{10000 + 2 * i + visit}"
+            metab_id = f"{20000 + 2 * i + visit}"
+            row = [p, blood, f"T{visit}"]
+            if bridge:
+                row += [protein_id, metab_id]
+            clinical.append(row)
+            proteins.append(["COVID19 sample", protein_id, float(i), float(visit)])
+            metabolites.append(["COVID19 sample", metab_id, float(i + visit), None if i == 0 else 3.0])
+    for i in range(4):
+        proteins.append(["Healthy Donor", str(30000 + i), 10.0, 11.0])
+        metabolites.append(["Healthy Donor", str(30000 + i), 3.0, 4.0])
+    wb.save(path)
+
+
+class Su2020PreparationTests(unittest.TestCase):
+    def test_clinical_assay_bridge_and_raw_nan(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            path = root / "table_s1.xlsx"
+            fixture(path, bridge=True)
+            report = prepare(path, root / "processed")
+            self.assertEqual(report["clinical_patients"], 25)
+            self.assertEqual(report["clinical_patients_with_two_draws"], 25)
+            self.assertEqual(report["assay_shared_sample_ids"], 4)
+            self.assertEqual(report["linked_clinical_draws"], 50)
+            self.assertEqual(report["linked_paired_draws"], 50)
+            self.assertEqual(report["status"], "canonical_raw_omics_exported")
+            subjects = pd.read_csv(root / "processed" / "subjects.csv")
+            protein = pd.read_csv(root / "processed" / "proteomics.csv")
+            metab = pd.read_csv(root / "processed" / "metabolomics.csv")
+            self.assertEqual(len(subjects), 50)
+            self.assertEqual(len(protein), 50)
+            self.assertEqual(len(metab), 50)
+            self.assertEqual(set(subjects.visit_order), {1, 2})
+            self.assertEqual(int(metab["metabolite B"].isna().sum()), 2)
+
+    def test_no_bridge_never_invents_patient_links(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            path = root / "table_s1.xlsx"
+            fixture(path, bridge=False)
+            report = prepare(path, root / "processed")
+            self.assertEqual(report["status"], "raw_assays_exported_no_verified_patient_join")
+            self.assertFalse((root / "processed" / "subjects.csv").exists())
+            self.assertTrue((root / "processed" / "protein_raw_by_assay_id.csv").exists())
+            self.assertTrue((root / "processed" / "metab_raw_by_assay_id.csv").exists())
+
+
+if __name__ == "__main__":
+    unittest.main()
