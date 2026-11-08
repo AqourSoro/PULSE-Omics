@@ -160,6 +160,7 @@ class Downloader:
                 expected = int(response.headers.get("Content-Length") or 0)
                 if expected and expected + (already if append else 0) > self.max_file:
                     raise ValueError("File exceeds per-file size cap")
+                received = 0
                 with temp.open("ab" if append else "wb") as stream:
                     while block := response.read(1024 * 1024):
                         if stream.tell() + len(block) > self.max_file:
@@ -167,7 +168,12 @@ class Downloader:
                         if self.used + len(block) > self.max_total:
                             raise ValueError("Session exceeds total download cap")
                         stream.write(block)
+                        received += len(block)
                         self.used += len(block)
+                if expected and received != expected:
+                    raise ValueError(
+                        f"Incomplete HTTP body: received {received} of {expected} bytes"
+                    )
             check_format(temp)
             size, sha = temp.stat().st_size, checksum(temp)
             temp.replace(dest)
