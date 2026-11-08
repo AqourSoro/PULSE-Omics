@@ -40,3 +40,24 @@ Inspection saves actual worksheet names, dimensions, and a small top-left cell p
 After inspection, implement a schema-specific adapter matching the observed worksheet identifiers, retain assay missingness, and split data by patient before fitting any feature scaling. All raw clinical/omics measurements remain on F:, outside version control.
 
 Dataset download and analysis on the user's WSL workstation are separate from modifications committed to GitHub.
+
+## PULSE longitudinal data adapter
+
+`omics/longitudinal.py` now accepts three **validated canonical CSV files**, once the workbook's actual identifiers have been resolved:
+
+- `subjects.csv`: columns `sample_id,patient_id,visit_order` (one row per blood draw).
+- `proteomics.csv`: one row per `sample_id` with protein abundance columns.
+- `metabolomics.csv`: one row per `sample_id` with metabolite abundance columns.
+
+```python
+from omics.longitudinal import to_pulse_dataset
+dataset, features = to_pulse_dataset(
+    subjects_path="/mnt/f/datasets/pulse-omics/processed/su2020/subjects.csv",
+    proteomics_path="/mnt/f/datasets/pulse-omics/processed/su2020/proteomics.csv",
+    metabolomics_path="/mnt/f/datasets/pulse-omics/processed/su2020/metabolomics.csv",
+    train_mask_rate=0.6,
+)
+print(len(dataset), {k: len(v) for k, v in features.items()})
+```
+
+The adapter rejects duplicate sample IDs, contradictory visit assignments, unmatched assay IDs, and partially missing/nonfinite feature vectors; an entire missing assay uses PULSE mask 2. It does not preprocess or normalize measurements. The three canonical CSVs are **not created by the workbook inspector**; that extraction step must be implemented after examining the real workbook layout.
