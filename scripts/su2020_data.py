@@ -128,7 +128,8 @@ def inspect(workbook: Path, output: Path, preview_rows: int, preview_cols: int) 
         "dataset_doi": DATASET_DOI,
         "sheets": [],
     }
-    with load_workbook(workbook, read_only=True, data_only=True) as excel:
+    excel = load_workbook(workbook, read_only=True, data_only=True)
+    try:
         for sheet in excel:
             preview = [
                 [compact_cell(value) for value in row]
@@ -146,6 +147,8 @@ def inspect(workbook: Path, output: Path, preview_rows: int, preview_cols: int) 
             }
             report["sheets"].append(info)
             print(f"{sheet.title}: {sheet.max_row} rows x {sheet.max_column} cols")
+    finally:
+        excel.close()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Workbook structure saved to: {output}")
