@@ -310,7 +310,14 @@ class Downloader:
                     parsed = urlparse(url)
                     if not parsed.path.startswith("/ibdmdb/"):
                         continue
-                    rel = unquote(parsed.path.removeprefix("/ibdmdb/"))
+                    # Some official Globus hrefs contain "/ibdmdb//products/...".
+                    # After removing the remote root they still begin with "/".
+                    # Treat them as dataset-relative paths, never filesystem absolutes.
+                    rel = unquote(parsed.path.removeprefix("/ibdmdb/")).lstrip("/")
+                    if not rel:
+                        continue
+                    # Check every discovered path before starting any transfer.
+                    safe_path(self.root / "raw" / "hmp2", rel)
                     # Reuse original three files already downloaded in earlier runs.
                     name = Path(rel).name
                     local = name if name in HMP2 else rel
