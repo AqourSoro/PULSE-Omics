@@ -11,14 +11,61 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sys
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin, unquote
 from urllib.request import Request, urlopen
 
 ROOT = "/mnt/f/datasets/pulse-omics"
+# The official IBDMDB results page links to all these HMP2 product pages.
+# Follow their actual file hrefs; do not preselect one table per modality.
+HMP2_PRODUCT_PAGES = (
+    "products_16s_2018-01-08.html",
+    "products_MBX_2017-03-01.html",
+    "products_MGX_2017-08-12.html",
+    "products_MTX_2017-12-14.html",
+    "products_HMP2_HTX.html",
+    "products_HMP2_Proteomics.html",
+    "products_HMP2_vir.html",
+    "products_HMP2_serology.html",
+)
+HMP2_CATALOG_BASE = "https://www.ibdmdb.org/downloads/html/"
+SU2020_RELEASE_ZIP = (
+    "https://api.data.mendeley.com/datasets/"
+    "tzydswhhb5/zip/file_downloaded?version=5"
+)
+GEO_SERIES = ("GSE325178",)
+GEO_SECTIONS = ("suppl", "matrix", "soft", "miniml")
+
+
+class AnchorLinks(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.hrefs = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() == "a":
+            link = dict(attrs).get("href")
+            if link:
+                self.hrefs.append(link)
+
+
+def list_http_files(url: str, allow_hosts: set[str]) -> list[str]:
+    req = Request(url, headers={"User-Agent": "PULSE-Omics/1.0"})
+    with urlopen(req, timeout=80) as response:
+        raw = response.read(32 * 1024 * 1024)
+    parser = AnchorLinks()
+    parser.feed(raw.decode("utf-8", errors="replace"))
+    candidates = [urljoin(url, href) for href in parser.hrefs]
+    return sorted(set(link for link in candidates
+                      if urlparse(link).scheme == "https"
+                      and (urlparse(link).hostname or "") in allow_hosts
+                      and not urlparse(link).path.endswith("/")))
+
 HMP2_BASE = "https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb"
 HMP2 = {
     "hmp2_metadata_2018-08-20.csv": (
@@ -111,13 +158,25 @@ class Downloader:
     def __init__(self, root: Path, dry_run: bool, max_file_gb: float, max_total_gb: float):
         self.root = root
         self.dry_run = dry_run
-        self.max_file = int(max_file_gb * 1024 ** 3)
-        self.max_total = int(max_total_gb * 1024 ** 3)
+        # Zero means unlimited. A cap is opt-in, not a hidden file-selection rule.
+        self.max_file = int(max_file_gb * 1024 ** 3) if max_file_gb else float("inf")
+        self.max_total = int(max_total_gb * 1024 ** 3) if max_total_gb else float("inf")
         self.used = 0
         self.downloaded = 0
         self.existing = 0
         self.failed = 0
         self.report = {}
+        self.inventory = {}
+        self.incomplete = set()
+
+    def mark_discovery(self, dataset: str, source: str, found: int | None,
+                       error: str | None = None) -> None:
+        self.inventory.setdefault(dataset, []).append({
+            "source": source, "listed_files": found,
+            "status": "failed" if error else "listed", "error": error,
+        })
+        if error:
+            self.incomplete.add(dataset)
 
     def record(self, dataset: str, entry: dict) -> None:
         self.report.setdefault(dataset, []).append(entry)
@@ -177,6 +236,8 @@ class Downloader:
                             raise ValueError("File exceeds per-file size cap")
                         if self.used + len(block) > self.max_total:
                             raise ValueError("Session exceeds total download cap")
+                        if shutil.disk_usage(dest.parent).free < len(block) + 512 * 1024 * 1024:
+                            raise ValueError("Insufficient free disk space (512 MiB reserve)")
                         stream.write(block)
                         received += len(block)
                         self.used += len(block)
@@ -195,6 +256,7 @@ class Downloader:
             })
         except (HTTPError, URLError, OSError, ValueError) as exc:
             self.failed += 1
+            self.incomplete.add(dataset)
             message = f"{type(exc).__name__}: {exc}"
             print(f"FAILED {dataset}/{relative}: {message}", file=sys.stderr)
             self.record(dataset, {
