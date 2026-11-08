@@ -9,7 +9,9 @@ setup(
     install_requires=[
         "torch>=1.9.0",
         "numpy>=1.19.0",
-        "tqdm>=4.60.0"
+        "tqdm>=4.60.0",
+        "pandas>=1.5.0",
+        "scikit-learn>=1.2.0"
     ],
     python_requires=">=3.8",
 )
