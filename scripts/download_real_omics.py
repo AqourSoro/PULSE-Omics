@@ -264,8 +264,8 @@ class Downloader:
                             raise ValueError("File exceeds per-file size cap")
                         if self.used + len(block) > self.max_total:
                             raise ValueError("Session exceeds total download cap")
-                        if shutil.disk_usage(dest.parent).free < len(block) + 512 * 1024 * 1024:
-                            raise ValueError("Insufficient free disk space (512 MiB reserve)")
+                        if shutil.disk_usage(dest.parent).free < len(block) + 10 * 1024 ** 3:
+                            raise ValueError("Insufficient free disk space (10 GiB reserve)")
                         stream.write(block)
                         received += len(block)
                         self.used += len(block)
