@@ -34,6 +34,14 @@ HMP2_PRODUCT_PAGES = (
     "products_HMP2_vir.html",
     "products_HMP2_serology.html",
 )
+HMP2_RAW_PAGES = (
+    "rawfiles_16s_2018-01-08.html",
+    "rawfiles_MBX_2017-03-01.html",
+    "rawfiles_MGX_2017-08-12.html",
+    "rawfiles_MTX_HMP2.html",
+    "rawfiles_proteomics_HMP2.html",
+    "rawfiles_Viromics_HMP2.html",
+)
 HMP2_CATALOG_BASE = "https://www.ibdmdb.org/downloads/html/"
 SU2020_RELEASE_ZIP = (
     "https://api.data.mendeley.com/datasets/"
@@ -284,10 +292,11 @@ class Downloader:
                 "status": "failed", "error": message,
             })
 
-    def hmp2_all_products(self) -> None:
-        """Download every publicly indexed HMP2 processed product, not 3 hand-picked files."""
+    def hmp2_all_products(self, include_raw: bool = False) -> None:
+        """Enumerate all HMP2 processed products, optionally source raw files."""
         listed = {}
-        for page in HMP2_PRODUCT_PAGES:
+        pages = HMP2_PRODUCT_PAGES + (HMP2_RAW_PAGES if include_raw else ())
+        for page in pages:
             catalog_url = urljoin(HMP2_CATALOG_BASE, page)
             try:
                 links = list_http_files(
@@ -397,6 +406,8 @@ class Downloader:
                         if not relative:
                             continue
                         if size > self.max_file:
+                            self.incomplete.add("ipop")
+                            print(f"SKIP iPOP/{key}: optional file-size cap")
                             continue
                         entries.append((size, label, relative, key))
             self.mark_discovery("ipop", "s3://hmpdcc/ihmp/t2d/host/", len(entries))
@@ -406,7 +417,8 @@ class Downloader:
             # Small processed tables first; do not copy arbitrary raw MS/sequencing data.
             for size, label, relative, key in sorted(entries):
                 if self.used + size > self.max_total:
-                    print(f"SKIP iPOP/{key}: total download budget")
+                    print(f"SKIP iPOP/{key}: optional total download budget")
+                    self.incomplete.add("ipop")
                     continue
                 self.s3("ipop", f"{label}/{relative}", client, key, size)
         except Exception as exc:
@@ -560,6 +572,8 @@ def main() -> None:
         "su2020", "ipop", "hmp2", "covaar", "p100", "csiro",
     ), default=["su2020", "ipop", "hmp2", "covaar", "p100", "csiro"])
     parser.add_argument("--dry-run", action="store_true", help="Discover only, do not download")
+    parser.add_argument("--include-raw", action="store_true",
+                        help="Also fetch publicly indexed HMP2 raw FASTQ/instrument files")
     parser.add_argument("--max-file-gb", type=float, default=0.0,
                         help="Optional maximum individual file size in GiB; 0 means unlimited")
     parser.add_argument("--max-total-gb", type=float, default=0.0,
@@ -580,7 +594,7 @@ def main() -> None:
         elif dataset == "ipop":
             runner.ipop()
         elif dataset == "hmp2":
-            runner.hmp2_all_products()
+            runner.hmp2_all_products(include_raw=args.include_raw)
         elif dataset == "covaar":
             runner.covaar_all_geo()
             runner.figshare()
