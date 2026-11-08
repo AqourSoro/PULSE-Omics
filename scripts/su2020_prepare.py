@@ -26,6 +26,8 @@ def main() -> None:
     print(f"  Clinical draws: {report['clinical_rows']}")
     print(f"  Patients with T1/T2: {report['clinical_patients_with_two_draws']}")
     print(f"  Assay-matched samples (no time inference): {report['assay_shared_sample_ids']}")
+    for name, kinds in report["assay_id_formats"].items():
+        print(f"  {name} sample_id formats: {kinds}")
     for name, count in report["clinical_sample_matches"].items():
         breakdown = report["match_sources"][name]
         print(f"  Clinical samples matched to {name}: {count} "
