@@ -11,22 +11,18 @@ The original Su2020 workbook and all subsequent real data are stored under
 ```bash
 conda activate pulse-omics
 python -m pip install -r requirements-data.txt
-python scripts/download_real_omics.py --datasets ipop hmp2 covaar p100
+python scripts/download_real_omics.py
 python scripts/profile_real_omics.py
 ```
 
-The downloader uses anonymous public-data endpoints, keeps resumable partial files
-and saves a per-dataset SHA-256 download manifest. The CSIRO collection requires
-separate endpoint discovery:
-
-```bash
-python scripts/download_real_omics.py --datasets csiro
-```
-
-See [real dataset access and data format research](docs/real_omics_data.md)
-for source details, modality definitions, sample joins and the standardized
-patient/visit/specimen/assay schema. Download status is determined by manifests
-written on the data drive; Git commits do not imply the data were downloaded.
+The downloader enumerates the published public source indexes for Su2020,
+HMP2, COVAAR, and CSIRO, plus iPOP and P100 public release resources.
+It skips already valid files, resumes interrupted transfers, and writes SHA-256
+records and **incomplete-source errors** only to the F: data drive. Optional
+size caps are disabled by default. HMP2 publicly indexed raw FASTQ/instrument
+files can additionally be fetched with `--include-raw`; this may be a very
+large transfer. No repository commit establishes that local downloads succeeded.
+Complete-access restrictions remain visible in the F: drive manifests.
 
 ## Installation
 
