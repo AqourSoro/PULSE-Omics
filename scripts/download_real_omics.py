@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Acquire public longitudinal omics resources to the WSL-mounted F: drive.
 
-Data catalog and biological interpretation: docs/real_omics_data.md
-No private credentials, anonymous AWS S3, resumable HTTPS transfers.
+Enumerates files from each available publisher/source index rather than selecting
+a few hand-picked matrices. No private credentials; resumable HTTPS transfers.
+All data and manifests stay on the F: data drive, never in GitHub.
 """
 from __future__ import annotations
 
@@ -527,18 +528,24 @@ class Downloader:
                 url.rstrip("),;") for url in urls
                 if (urlparse(url).hostname or "").endswith(
                     ("csiro.au", "csirocdn.com.au")
-                ) and urlparse(url).path.lower().endswith(DATA_EXTENSIONS + (".zip",))
+                ) and Path(urlparse(url).path).suffix.lower() in {
+                    ".zip", ".xlsx", ".xls", ".csv", ".tsv", ".txt",
+                    ".pdf", ".gz", ".rdata", ".rds", ".h5", ".biom",
+                    ".mzml", ".raw", ".7z", ".tar", ".parquet",
+                }
             ]
             if not downloads:
                 raise ValueError(
-                    "CSIRO collection file list did not expose direct public omics URLs"
+                    "CSIRO collection file list did not expose direct public file URLs"
                 )
+            self.mark_discovery("csiro", CSIRO_LIST_API, len(downloads))
             for index, url in enumerate(downloads):
                 name = Path(urlparse(url).path).name
                 self.https("csiro", f"{index:03d}_{name}", url)
         except Exception as exc:
             self.failed += 1
             message = f"{type(exc).__name__}: {exc}"
+            self.mark_discovery("csiro", CSIRO_LIST_API, None, message)
             print(f"CSIRO collection discovery unresolved: {message}", file=sys.stderr)
             self.record("csiro", {
                 "status": "discovery_failed", "source": CSIRO_LIST_API,
