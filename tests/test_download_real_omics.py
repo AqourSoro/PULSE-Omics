@@ -113,8 +113,22 @@ class DownloaderTests(unittest.TestCase):
                 "scripts.download_real_omics.list_http_files", return_value=[href],
             ), patch.object(runner, "https") as downloader:
                 runner.hmp2_all_products()
-            downloader.assert_not_called()
+            # The independent metadata CSV is still considered, but the
+            # unsafe source object must not reach the downloader.
+            self.assertEqual(downloader.call_count, 1)
+            self.assertEqual(downloader.call_args.args[1], "hmp2_metadata_2018-08-20.csv")
             self.assertIn("hmp2", runner.incomplete)
+
+    def test_su2020_attempts_all_six_pmc_supplements(self):
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), True, 0, 0)
+            with patch.object(runner, "https") as download:
+                runner.su2020_full_release()
+            self.assertEqual(download.call_count, 8)
+            self.assertEqual(
+                [args.args[1] for args in download.call_args_list[-6:]],
+                [f"pmc/mmc{i}.xlsx" for i in range(1, 7)],
+            )
 
     def test_zero_download_caps_are_unlimited(self):
         runner = Downloader(Path("/tmp"), True, 0, 0)
