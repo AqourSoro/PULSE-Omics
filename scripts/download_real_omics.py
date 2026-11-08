@@ -38,6 +38,10 @@ SU2020_RELEASE_ZIP = (
     "https://api.data.mendeley.com/datasets/"
     "tzydswhhb5/zip/file_downloaded?version=5"
 )
+SU2020_EUROPEPMC_ZIP = (
+    "https://www.ebi.ac.uk/europepmc/webservices/rest/"
+    "PMC7598382/supplementaryFiles"
+)
 GEO_SERIES = ("GSE325178",)
 GEO_SECTIONS = ("suppl", "matrix", "soft", "miniml")
 
@@ -348,7 +352,7 @@ class Downloader:
             self.https("covaar", f"geo/{name}", url)
 
     def su2020_full_release(self) -> None:
-        """Download the full published Mendeley v5 package containing Tables S1–S6."""
+        """Acquire all published Mendeley v5 tables in one source archive."""
         self.https(
             "su2020", "mendeley_v5_complete_supplementary.zip",
             SU2020_RELEASE_ZIP,
@@ -357,9 +361,16 @@ class Downloader:
             "su2020", "https://data.mendeley.com/datasets/tzydswhhb5/5",
             6,
         )
+        # Preserve a second public source even if the Mendeley API requires
+        # an authenticated token or redirects to a blocked object.
+        self.https(
+            "su2020", "europepmc_supplementary.zip",
+            SU2020_EUROPEPMC_ZIP,
+        )
 
     def ipop(self) -> None:
         processed = self.root / "raw/ipop/seasonal/Multi_Omics_Seasonal.RData"
+        self.figshare_article("ipop", 12376508, "seasonal")
         if processed.exists():
             self.https("ipop", "seasonal/Multi_Omics_Seasonal.RData", IPOP_SEASONAL_URL)
         try:
@@ -471,24 +482,34 @@ class Downloader:
                 "status": "failed", "error": message,
             })
 
-    def figshare(self) -> None:
+    def figshare_article(self, dataset: str, article_id: int, subdir: str) -> None:
+        api = f"https://api.figshare.com/v2/articles/{article_id}"
         try:
-            req = Request(FIGSHARE_ARTICLE, headers={"User-Agent": "PULSE-Omics/1.0"})
+            req = Request(api, headers={"User-Agent": "PULSE-Omics/1.0"})
             with urlopen(req, timeout=40) as response:
                 metadata = json.load(response)
             files = metadata.get("files", [])
             if not files:
-                raise ValueError("Figshare article has no downloadable files")
+                raise ValueError("Figshare record has no public downloadable files")
+            self.mark_discovery(dataset, api, len(files))
             for item in files:
                 name = item.get("name")
                 url = item.get("download_url")
                 if name and url and urlparse(url).scheme == "https":
-                    self.https("covaar", f"figshare/{Path(name).name}", url)
+                    self.https(dataset, f"{subdir}/{Path(name).name}", url)
+                else:
+                    raise ValueError("Figshare listed file without a usable public URL")
         except Exception as exc:
             self.failed += 1
+            self.mark_discovery(dataset, api, None, str(exc))
             message = f"{type(exc).__name__}: {exc}"
-            print(f"FAILED COVAAR Figshare discovery: {message}", file=sys.stderr)
-            self.record("covaar", {"status": "discovery_failed", "error": message})
+            print(f"FAILED {dataset} Figshare discovery: {message}", file=sys.stderr)
+            self.record(dataset, {
+                "status": "discovery_failed", "source": api, "error": message,
+            })
+
+    def figshare(self) -> None:
+        self.figshare_article("covaar", 31685023, "figshare")
 
     def csiro(self) -> None:
         # Discover first: collection numeric ID and public file list are API-specific.
