@@ -26,8 +26,11 @@ def main() -> None:
     print(f"  Clinical draws: {report['clinical_rows']}")
     print(f"  Patients with T1/T2: {report['clinical_patients_with_two_draws']}")
     print(f"  Assay-matched samples (no time inference): {report['assay_shared_sample_ids']}")
-    for name, count in report["exact_clinical_label_matches"].items():
-        print(f"  Clinical Sample ID matches in {name} labels: {count}")
+    for name, count in report["clinical_sample_matches"].items():
+        breakdown = report["match_sources"][name]
+        print(f"  Clinical samples matched to {name}: {count} "
+              f"(assay sample_id={breakdown['assay_sample_id']}, "
+              f"label={breakdown['assay_label']})")
     for name, info in report["clinical_bridge_candidates"].items():
         print(f"  Clinical bridge candidates for {name}: {info[:4]}")
     if "linked_clinical_draws" in report:
