@@ -51,6 +51,11 @@ SU2020_EUROPEPMC_ZIP = (
     "https://www.ebi.ac.uk/europepmc/webservices/rest/"
     "PMC7598382/supplementaryFiles"
 )
+# Cell's PMC version lists supplements mmc1.xlsx through mmc6.xlsx.
+# mmc1.xlsx is already a known source in scripts/su2020_data.py.
+SU2020_PMC_AWS_PREFIX = (
+    "https://pmc-oa-opendata.s3.amazonaws.com/PMC7598382.1/"
+)
 GEO_SERIES = ("GSE325178",)
 GEO_SECTIONS = ("suppl", "matrix", "soft", "miniml")
 
@@ -384,6 +389,11 @@ class Downloader:
             "su2020", "europepmc_supplementary.zip",
             SU2020_EUROPEPMC_ZIP,
         )
+        # Individual paper supplements avoid dependence on Mendeley's
+        # OAuth-gated bulk archive and Europe PMC's HTML response.
+        for number in range(1, 7):
+            name = f"mmc{number}.xlsx"
+            self.https("su2020", f"pmc/{name}", SU2020_PMC_AWS_PREFIX + name)
 
     def ipop(self) -> None:
         self.figshare_article("ipop", 12376508, "seasonal")
