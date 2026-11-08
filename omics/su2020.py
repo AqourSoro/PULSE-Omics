@@ -330,6 +330,13 @@ def prepare(workbook: Path, output_dir: Path) -> dict:
             report["linked_clinical_draws"] = len(linked)
             report["linked_paired_draws"] = int(paired.sum())
             report["linked_patients_with_two_draws"] = sum(n == 2 for n in per_patient.values())
+            paired_patient_counts = paired.groupby(linked["Study Subject ID"]).sum()
+            report["patients_with_two_paired_omics_visits"] = int(
+                (paired_patient_counts >= 2).sum()
+            )
+            report["patients_with_at_least_one_paired_omics_visit"] = int(
+                (paired_patient_counts >= 1).sum()
+            )
             report["status"] = "canonical_raw_omics_exported"
 
     output = output_dir / "preparation_report.json"
