@@ -53,16 +53,16 @@ class DownloaderTests(unittest.TestCase):
             self.assertEqual(runner.existing, 1)
             self.assertTrue((Path(root) / "raw/p100/download_manifest.json").exists())
 
-    def test_ipop_uses_published_processed_source_when_s3_is_unavailable(self):
+    def test_ipop_keeps_figshare_and_records_unavailable_s3(self):
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), False, 1.0, 1.0)
-            with patch.dict(sys.modules, {"boto3": None}), patch.object(runner, "https") as download:
+            with patch.dict(sys.modules, {"boto3": None}), patch.object(
+                runner, "figshare_article"
+            ) as figshare:
                 runner.ipop()
-            download.assert_called_once_with(
-                "ipop", "seasonal/Multi_Omics_Seasonal.RData",
-                "https://ndownloader.figshare.com/files/22807673",
-            )
-            self.assertEqual(runner.failed, 0)
+            figshare.assert_called_once_with("ipop", 12376508, "seasonal")
+            self.assertEqual(runner.failed, 1)
+            self.assertIn("ipop", runner.incomplete)
 
     def test_complete_hmp2_indexes_all_links(self):
         """The downloader must enumerate source links, not just hard-coded matrices."""
@@ -76,6 +76,45 @@ class DownloaderTests(unittest.TestCase):
                 )
             self.assertEqual(len(found), 2)
             self.assertTrue(any(item.endswith("first.biom.gz") for item in found))
+
+    def test_hmp2_double_slash_catalog_path_is_relative(self):
+        """Regresses crash for /ibdmdb//products/HMP2/MGX/... paths."""
+        href = (
+            "https://g-227ca.190ebd.75bc.data.globus.org/"
+            "ibdmdb//products/HMP2/MGX/2018-05-04/contigs/"
+            "CSM5FZ4M_contigs.fna.gz"
+        )
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), True, 0, 0)
+            with patch(
+                "scripts.download_real_omics.HMP2_PRODUCT_PAGES",
+                ("products_MGX_2017-08-12.html",),
+            ), patch(
+                "scripts.download_real_omics.list_http_files", return_value=[href],
+            ), patch.object(runner, "https") as downloader:
+                runner.hmp2_all_products()
+            downloader.assert_any_call(
+                "hmp2",
+                "products/HMP2/MGX/2018-05-04/contigs/CSM5FZ4M_contigs.fna.gz",
+                href,
+            )
+            self.assertNotIn("hmp2", runner.incomplete)
+
+    def test_hmp2_rejects_traversal_even_after_url_decoding(self):
+        href = (
+            "https://g-227ca.190ebd.75bc.data.globus.org/"
+            "ibdmdb//products/HMP2/%2e%2e/%2e%2e/escape.txt"
+        )
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), True, 0, 0)
+            with patch(
+                "scripts.download_real_omics.HMP2_PRODUCT_PAGES", ("one.html",),
+            ), patch(
+                "scripts.download_real_omics.list_http_files", return_value=[href],
+            ), patch.object(runner, "https") as downloader:
+                runner.hmp2_all_products()
+            downloader.assert_not_called()
+            self.assertIn("hmp2", runner.incomplete)
 
     def test_zero_download_caps_are_unlimited(self):
         runner = Downloader(Path("/tmp"), True, 0, 0)
