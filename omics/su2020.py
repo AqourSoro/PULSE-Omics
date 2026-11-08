@@ -120,6 +120,34 @@ def _choose_bridge(candidates: list[dict], modality: str) -> str | None:
     return top["column"]
 
 
+def _patient_sample_labels(
+    clinical: pd.DataFrame, assay: pd.DataFrame, name: str
+) -> dict[str, str]:
+    """Exact match from assay's COVID19-sample label to clinical Sample ID.
+
+    Healthy donor labels repeat and do not match any clinical sample ID.
+    A separate numeric 'sample_id' is an assay identity, not a patient identity.
+    """
+    clinical_samples = {
+        str(value).casefold(): value for value in clinical["Sample ID"]
+    }
+    mapped = {}
+    for assay_id, label in assay[ASSAY_COLUMNS[0]].items():
+        candidate = as_id(label)
+        if candidate is None:
+            continue
+        key = candidate.casefold()
+        if key not in clinical_samples:
+            continue
+        clinical_sample = clinical_samples[key]
+        if clinical_sample in mapped:
+            raise ValueError(
+                f"{name}: duplicate COVID19 sample label {clinical_sample!r}"
+            )
+        mapped[clinical_sample] = assay_id
+    return mapped
+
+
 def _atomic_csv(frame: pd.DataFrame, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
@@ -148,6 +176,8 @@ def prepare(workbook: Path, output_dir: Path) -> dict:
         original = data.reset_index().loc[:, ["sample_id", *features]]
         _atomic_csv(original, output_dir / f"{name}_raw_by_assay_id.csv")
 
+    p_labels = _patient_sample_labels(clinical, protein, "protein")
+    m_labels = _patient_sample_labels(clinical, metab, "metab")
     p_candidates = _bridge_candidates(clinical, protein)
     m_candidates = _bridge_candidates(clinical, metab)
     p_col = _choose_bridge(p_candidates, "protein")
@@ -169,30 +199,33 @@ def prepare(workbook: Path, output_dir: Path) -> dict:
             "protein": round(float(protein[protein_features].isna().to_numpy().mean()), 5),
             "metab": round(float(metab[metab_features].isna().to_numpy().mean()), 5),
         },
+        "exact_clinical_label_matches": {"protein": len(p_labels), "metab": len(m_labels)},
         "clinical_bridge_candidates": {"protein": p_candidates, "metab": m_candidates},
         "selected_bridge_columns": {"protein": p_col, "metab": m_col},
         "status": "raw_assays_exported_no_verified_patient_join",
     }
 
-    if p_col or m_col:
+    if p_labels or m_labels or p_col or m_col:
         linked = clinical.loc[:, [*CLINICAL_COLUMNS, "visit_order"]].copy()
-        linked["protein_assay_id"] = clinical[p_col].map(as_id) if p_col else None
-        linked["metab_assay_id"] = clinical[m_col].map(as_id) if m_col else None
+        linked["protein_assay_id"] = clinical["Sample ID"].map(p_labels)
+        linked["metab_assay_id"] = clinical["Sample ID"].map(m_labels)
+        for name, bridge_col in (("protein", p_col), ("metab", m_col)):
+            if bridge_col:
+                target = f"{name}_assay_id"
+                fallback = clinical[bridge_col].map(as_id)
+                conflicting = (
+                    linked[target].notna()
+                    & fallback.notna()
+                    & (linked[target] != fallback)
+                )
+                if conflicting.any():
+                    raise ValueError(
+                        f"{name}: clinical bridge disagrees with explicit COVID19 label"
+                    )
+                linked[target] = linked[target].fillna(fallback)
         for name, assay in (("protein", protein), ("metab", metab)):
             col = f"{name}_assay_id"
             linked[col] = linked[col].where(linked[col].isin(assay.index), None)
-
-        # If one verified bridge value appears in the other assay, it is the
-        # exact same specimen ID and can be used there too. Never infer from
-        # subject or row position.
-        for target_name, target_assay, other_name in (
-            ("protein", protein, "metab"),
-            ("metab", metab, "protein"),
-        ):
-            col = f"{target_name}_assay_id"
-            other_col = f"{other_name}_assay_id"
-            use = linked[col].isna() & linked[other_col].isin(target_assay.index)
-            linked.loc[use, col] = linked.loc[use, other_col]
 
         linked = linked.loc[
             linked["protein_assay_id"].notna() | linked["metab_assay_id"].notna()
