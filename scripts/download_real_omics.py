@@ -257,12 +257,16 @@ class Downloader:
             if offset:
                 kwargs["Range"] = f"bytes={offset}-"
             response = client.get_object(**kwargs)
-            with response["Body"] as body, temp.open("ab" if offset else "wb") as stream:
-                while block := body.read(1024 * 1024):
-                    if self.used + len(block) > self.max_total:
-                        raise ValueError("Session exceeds total download cap")
-                    stream.write(block)
-                    self.used += len(block)
+            body = response["Body"]
+            try:
+                with temp.open("ab" if offset else "wb") as stream:
+                    while block := body.read(1024 * 1024):
+                        if self.used + len(block) > self.max_total:
+                            raise ValueError("Session exceeds total download cap")
+                        stream.write(block)
+                        self.used += len(block)
+            finally:
+                body.close()
             if temp.stat().st_size != size:
                 raise ValueError(f"Object size mismatch: expected {size}")
             check_format(temp)
