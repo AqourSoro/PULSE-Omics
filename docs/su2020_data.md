@@ -112,3 +112,42 @@ When verified links exist, the extractor additionally writes:
 The extractor records all counts, candidate joins, actual label matches, feature missingness, and whether canonical exports were possible in `processed/su2020/preparation_report.json`. If no clinical linkage can be verified, it exports only raw assay matrices and reports `raw_assays_exported_no_verified_patient_join` without fabricating visits.
 
 **Important:** Missing feature measurements are preserved as NaN, not replaced with zeros or global means. These canonical CSV files are raw linked matrices and are **not yet training-ready**; handling partial missingness, training-only normalization, and a patient-level train/test split are the next preprocessing stage.
+
+## Patient identifiers in the original Su2020 tables
+
+The **clinical** table uses `Study Subject ID` (patient) and `Sample ID`
+(`INCOV001-1`, `INCOV001-2`, corresponding to T1 and T2).
+
+The original plasma assay tables use `sample_id` to identify measured specimens.
+Their first column, `Healthy donor sample or COVID19 sample`, can be a
+donor/patient group label rather than the unique clinical sample identifier.
+The previous extractor inspected only this group column for clinical identity,
+so its `exact_clinical_label_matches: 0` output did **not** establish that
+patient-to-assay mapping is impossible.
+
+The updated extractor checks both assay fields. For explicit sample IDs it
+uses the published suffix conventions:
+
+- `INCOV001-1` = `INCOV001-BL` = `COVID_1_T1`
+- `INCOV001-2` = `INCOV001-AC` = `COVID_1_T2`
+
+These conventions are documented in
+[DIVAS_COVID19_CaseStudy](https://github.com/ByronSyun/DIVAS_COVID19_CaseStudy/blob/main/preprocessing/process_bulk/process_proteomics.py)
+and its [sample ID table](https://github.com/ByronSyun/DIVAS_COVID19_CaseStudy/blob/main/preprocessing/sample_distribution/sample_ids.tsv).
+This mapping is limited to explicit recognized strings. Numeric donor IDs
+(such as `1065558`) are **never** converted to patient identifiers.
+
+To inspect the **actual** number of matches in the original Su2020 workbook:
+
+```bash
+git pull --ff-only
+python -m unittest discover -s tests -p 'test_su2020_prepare.py' -v
+python scripts/su2020_prepare.py
+```
+
+The report distinguishes `clinical_sample_matches`, `match_sources`,
+`assay_id_formats`, `linked_paired_draws`, and
+`linked_patients_with_two_draws`. Having 126 patients with two clinical
+blood draws does **not** establish that 126 have two paired proteome and
+metabolome measurements. Counts in `preparation_report.json` are authoritative
+only after running the corrected extractor against the original workbook.
