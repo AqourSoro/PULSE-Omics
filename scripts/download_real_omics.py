@@ -333,7 +333,9 @@ class Downloader:
                         raise ValueError("No files listed for mandatory GEO section")
                     print(f"COVAAR {accession}/{section}: {len(urls)} source files")
                     for url in urls:
-                        self.https("covaar", f"geo/{section}/{Path(urlparse(url).path).name}", url)
+                        name = unquote(Path(urlparse(url).path).name)
+                        relative = f"geo/{name}" if name in COVAAR else f"geo/{section}/{name}"
+                        self.https("covaar", relative, url)
                 except Exception as exc:
                     self.failed += 1
                     self.mark_discovery("covaar", page, None, str(exc))
@@ -360,7 +362,6 @@ class Downloader:
         processed = self.root / "raw/ipop/seasonal/Multi_Omics_Seasonal.RData"
         if processed.exists():
             self.https("ipop", "seasonal/Multi_Omics_Seasonal.RData", IPOP_SEASONAL_URL)
-            return
         try:
             import boto3
             from botocore import UNSIGNED
@@ -381,12 +382,13 @@ class Downloader:
                             continue
                         size = int(obj["Size"])
                         relative = key[len(prefix):]
-                        if not relative or not key.lower().endswith(DATA_EXTENSIONS):
+                        if not relative:
                             continue
                         if size > self.max_file:
                             continue
                         entries.append((size, label, relative, key))
-            print(f"iPOP candidate processed omics objects: {len(entries)}")
+            self.mark_discovery("ipop", "s3://hmpdcc/ihmp/t2d/host/", len(entries))
+            print(f"iPOP public host objects enumerated: {len(entries)}")
             if not entries:
                 raise ValueError("No candidate processed omics objects found")
             # Small processed tables first; do not copy arbitrary raw MS/sequencing data.
@@ -397,6 +399,8 @@ class Downloader:
                 self.s3("ipop", f"{label}/{relative}", client, key, size)
         except Exception as exc:
             message = f"{type(exc).__name__}: {exc}"
+            self.failed += 1
+            self.mark_discovery("ipop", "s3://hmpdcc/ihmp/t2d/host/", None, message)
             print(f"iPOP S3 discovery unavailable: {message}; using the published "
                   "seasonal-study processed data", file=sys.stderr)
             self.record("ipop", {
@@ -525,14 +529,16 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-root", default=os.environ.get("PULSE_OMICS_DATA_ROOT", ROOT))
     parser.add_argument("--datasets", nargs="+", choices=(
-        "ipop", "hmp2", "covaar", "p100", "csiro",
-    ), default=["ipop", "hmp2", "covaar", "p100", "csiro"])
+        "su2020", "ipop", "hmp2", "covaar", "p100", "csiro",
+    ), default=["su2020", "ipop", "hmp2", "covaar", "p100", "csiro"])
     parser.add_argument("--dry-run", action="store_true", help="Discover only, do not download")
-    parser.add_argument("--max-file-gb", type=float, default=2.0)
-    parser.add_argument("--max-total-gb", type=float, default=12.0)
+    parser.add_argument("--max-file-gb", type=float, default=0.0,
+                        help="Optional maximum individual file size in GiB; 0 means unlimited")
+    parser.add_argument("--max-total-gb", type=float, default=0.0,
+                        help="Optional total transfer cap in GiB; 0 means unlimited")
     args = parser.parse_args()
-    if args.max_file_gb <= 0 or args.max_total_gb <= 0:
-        parser.error("Download size limits must be positive")
+    if args.max_file_gb < 0 or args.max_total_gb < 0:
+        parser.error("Download size limits must be nonnegative")
     runner = Downloader(
         Path(args.data_root).expanduser(),
         args.dry_run,
@@ -541,25 +547,28 @@ def main() -> None:
     )
     for dataset in dict.fromkeys(args.datasets):
         print(f"\n=== {dataset.upper()} ===", flush=True)
-        if dataset == "ipop":
+        if dataset == "su2020":
+            runner.su2020_full_release()
+        elif dataset == "ipop":
             runner.ipop()
         elif dataset == "hmp2":
-            for name, url in HMP2.items():
-                runner.https("hmp2", name, url)
+            runner.hmp2_all_products()
         elif dataset == "covaar":
-            for name, url in COVAAR.items():
-                runner.https("covaar", f"geo/{name}", url)
+            runner.covaar_all_geo()
             runner.figshare()
         elif dataset == "p100":
             for name, url in P100.items():
                 runner.https("p100", name, url)
         elif dataset == "csiro":
             runner.csiro()
+        runner.flush(dataset)
     print(
         f"\nDownloads: {runner.downloaded}, existing: {runner.existing}, "
         f"failures: {runner.failed}; data root: {runner.root / 'raw'}"
     )
-    if runner.failed:
+    if runner.failed or runner.incomplete:
+        print("Incomplete source coverage or failed downloads: "
+              + ", ".join(sorted(runner.incomplete)))
         sys.exit(2)
 
 
