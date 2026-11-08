@@ -31,7 +31,16 @@ python scripts/su2020_data.py fetch
 python scripts/su2020_data.py inspect
 ```
 
-The downloader first tries the paper's PMC supplementary Table S1. If it is blocked, it resolves the v5 file using Mendeley Data's **current** public API (`api.data.mendeley.com`). It validates the downloaded XLSX container and writes a SHA-256 manifest. If both sources fail, it reports their errors and does not create a fake workbook. It does not overwrite an existing file unless `--overwrite` is specified.
+The downloader tries [Europe PMC's supplementary ZIP endpoint](https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7598382/supplementaryFiles) first and then PMC's [post-August-2026 AWS article object storage](https://pmc.ncbi.nlm.nih.gov/tools/pmcaws/). These sources may not distribute the supplement depending on licensing or connectivity; they are attempted, not guaranteed. It selects only the Table S1 workbook from an archive, validates that the file is a real XLSX, and records SHA-256. In November 2026 the old PMC attachment path returned a browser interstitial and the anonymous Mendeley API returned HTTP 401; neither is used as an automated fallback.
+
+If automated retrieval fails, visit the [original Mendeley Data v5 page](https://data.mendeley.com/datasets/tzydswhhb5/5), download the version 5 Table S1 workbook using your browser, then import the file from its WSL-visible Windows Downloads path:
+
+```bash
+python scripts/su2020_data.py import --file '/mnt/c/Users/YOUR_WINDOWS_USER/Downloads/Table S1.xlsx'
+python scripts/su2020_data.py inspect
+```
+
+You can instead use a ZIP downloaded through the site's `Download All` button; the importer extracts only Table S1. Keep the downloaded file's actual name in the `--file` argument. No account token is embedded or logged. The importer checks the XLSX structure before placing it on F:. Downloads and imports never overwrite existing data unless `--overwrite` is passed.
 
 Inspection saves actual worksheet names, dimensions, and a small top-left cell preview in `workbook_structure.json`.
 
