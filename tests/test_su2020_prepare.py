@@ -52,6 +52,7 @@ class Su2020PreparationTests(unittest.TestCase):
             self.assertEqual(report["assay_shared_sample_ids"], 4)
             self.assertEqual(report["linked_clinical_draws"], 50)
             self.assertEqual(report["linked_paired_draws"], 50)
+            self.assertEqual(report["patients_with_two_paired_omics_visits"], 25)
             self.assertEqual(report["status"], "canonical_raw_omics_exported")
             subjects = pd.read_csv(root / "processed" / "subjects.csv")
             protein = pd.read_csv(root / "processed" / "proteomics.csv")
