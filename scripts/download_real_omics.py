@@ -180,17 +180,32 @@ class Downloader:
 
     def record(self, dataset: str, entry: dict) -> None:
         self.report.setdefault(dataset, []).append(entry)
-        manifest = self.root / "raw" / dataset / "download_manifest.json"
         if not self.dry_run:
-            manifest.parent.mkdir(parents=True, exist_ok=True)
-            manifest.write_text(
-                json.dumps({
-                    "dataset": dataset,
-                    "updated_utc": datetime.now(timezone.utc).isoformat(),
-                    "files": self.report[dataset],
-                }, indent=2, ensure_ascii=False) + "\n",
-                encoding="utf-8",
-            )
+            folder = self.root / "raw" / dataset
+            folder.mkdir(parents=True, exist_ok=True)
+            with (folder / "download_events.jsonl").open("a", encoding="utf-8") as stream:
+                stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+    def flush(self, dataset: str) -> None:
+        if self.dry_run:
+            return
+        out = self.root / "raw" / dataset / "download_manifest.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        entries = self.report.get(dataset, [])
+        issues = [x for x in entries if x.get("status") in ("failed", "discovery_failed")]
+        state = "incomplete" if issues or dataset in self.incomplete else "enumerated_in_this_run"
+        payload = {
+            "dataset": dataset,
+            "updated_utc": datetime.now(timezone.utc).isoformat(),
+            "status": state,
+            "source_inventories": self.inventory.get(dataset, []),
+            "files_checked_this_run": len(entries),
+            "issues": len(issues),
+            "files": entries,
+        }
+        temp = out.with_suffix(".json.part")
+        temp.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        temp.replace(out)
 
     def https(self, dataset: str, relative: str, url: str) -> None:
         folder = self.root / "raw" / dataset
@@ -263,6 +278,83 @@ class Downloader:
                 "file": relative, "source": url,
                 "status": "failed", "error": message,
             })
+
+    def hmp2_all_products(self) -> None:
+        """Download every publicly indexed HMP2 processed product, not 3 hand-picked files."""
+        listed = {}
+        for page in HMP2_PRODUCT_PAGES:
+            catalog_url = urljoin(HMP2_CATALOG_BASE, page)
+            try:
+                links = list_http_files(
+                    catalog_url,
+                    {"g-227ca.190ebd.75bc.data.globus.org"},
+                )
+                if not links:
+                    raise ValueError("No downloadable Globus file links in source page")
+                self.mark_discovery("hmp2", catalog_url, len(links))
+                for url in links:
+                    parsed = urlparse(url)
+                    if not parsed.path.startswith("/ibdmdb/"):
+                        continue
+                    rel = unquote(parsed.path.removeprefix("/ibdmdb/"))
+                    # Reuse original three files already downloaded in earlier runs.
+                    name = Path(rel).name
+                    local = name if name in HMP2 else rel
+                    listed[local] = url
+                print(f"HMP2 {page}: {len(links)} source files enumerated")
+            except Exception as exc:
+                self.failed += 1
+                self.mark_discovery("hmp2", catalog_url, None, str(exc))
+                self.record("hmp2", {
+                    "status": "discovery_failed", "source": catalog_url,
+                    "error": f"{type(exc).__name__}: {exc}",
+                })
+        for name, url in sorted(listed.items()):
+            self.https("hmp2", name, url)
+        # Existing clinical metadata from the published HMP2 release.
+        self.https("hmp2", "hmp2_metadata_2018-08-20.csv", HMP2["hmp2_metadata_2018-08-20.csv"])
+
+    def covaar_all_geo(self) -> None:
+        """Retrieve complete public series-level GEO files in every standard section."""
+        for accession in GEO_SERIES:
+            base = (f"https://ftp.ncbi.nlm.nih.gov/geo/series/"
+                    f"{accession[:-3]}nnn/{accession}/")
+            for section in GEO_SECTIONS:
+                page = base + section + "/"
+                try:
+                    urls = list_http_files(page, {"ftp.ncbi.nlm.nih.gov"})
+                    # Standard FTP indexes have parent links; discard all items
+                    # outside the exact section and directory.
+                    urls = [u for u in urls if urlparse(u).path.startswith(
+                        f"/geo/series/{accession[:-3]}nnn/{accession}/{section}/"
+                    )]
+                    self.mark_discovery("covaar", page, len(urls))
+                    if not urls and section in ("suppl", "matrix"):
+                        raise ValueError("No files listed for mandatory GEO section")
+                    print(f"COVAAR {accession}/{section}: {len(urls)} source files")
+                    for url in urls:
+                        self.https("covaar", f"geo/{section}/{Path(urlparse(url).path).name}", url)
+                except Exception as exc:
+                    self.failed += 1
+                    self.mark_discovery("covaar", page, None, str(exc))
+                    self.record("covaar", {
+                        "status": "discovery_failed", "source": page,
+                        "error": f"{type(exc).__name__}: {exc}",
+                    })
+        # Retain earlier published filenames on disk rather than overwrite them.
+        for name, url in COVAAR.items():
+            self.https("covaar", f"geo/{name}", url)
+
+    def su2020_full_release(self) -> None:
+        """Download the full published Mendeley v5 package containing Tables S1–S6."""
+        self.https(
+            "su2020", "mendeley_v5_complete_supplementary.zip",
+            SU2020_RELEASE_ZIP,
+        )
+        self.mark_discovery(
+            "su2020", "https://data.mendeley.com/datasets/tzydswhhb5/5",
+            6,
+        )
 
     def ipop(self) -> None:
         processed = self.root / "raw/ipop/seasonal/Multi_Omics_Seasonal.RData"
