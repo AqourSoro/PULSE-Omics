@@ -47,6 +47,7 @@ class DownloaderTests(unittest.TestCase):
             ) as request:
                 runner.https("p100", "test.zip", "https://example.org/test.zip")
                 runner.https("p100", "test.zip", "https://example.org/test.zip")
+            runner.flush("p100")
             self.assertEqual(request.call_count, 1)
             self.assertEqual(runner.downloaded, 1)
             self.assertEqual(runner.existing, 1)
@@ -62,6 +63,24 @@ class DownloaderTests(unittest.TestCase):
                 "https://ndownloader.figshare.com/files/22807673",
             )
             self.assertEqual(runner.failed, 0)
+
+    def test_complete_hmp2_indexes_all_links(self):
+        """The downloader must enumerate source links, not just hard-coded matrices."""
+        html = b'<html><a href="https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/products/HMP2/MPX/first.biom.gz">first</a><a href="https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/products/HMP2/MPX/second.tsv.gz">second</a></html>'
+        with tempfile.TemporaryDirectory() as root:
+            with patch("scripts.download_real_omics.urlopen", return_value=FakeResponse(html)):
+                from scripts.download_real_omics import list_http_files
+                found = list_http_files(
+                    "https://www.ibdmdb.org/downloads/html/products_HMP2_Proteomics.html",
+                    {"g-227ca.190ebd.75bc.data.globus.org"},
+                )
+            self.assertEqual(len(found), 2)
+            self.assertTrue(any(item.endswith("first.biom.gz") for item in found))
+
+    def test_zero_download_caps_are_unlimited(self):
+        runner = Downloader(Path("/tmp"), True, 0, 0)
+        self.assertEqual(runner.max_file, float("inf"))
+        self.assertEqual(runner.max_total, float("inf"))
 
     def test_http_range_resumes_incomplete_file(self):
         with tempfile.TemporaryDirectory() as root:
