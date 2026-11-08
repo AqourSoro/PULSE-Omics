@@ -1,0 +1,385 @@
+source,abbreviation,name,description,category,uniprot,peptide
+Olink,IL_8,,,CVD,,
+Olink,VEGF_A,,,CVD,,
+Olink,AM,,,CVD,,
+Olink,CD40L,,,CVD,,
+Olink,GDF_15,,,CVD,,
+Olink,PlGF,,,CVD,,
+Olink,SELE,,,CVD,,
+Olink,EGF,,,CVD,,
+Olink,OPG,,,CVD,,
+Olink,SRC,,,CVD,,
+Olink,IL_1ra,,,CVD,,
+Olink,IL_6,,,CVD,,
+Olink,CSTB,,,CVD,,
+Olink,MCP_1,,,CVD,,
+Olink,KLK6,,,CVD,,
+Olink,Gal_3,,,CVD,,
+Olink,PAR_1,,,CVD,,
+Olink,TRAIL,,,CVD,,
+Olink,hK11,,,CVD,,
+Olink,TIE2,,,CVD,,
+Olink,TF,,,CVD,,
+Olink,TNF_R1,,,CVD,,
+Olink,PDGF_Subunit_B,,,CVD,,
+Olink,IL27_A,,,CVD,,
+Olink,CSF_1,,,CVD,,
+Olink,CXCL1,,,CVD,,
+Olink,LOX_1,,,CVD,,
+Olink,TRAIL_R2,,,CVD,,
+Olink,FGF_23,,,CVD,,
+Olink,SCF,,,CVD,,
+Olink,IL_18,,,CVD,,
+Olink,IL_6RA,,,CVD,,
+Olink,TNF_R2,,,CVD,,
+Olink,MMP_3,,,CVD,,
+Olink,HSP_27,,,CVD,,
+Olink,TNFSF14,,,CVD,,
+Olink,PRL,,,CVD,,
+Olink,MPO,,,CVD,,
+Olink,GH,,,CVD,,
+Olink,MMP_1,,,CVD,,
+Olink,RETN,,,CVD,,
+Olink,FAS,,,CVD,,
+Olink,PAPPA,,,CVD,,
+Olink,PTX3,,,CVD,,
+Olink,REN,,,CVD,,
+Olink,CHI3L1,,,CVD,,
+Olink,ST2,,,CVD,,
+Olink,TIM,,,CVD,,
+Olink,Beta_NGF,,,CVD,,
+Olink,mAmP,,,CVD,,
+Olink,TRANCE,,,CVD,,
+Olink,HGF,,,CVD,,
+Olink,PSGL_1,,,CVD,,
+Olink,MB,,,CVD,,
+Olink,TM,,,CVD,,
+Olink,IL_16,,,CVD,,
+Olink,MMP_10,,,CVD,,
+Olink,U_PAR,,,CVD,,
+Olink,CCL4,,,CVD,,
+Olink,CTSD,,,CVD,,
+Olink,RAGE,,,CVD,,
+Olink,CCL3,,,CVD,,
+Olink,MMP_7,,,CVD,,
+Olink,CXCL6,,,CVD,,
+Olink,ITGB1BP2,,,CVD,,
+Olink,CXCL16,,,CVD,,
+Olink,Dkk_1,,,CVD,,
+Olink,SIRT2,,,CVD,,
+Olink,GAL,,,CVD,,
+Olink,AGRP,,,CVD,,
+Olink,EN_RAGE,,,CVD,,
+Olink,CD40,,,CVD,,
+Olink,t_PA,,,CVD,,
+Olink,HB_EGF,,,CVD,,
+Olink,ESM_1,,,CVD,,
+Olink,IL_4,,,CVD,,
+Olink,VEGF_D,,,CVD,,
+Olink,MMP_12,,,CVD,,
+Olink,SPON1,,,CVD,,
+Olink,CASP_8,,,CVD,,
+Olink,CTSL1,,,CVD,,
+Olink,CX3CL1,,,CVD,,
+Olink,FABP4,,,CVD,,
+Olink,BNP,,,CVD,,
+Olink,LEP,,,CVD,,
+Olink,CCL20,,,CVD,,
+Olink,CA_125,,,CVD,,
+Olink,NEMO,,,CVD,,
+Olink,FS,,,CVD,,
+Olink,PECAM_1,,,CVD,,
+Olink,NT_pro_BNP,,,CVD,,
+Olink,ECP,,,CVD,,
+Olink,IL_8,,,Inflammation,,
+Olink,VEGF_A,,,Inflammation,,
+Olink,BDNF,,,Inflammation,,
+Olink,MCP_3,,,Inflammation,,
+Olink,hGDNF,,,Inflammation,,
+Olink,CDCP1,,,Inflammation,,
+Olink,CD244,,,Inflammation,,
+Olink,IL_7,,,Inflammation,,
+Olink,OPG,,,Inflammation,,
+Olink,LAP_TGF_beta_1,,,Inflammation,,
+Olink,uPA,,,Inflammation,,
+Olink,IL_6,,,Inflammation,,
+Olink,IL_17C,,,Inflammation,,
+Olink,MCP_1,,,Inflammation,,
+Olink,IL_17A,,,Inflammation,,
+Olink,CXCL11,,,Inflammation,,
+Olink,AXIN1,,,Inflammation,,
+Olink,TRAIL,,,Inflammation,,
+Olink,IL_20RA,,,Inflammation,,
+Olink,CXCL9,,,Inflammation,,
+Olink,CST5,,,Inflammation,,
+Olink,IL_2RB,,,Inflammation,,
+Olink,IL_1_alpha,,,Inflammation,,
+Olink,OSM,,,Inflammation,,
+Olink,IL_2,,,Inflammation,,
+Olink,CXCL1,,,Inflammation,,
+Olink,TSLP,,,Inflammation,,
+Olink,CCL4,,,Inflammation,,
+Olink,CD6,,,Inflammation,,
+Olink,SCF,,,Inflammation,,
+Olink,IL_18,,,Inflammation,,
+Olink,SLAMF1,,,Inflammation,,
+Olink,TGFA,,,Inflammation,,
+Olink,MCP_4,,,Inflammation,,
+Olink,CCL11,,,Inflammation,,
+Olink,TNFSF14,,,Inflammation,,
+Olink,FGF_23,,,Inflammation,,
+Olink,IL_10RA,,,Inflammation,,
+Olink,FGF_5,,,Inflammation,,
+Olink,MMP_1,,,Inflammation,,
+Olink,LIF_R,,,Inflammation,,
+Olink,FGF_21,,,Inflammation,,
+Olink,CCL19,,,Inflammation,,
+Olink,IL_15RA,,,Inflammation,,
+Olink,IL_10RB,,,Inflammation,,
+Olink,IL_22_RA1,,,Inflammation,,
+Olink,IL_18R1,,,Inflammation,,
+Olink,PD_L1,,,Inflammation,,
+Olink,Beta_NGF,,,Inflammation,,
+Olink,CXCL5,,,Inflammation,,
+Olink,TRANCE,,,Inflammation,,
+Olink,HGF,,,Inflammation,,
+Olink,IL_12B,,,Inflammation,,
+Olink,IL_24,,,Inflammation,,
+Olink,IL_13,,,Inflammation,,
+Olink,ARTN,,,Inflammation,,
+Olink,MMP_10,,,Inflammation,,
+Olink,IL_10,,,Inflammation,,
+Olink,TNF,,,Inflammation,,
+Olink,CCL23,,,Inflammation,,
+Olink,CD5,,,Inflammation,,
+Olink,MIP_1_alpha,,,Inflammation,,
+Olink,Flt3L,,,Inflammation,,
+Olink,CXCL6,,,Inflammation,,
+Olink,CXCL10,,,Inflammation,,
+Olink,4E_BP1,,,Inflammation,,
+Olink,IL_20,,,Inflammation,,
+Olink,SIRT2,,,Inflammation,,
+Olink,CCL28,,,Inflammation,,
+Olink,DNER,,,Inflammation,,
+Olink,EN_RAGE,,,Inflammation,,
+Olink,CD40,,,Inflammation,,
+Olink,IL_33,,,Inflammation,,
+Olink,IFN_gamma,,,Inflammation,,
+Olink,FGF_19,,,Inflammation,,
+Olink,IL_4,,,Inflammation,,
+Olink,LIF,,,Inflammation,,
+Olink,NRTN,,,Inflammation,,
+Olink,MCP_2,,,Inflammation,,
+Olink,CASP_8,,,Inflammation,,
+Olink,CCL25,,,Inflammation,,
+Olink,CX3CL1,,,Inflammation,,
+Olink,TNFRSF9,,,Inflammation,,
+Olink,NT_3,,,Inflammation,,
+Olink,TWEAK,,,Inflammation,,
+Olink,CCL20,,,Inflammation,,
+Olink,ST1A1,,,Inflammation,,
+Olink,STAMPB,,,Inflammation,,
+Olink,IL_5,,,Inflammation,,
+Olink,ADA,,,Inflammation,,
+Olink,TNFB,,,Inflammation,,
+Olink,CSF_1,,,Inflammation,,
+SRM,HTR2C,5-hydroxytryptamine (serotonin) receptor 2C," This is one of the several different receptors for 5- hydroxytryptamine (serotonin), a biogenic hormone that functions as a neurotransmitter, a hormone, and a mitogen. This receptor mediates its action by association with G proteins that activate a phosphatidylinositol-calcium second messenger system (458 aa)",brain,P28335,ELNVNIYR
+SRM,AP3B2,"adaptor-related protein complex 3, beta 2 subunit",Subunit of non-clathrin- and clathrin-associated adaptor protein complex 3 that plays a role in protein sorting in the late-Golgi/trans-Golgi network (TGN) and/or endosomes. The AP complexes mediate both the recruitment of clathrin to membranes and the recognition of sorting signals within the cytosolic tails of transmembrane cargo molecules. AP-3 appears to be involved in the sorting of a subset of transmembrane proteins targeted to lysosomes and lysosome-related organelles (1082 aa),brain,Q13367,DHFQLGSLSHLLNAK
+SRM,AP3B2,"adaptor-related protein complex 3, beta 2 subunit",Subunit of non-clathrin- and clathrin-associated adaptor protein complex 3 that plays a role in protein sorting in the late-Golgi/trans-Golgi network (TGN) and/or endosomes. The AP complexes mediate both the recruitment of clathrin to membranes and the recognition of sorting signals within the cytosolic tails of transmembrane cargo molecules. AP-3 appears to be involved in the sorting of a subset of transmembrane proteins targeted to lysosomes and lysosome-related organelles (1082 aa),brain,Q13367,NASDLFPAVVK
+SRM,AK5,adenylate kinase 5," Active on AMP and dAMP with ATP as a donor. When GTP is used as phosphate donor, the enzyme phosphorylates AMP, CMP, and to a small extent dCMP (562 aa).  Converts progesterone to its inactive form, 20-alpha- dihydroxyprogesterone (20-alpha-OHP). In the liver and intestine, may have a role in the transport of bile. May have a role in monitoring the intrahepatic bile acid concentration. Has a low bile-binding ability. May play a role in myelin formation (323 aa)",brain,Q9Y6K8,YGFTHLSTGELLR
+SRM,AK1.AK5,Adenylate kinase isoenzyme 1 and 5,Catalyzes the reversible transfer of the terminal phosphate group between ATP and AMP. Also displays broad nucleoside diphosphate kinase activity. Plays an important role in cellular energy homeostasis and in adenine nucleotide metabolism.,brain,P00568.Q9Y6K8,GFLIDGYPR
+SRM,APLP1,amyloid beta (A4) precursor-like protein 1," May play a role in postsynaptic function. The C-terminal gamma-secretase processed fragment, ALID1, activates transcription activation through APBB1 (Fe65) binding (By similarity). Couples to JIP signal transduction through C-terminal binding. May interact with cellular G-protein signaling pathways. Can regulate neurite outgrowth through binding to components of the extracellular matrix such as heparin and collagen I (651 aa)",brain,P51693,DELAPAGTGVSR
+SRM,CLSTN1,calsyntenin 1," Induces KLC1 association with vesicles and functions as a cargo in axonal anterograde transport. Complex formation with APBA2 and APP, stabilizes APP metabolism and enhances APBA2- mediated suppression of beta-APP40 secretion, due to the retardation of intracellular APP maturation. In complex with APBA2 and C99, a C-terminal APP fragment, abolishes C99 interaction with PSEN1 and thus APP C99 cleavage by gamma-secretase, most probably through stabilization of the direct interaction between APBA2 and APP. The intracellular fragment AlcICD suppresses APBB1-dependent transac [...] (981 aa)",brain,O94985,AASEFESSEGVFLFPELR
+SRM,CLSTN1,calsyntenin 1," Induces KLC1 association with vesicles and functions as a cargo in axonal anterograde transport. Complex formation with APBA2 and APP, stabilizes APP metabolism and enhances APBA2- mediated suppression of beta-APP40 secretion, due to the retardation of intracellular APP maturation. In complex with APBA2 and C99, a C-terminal APP fragment, abolishes C99 interaction with PSEN1 and thus APP C99 cleavage by gamma-secretase, most probably through stabilization of the direct interaction between APBA2 and APP. The intracellular fragment AlcICD suppresses APBB1-dependent transac [...] (981 aa)",brain,O94985,LTVTAYDCGK
+SRM,CNDP1,carnosine dipeptidase 1 (metallopeptidase M20 family) (507 aa),,brain,Q96KN2,ALEQDLPVNIK
+SRM,CNDP1,carnosine dipeptidase 1 (metallopeptidase M20 family) (507 aa),,brain,Q96KN2,EWVAIESDSVQPVPR
+SRM,CTNNA2,"catenin (cadherin-associated protein), alpha 2",May function as a linker between cadherin adhesion receptors and the cytoskeleton to regulate cell-cell adhesion and differentiation in the nervous system. Regulates morphological plasticity of synapses and cerebellar and hippocampal lamination during development. Functions in the control of startle modulation (By similarity) (905 aa),brain,P26232,AHVLAASVEQATQNFLEK
+SRM,CTNNA2,"catenin (cadherin-associated protein), alpha 2",May function as a linker between cadherin adhesion receptors and the cytoskeleton to regulate cell-cell adhesion and differentiation in the nervous system. Regulates morphological plasticity of synapses and cerebellar and hippocampal lamination during development. Functions in the control of startle modulation (By similarity) (905 aa),brain,P26232,LLEPLVTQVTTLVNTSNK
+SRM,CHL1,cell adhesion molecule with homology to L1CAM (close homolog of L1),Extracellular matrix and cell adhesion protein that plays a role in nervous system development and in synaptic plasticity. Both soluble and membranous forms promote neurite outgrowth of cerebellar and hippocampal neurons and suppress neuronal cell death. Plays a role in neuronal positioning of pyramidal neurons and in regulation of both the number of interneurons and the efficacy of GABAergic synapses. May play a role in regulating cell migration in nerve regeneration and cortical development. Potentiates integrin-dep [...] (1224 aa),brain,O00533,DTATLSWGLPK
+SRM,CHL1,cell adhesion molecule with homology to L1CAM (close homolog of L1),Extracellular matrix and cell adhesion protein that plays a role in nervous system development and in synaptic plasticity. Both soluble and membranous forms promote neurite outgrowth of cerebellar and hippocampal neurons and suppress neuronal cell death. Plays a role in neuronal positioning of pyramidal neurons and in regulation of both the number of interneurons and the efficacy of GABAergic synapses. May play a role in regulating cell migration in nerve regeneration and cortical development. Potentiates integrin-dep [...] (1224 aa),brain,O00533,VIAVNEVGR
+SRM,CHN1,chimerin (chimaerin) 1,GTPase-activating protein for p21-rac and a phorbol ester receptor. May play an important role in neuronal signal- transduction mechanisms (459 aa),brain,P15882,SYLYQLQQEAPHPR
+SRM,CHN1,chimerin (chimaerin) 1,GTPase-activating protein for p21-rac and a phorbol ester receptor. May play an important role in neuronal signal- transduction mechanisms (459 aa),brain,P15882,VSGFSDLIEDVK
+SRM,CNTN1,contactin 1,Contactins mediate cell surface interactions during nervous system development. Involved in the formation of paranodal axo-glial junctions in myelinated peripheral nerves and in the signaling between axons and myelinating glial cells via its association with CNTNAP1. Participates in oligodendrocytes generation by acting as a ligand of NOTCH1. Its association with NOTCH1 promotes NOTCH1 activation through the released notch intracellular domain (NICD) and subsequent translocation to the nucleus. Interaction with TNR induces a repulsion of neurons and an inhibition of neurit [...] (1018 aa),brain,Q12860,ELTITWAPLSR
+SRM,CNTN1,contactin 1,Contactins mediate cell surface interactions during nervous system development. Involved in the formation of paranodal axo-glial junctions in myelinated peripheral nerves and in the signaling between axons and myelinating glial cells via its association with CNTNAP1. Participates in oligodendrocytes generation by acting as a ligand of NOTCH1. Its association with NOTCH1 promotes NOTCH1 activation through the released notch intracellular domain (NICD) and subsequent translocation to the nucleus. Interaction with TNR induces a repulsion of neurons and an inhibition of neurit [...] (1018 aa),brain,Q12860,TTKPYPADIVVQFK
+SRM,GABBR2,"gamma-aminobutyric acid (GABA) B receptor, 2"," Receptor for GABA. The activity of this receptor is mediated by G-proteins that inhibit adenylyl cyclase activity, stimulates phospholipase A2, activates potassium channels, inactivates voltage-dependent calcium-channels and modulates inositol phospholipids hydrolysis. Plays a critical role in the fine-tuning of inhibitory synaptic transmission. Pre-synaptic GABA-B-R inhibit neurotransmitter release by down-regulating high- voltage activated calcium channels, whereas postsynaptic GABA-B-R decrease neuronal excitability by activating a promi [...] (941 aa)",brain,O75899,GVLPAVELAIEQIR
+SRM,GABBR2,"gamma-aminobutyric acid (GABA) B receptor, 2"," Receptor for GABA. The activity of this receptor is mediated by G-proteins that inhibit adenylyl cyclase activity, stimulates phospholipase A2, activates potassium channels, inactivates voltage-dependent calcium-channels and modulates inositol phospholipids hydrolysis. Plays a critical role in the fine-tuning of inhibitory synaptic transmission. Pre-synaptic GABA-B-R inhibit neurotransmitter release by down-regulating high- voltage activated calcium channels, whereas postsynaptic GABA-B-R decrease neuronal excitability by activating a promi [...] (941 aa)",brain,O75899,TVPSDNAVNPAILK
+SRM,GRIA3,Glutamate receptor 3,"Receptor for glutamate that functions as ligand-gated ion channel in the central nervous system and plays an important role in excitatory synaptic transmission. L-glutamate acts as an excitatory neurotransmitter at many synapses in the central nervous system. Binding of the excitatory neurotransmitter L-glutamate induces a conformation change, leading to the opening of the cation channel, and thereby converts the chemical signal to an electrical impulse. The receptor then desensitizes rapidly and enters a transient inactive state, characterized by the presence of bound agonist. In the presence of CACNG4 or CACNG7 or CACNG8, shows resensitization which is characterized by a delayed accumulation of current flux upon continued application of glutamate.",brain,P42263,EGYNVYGTESVK
+SRM,GRIA3,Glutamate receptor 3,"Receptor for glutamate that functions as ligand-gated ion channel in the central nervous system and plays an important role in excitatory synaptic transmission. L-glutamate acts as an excitatory neurotransmitter at many synapses in the central nervous system. Binding of the excitatory neurotransmitter L-glutamate induces a conformation change, leading to the opening of the cation channel, and thereby converts the chemical signal to an electrical impulse. The receptor then desensitizes rapidly and enters a transient inactive state, characterized by the presence of bound agonist. In the presence of CACNG4 or CACNG7 or CACNG8, shows resensitization which is characterized by a delayed accumulation of current flux upon continued application of glutamate.",brain,P42263,NTVQEHSAFR
+SRM,GAP43,growth associated protein 43," This protein is associated with nerve growth. It is a major component of the motile """"growth cones"""" that form the tips of elongating axons (274 aa)",brain,P17677,DEAPVADGVEK
+SRM,GAP43,growth associated protein 43," This protein is associated with nerve growth. It is a major component of the motile """"growth cones"""" that form the tips of elongating axons (274 aa)",brain,P17677,GEGDAATEQAAPQAPASSEEK
+SRM,L1CAM,L1 cell adhesion molecule," Cell adhesion molecule with an important role in the development of the nervous system. Involved in neuron-neuron adhesion, neurite fasciculation, outgrowth of neurites, etc. Binds to axonin on neurons (1257 aa)",brain,P32004,INGIPVEELAK
+SRM,L1CAM,L1 cell adhesion molecule," Cell adhesion molecule with an important role in the development of the nervous system. Involved in neuron-neuron adhesion, neurite fasciculation, outgrowth of neurites, etc. Binds to axonin on neurons (1257 aa)",brain,P32004,LSPYVHYTFR
+SRM,MLC1,megalencephalic leukoencephalopathy with subcortical cysts 1,May be a transporter. May act as a non-selective neuronal cation channel (377 aa),brain,Q15049,CAAGSCIPSAIVSFTVSR
+SRM,MLC1,megalencephalic leukoencephalopathy with subcortical cysts 1,May be a transporter. May act as a non-selective neuronal cation channel (377 aa),brain,Q15049,LAGEVAR
+SRM,MAP6,microtubule-associated protein 6," Involved in microtubule stabilization in many cell types, including neuronal cells. Specifically has microtubule cold stabilizing activity (813 aa)",brain,Q96JE9,ADIAVPLVFTK
+SRM,MAP6,microtubule-associated protein 6," Involved in microtubule stabilization in many cell types, including neuronal cells. Specifically has microtubule cold stabilizing activity (813 aa)",brain,Q96JE9,DQGSVVPGLLK
+SRM,NCAM1,neural cell adhesion molecule 1," This protein is a cell adhesion molecule involved in neuron-neuron adhesion, neurite fasciculation, outgrowth of neurites, etc (857 aa)",brain,P13591,ALSSEWKPEIR
+SRM,NCAM1,neural cell adhesion molecule 1," This protein is a cell adhesion molecule involved in neuron-neuron adhesion, neurite fasciculation, outgrowth of neurites, etc (857 aa)",brain,P13591,HTEPNETTPLTEPEK
+SRM,NCAM2,neural cell adhesion molecule 2,May play important roles in selective fasciculation and zone-to-zone projection of the primary olfactory axons (837 aa),brain,O15394,EALNPETIEIK
+SRM,NCAM2,neural cell adhesion molecule 2,May play important roles in selective fasciculation and zone-to-zone projection of the primary olfactory axons (837 aa),brain,O15394,FQEYILALADVPSSPYGVK
+SRM,HMP19,Neuron-specific protein family member 2 (Protein p19)(HMP19) (171 aa),May function as an adapter molecule that regulates TRAF3-mediated JNK activation.,brain,Q9Y328,AIGPWLSAAAVIHEPKPPK
+SRM,HMP19,Neuron-specific protein family member 2 (Protein p19)(HMP19) (171 aa),May function as an adapter molecule that regulates TRAF3-mediated JNK activation.,brain,Q9Y328,FYTVISHYSVAK
+SRM,OLFM1,olfactomedin 1,Seems to play an important role in regulating the production of neural crest cells by the neural tube (By similarity) (467 aa),brain,Q99784,LTGISDPVTVK
+SRM,OXT,"oxytocin, prepropeptide",Neurophysin 1 specifically binds oxytocin (125 aa),brain,P01178,AAPDLDVR
+SRM,OXT,"oxytocin, prepropeptide",Neurophysin 1 specifically binds oxytocin (125 aa),brain,P01178,CLPCGPGGK
+SRM,PMCH,pro-melanin-concentrating hormone," MCH may act as a neurotransmitter or neuromodulator in a broad array of neuronal functions directed toward the regulation of goal-directed behavior, such as food intake, and general arousal. May also have a role in spermatocyte differentiation (165 aa)",brain,P20382,GSVAFPAENGVQNTESTQEK
+SRM,PMCH,pro-melanin-concentrating hormone," MCH may act as a neurotransmitter or neuromodulator in a broad array of neuronal functions directed toward the regulation of goal-directed behavior, such as food intake, and general arousal. May also have a role in spermatocyte differentiation (165 aa)",brain,P20382,SVIAPSLEQYK
+SRM,PAQR6,progestin and adipoQ receptor family member VI (351 aa),,brain,Q6TCH4,LLALAGGPGFR
+SRM,PAQR6,progestin and adipoQ receptor family member VI (351 aa),,brain,Q6TCH4,LPQLLQVHQVPR
+SRM,PRL,prolactin,Prolactin acts primarily on the mammary gland by promoting lactation (227 aa),brain,P01236,AINSCHTSSLATPEDK
+SRM,PRL,prolactin,Prolactin acts primarily on the mammary gland by promoting lactation (227 aa),brain,P01236,SWNEPLYHLVTEVR
+SRM,PTPRZ1,"protein tyrosine phosphatase, receptor-type, Z polypeptide 1",May be involved in the regulation of specific developmental processes in the CNS (2315 aa),brain,P23471,IGLAEGLESEK
+SRM,PTPRZ1,"protein tyrosine phosphatase, receptor-type, Z polypeptide 1",May be involved in the regulation of specific developmental processes in the CNS (2315 aa),brain,P23471,LIHSDEILTSTK
+SRM,PLP1,proteolipid protein 1,This is the major myelin protein from the central nervous system. It plays an important role in the formation or maintenance of the multilamellar structure of myelin (277 aa),brain,P60201,GLSATVTGGQK
+SRM,PLP1,proteolipid protein 1,This is the major myelin protein from the central nervous system. It plays an important role in the formation or maintenance of the multilamellar structure of myelin (277 aa),brain,P60201,LIETYFSK
+SRM,S100B,S100 calcium binding protein B," Weakly binds calcium but binds zinc very tightly- distinct binding sites with different affinities exist for both ions on each monomer. Physiological concentrations of potassium ion antagonize the binding of both divalent cations, especially affecting high-affinity calcium-binding sites. Binds to and initiates the activation of STK38 by releasing autoinhibitory intramolecular interactions within the kinase (92 aa)",brain,P04271,ELINNELSHFLEEIK
+SRM,S100B,S100 calcium binding protein B," Weakly binds calcium but binds zinc very tightly- distinct binding sites with different affinities exist for both ions on each monomer. Physiological concentrations of potassium ion antagonize the binding of both divalent cations, especially affecting high-affinity calcium-binding sites. Binds to and initiates the activation of STK38 by releasing autoinhibitory intramolecular interactions within the kinase (92 aa)",brain,P04271,EQEVVDK
+SRM,STMN2,stathmin-like 2," May play a role in neuronal differentiation, and in modulating membrane interaction with the cytoskeleton during neurite outgrowth (179 aa)",brain,Q93045,ASGQAFELILKPPSPISEAPR
+SRM,STMN2,stathmin-like 2," May play a role in neuronal differentiation, and in modulating membrane interaction with the cytoskeleton during neurite outgrowth (179 aa)",brain,Q93045,EANLAAIIER
+SRM,SYN1,synapsin I," Neuronal phosphoprotein that coats synaptic vesicles, binds to the cytoskeleton, and is believed to function in the regulation of neurotransmitter release. The complex formed with NOS1 and CAPON proteins is necessary for specific nitric-oxid functions at a presynaptic level (705 aa)",brain,P17600,GSHGQTPSPGALPLGR
+SRM,SYN1,synapsin I," Neuronal phosphoprotein that coats synaptic vesicles, binds to the cytoskeleton, and is believed to function in the regulation of neurotransmitter release. The complex formed with NOS1 and CAPON proteins is necessary for specific nitric-oxid functions at a presynaptic level (705 aa)",brain,P17600,TYATAEPFIDAK
+SRM,SV2B,synaptic vesicle glycoprotein 2B,Probably plays a role in the control of regulated secretion in neural and endocrine cells (By similarity) (683 aa),brain,Q7L1I2,ATAFGILNGLCK
+SRM,ACTA2,"Actin, aortic smooth muscle",Actins are highly conserved proteins that are involved in various types of cell motility and are ubiquitously expressed in all eukaryotic cells.,heart,P62736,DSYVGDEAQSK
+SRM,ACTA2,"Actin, aortic smooth muscle",Actins are highly conserved proteins that are involved in various types of cell motility and are ubiquitously expressed in all eukaryotic cells.,heart,P62736,IIAPPER
+SRM,ADPRHL1,ADP-ribosylhydrolase like 1,ADP-ribosylhydrolase like 1 (354 aa),heart,Q8NDY3,AIFPDNYDAEER
+SRM,ADPRHL1,ADP-ribosylhydrolase like 1,ADP-ribosylhydrolase like 1 (354 aa),heart,Q8NDY3,LETLIEVSVECGR
+SRM,ADPRHL1,ADP-ribosylhydrolase like 1,ADP-ribosylhydrolase like 1 (354 aa),heart,Q8NDY3,WQFYLEER
+SRM,ANK2,"ankyrin 2, neuronal"," Attaches integral membrane proteins to cytoskeletal elements. Also binds to cytoskeletal proteins. Required for coordinate assembly of Na/Ca exchanger, Na/K ATPase and InsP3 receptor at sarcoplasmic reticulum sites in cardiomyocytes. Required for the coordinated expression of the Na/K ATPase, Na/Ca exchanger and beta-2-spectrin (SPTBN1) in the inner segment of rod photoreceptors. Required for expression and targeting of SPTBN1 in neonatal cardiomyocytes and for the regulation of neonatal cardiomyocyte contraction rate (3957 aa)",heart,Q01484,GLVHQAICNLNITLPIYTK
+SRM,ANK2,"ankyrin 2, neuronal"," Attaches integral membrane proteins to cytoskeletal elements. Also binds to cytoskeletal proteins. Required for coordinate assembly of Na/Ca exchanger, Na/K ATPase and InsP3 receptor at sarcoplasmic reticulum sites in cardiomyocytes. Required for the coordinated expression of the Na/K ATPase, Na/Ca exchanger and beta-2-spectrin (SPTBN1) in the inner segment of rod photoreceptors. Required for expression and targeting of SPTBN1 in neonatal cardiomyocytes and for the regulation of neonatal cardiomyocyte contraction rate (3957 aa)",heart,Q01484,SGHDQVVELLLER
+SRM,FHL2,four and a half LIM domains 2,May function as a molecular transmitter linking various signaling pathways to transcriptional regulation. Negatively regulates the transcriptional repressor E4F1 and may function in cell growth (279 aa),heart,Q14192,CSLSLVGR
+SRM,FHL2,four and a half LIM domains 2,May function as a molecular transmitter linking various signaling pathways to transcriptional regulation. Negatively regulates the transcriptional repressor E4F1 and may function in cell growth (279 aa),heart,Q14192,ECFVCTACR
+SRM,FHL2,four and a half LIM domains 2,May function as a molecular transmitter linking various signaling pathways to transcriptional regulation. Negatively regulates the transcriptional repressor E4F1 and may function in cell growth (279 aa),heart,Q14192,EDQLLCTDCYSNEYSSK
+SRM,MYOCD,myocardin,Transcriptional factor that uses the canonical single or multiple CArG boxes DNA sequence. Binds CArG boxes only in the presence of serum response factor (SRF). Acts as a cofactor of SRF and modulates SRF-target genes. Regulates the expression of a set of cardiac and smooth muscle-specific genes. Plays a crucial role in cardiogenesis and differentiation of the smooth muscle cell lineage (By similarity) (938 aa),heart,Q8IZQ8,FSIPSPTFSK
+SRM,MYOCD,myocardin,Transcriptional factor that uses the canonical single or multiple CArG boxes DNA sequence. Binds CArG boxes only in the presence of serum response factor (SRF). Acts as a cofactor of SRF and modulates SRF-target genes. Regulates the expression of a set of cardiac and smooth muscle-specific genes. Plays a crucial role in cardiogenesis and differentiation of the smooth muscle cell lineage (By similarity) (938 aa),heart,Q8IZQ8,IALRPGPLELVEK
+SRM,MYOCD,myocardin,Transcriptional factor that uses the canonical single or multiple CArG boxes DNA sequence. Binds CArG boxes only in the presence of serum response factor (SRF). Acts as a cofactor of SRF and modulates SRF-target genes. Regulates the expression of a set of cardiac and smooth muscle-specific genes. Plays a crucial role in cardiogenesis and differentiation of the smooth muscle cell lineage (By similarity) (938 aa),heart,Q8IZQ8,SSSAISEVTQPPSYEDAVK
+SRM,PTGDS,prostaglandin D2 synthase 21kDa (brain)," Catalyzes the conversion of PGH2 to PGD2, a prostaglandin involved in smooth muscle contraction/relaxation and a potent inhibitor of platelet aggregation. Involved in a variety of CNS functions, such as sedation, NREM sleep and PGE2-induced allodynia, and may have an anti-apoptotic role in oligodendrocytes. Binds small non-substrate lipophilic molecules, including biliverdin, bilirubin, retinal, retinoic acid and thyroid hormone, and may act as a scavenger for harmful hydrophopic molecules and as a secretory retinoid and thyroid hormone transpor [...] (190 aa)",heart,P41222,AQGFTEDTIVFLPQTDK
+SRM,PTGDS,prostaglandin D2 synthase 21kDa (brain)," Catalyzes the conversion of PGH2 to PGD2, a prostaglandin involved in smooth muscle contraction/relaxation and a potent inhibitor of platelet aggregation. Involved in a variety of CNS functions, such as sedation, NREM sleep and PGE2-induced allodynia, and may have an anti-apoptotic role in oligodendrocytes. Binds small non-substrate lipophilic molecules, including biliverdin, bilirubin, retinal, retinoic acid and thyroid hormone, and may act as a scavenger for harmful hydrophopic molecules and as a secretory retinoid and thyroid hormone transpor [...] (190 aa)",heart,P41222,WFSAGLASNSSWLR
+SRM,PCDH7,protocadherin 7 (1200 aa),Calcium ion binding,heart,O60245,VATVLATDADSGK
+SRM,PCDH7,protocadherin 7 (1200 aa),Calcium ion binding,heart,O60245,YFLHTSTPLDYEATR
+SRM,RYR2,ryanodine receptor 2 (cardiac),Communication between transverse-tubules and sarcoplasmic reticulum. Contraction of cardiac muscle is triggered by release of calcium ions from SR following depolarization of T- tubules (By similarity) (4965 aa),heart,Q92736,AVNLFLQGYEK
+SRM,RYR2,ryanodine receptor 2 (cardiac),Communication between transverse-tubules and sarcoplasmic reticulum. Contraction of cardiac muscle is triggered by release of calcium ions from SR following depolarization of T- tubules (By similarity) (4965 aa),heart,Q92736,DPVGGTTEFLFVPLIK
+SRM,RYR2,ryanodine receptor 2 (cardiac),Communication between transverse-tubules and sarcoplasmic reticulum. Contraction of cardiac muscle is triggered by release of calcium ions from SR following depolarization of T- tubules (By similarity) (4965 aa),heart,Q92736,DSSLSAVLNSIDVK
+SRM,TEAD1,TEA domain family member 1 (SV40 transcriptional enhancer factor)," Binds specifically and cooperatively to the SPH and GT- IIC """"enhansons"""" (5'-GTGGAATGT-3') and activates transcription in vivo in a cell-specific manner. The activation function appears to be mediated by a limiting cell-specific transcriptional intermediary factor (TIF). Involved in cardiac development. Binds to the M-CAT motif (411 aa)",heart,P28347,GPQNAFFLVK
+SRM,TEAD1,TEA domain family member 1 (SV40 transcriptional enhancer factor)," Binds specifically and cooperatively to the SPH and GT- IIC """"enhansons"""" (5'-GTGGAATGT-3') and activates transcription in vivo in a cell-specific manner. The activation function appears to be mediated by a limiting cell-specific transcriptional intermediary factor (TIF). Involved in cardiac development. Binds to the M-CAT motif (411 aa)",heart,P28347,IILSDEGK
+SRM,WNT10B,"wingless-type MMTV integration site family, member 10B",Ligand for members of the frizzled family of seven transmembrane receptors. Probable developmental protein. May be a signaling molecule which affects the development of discrete regions of tissues. Is likely to signal over only few cell diameters (By similarity) (389 aa),heart,O00744,AIFIDTHNR
+SRM,WNT10B,"wingless-type MMTV integration site family, member 10B",Ligand for members of the frizzled family of seven transmembrane receptors. Probable developmental protein. May be a signaling molecule which affects the development of discrete regions of tissues. Is likely to signal over only few cell diameters (By similarity) (389 aa),heart,O00744,LLQLQALSR
+SRM,A1BG,Alpha-1B-glycoprotein,,liver,P04217,CEGPIPDVTFELLR
+SRM,A1BG,Alpha-1B-glycoprotein,,liver,P04217,SGLSTGWTQLSK
+SRM,APCS,"amyloid P component, serum",Can interact with DNA and histones and may scavenge nuclear material released from damaged circulating cells. May also function as a calcium-dependent lectin (223 aa),liver,P02743,IVLGQEQDSYGGK
+SRM,APCS,"amyloid P component, serum",Can interact with DNA and histones and may scavenge nuclear material released from damaged circulating cells. May also function as a calcium-dependent lectin (223 aa),liver,P02743,VGEYSLYIGR
+SRM,APOA4,apolipoprotein A-IV,May have a role in chylomicrons and VLDL secretion and catabolism. Required for efficient activation of lipoprotein lipase by ApoC-II,liver,P06727,LGPHAGDVEGHLSFLEK
+SRM,APOA4,apolipoprotein A-IV,May have a role in chylomicrons and VLDL secretion and catabolism. Required for efficient activation of lipoprotein lipase by ApoC-II,liver,P06727,SELTQQLNALFQDK
+SRM,GOT1,"Aspartate aminotransferase, cytoplasmic","Biosynthesis of L-glutamate from L-aspartate or L-cysteine. Important regulator of levels of glutamate, the major excitatory neurotransmitter of the vertebrate central nervous system. Acts as a scavenger of glutamate in brain neuroprotection. The aspartate aminotransferase activity is involved in hepatic glucose synthesis during development and in adipocyte glyceroneogenesis. Using L-cysteine as substrate, regulates levels of mercaptopyruvate, an important source of hydrogen sulfide. Mercaptopyruvate is converted into H2S via the action of 3-mercaptopyruvate sulfurtransferase (3MST). Hydrogen sulfide is an important synaptic modulator and neuroprotectant in the brain.",liver,P17174,IGADFLAR
+SRM,GOT1,"Aspartate aminotransferase, cytoplasmic","Biosynthesis of L-glutamate from L-aspartate or L-cysteine. Important regulator of levels of glutamate, the major excitatory neurotransmitter of the vertebrate central nervous system. Acts as a scavenger of glutamate in brain neuroprotection. The aspartate aminotransferase activity is involved in hepatic glucose synthesis during development and in adipocyte glyceroneogenesis. Using L-cysteine as substrate, regulates levels of mercaptopyruvate, an important source of hydrogen sulfide. Mercaptopyruvate is converted into H2S via the action of 3-mercaptopyruvate sulfurtransferase (3MST). Hydrogen sulfide is an important synaptic modulator and neuroprotectant in the brain.",liver,P17174,IVASTLSNPELFEEWTGNVK
+SRM,APOH,Beta-2-glycoprotein 1,"Binds to various kinds of negatively charged substances such as heparin, phospholipids, and dextran sulfate. May prevent activation of the intrinsic blood coagulation cascade by binding to phospholipids on the surface of damaged cells.",liver,P02749,FICPLTGLWPINTLK
+SRM,APOH,Beta-2-glycoprotein 1,"Binds to various kinds of negatively charged substances such as heparin, phospholipids, and dextran sulfate. May prevent activation of the intrinsic blood coagulation cascade by binding to phospholipids on the surface of damaged cells.",liver,P02749,TCPKPDDLPFSTVVPLK
+SRM,CRP,"C-reactive protein, pentraxin-related"," Displays several functions associated with host defense- it promotes agglutination, bacterial capsular swelling, phagocytosis and complement fixation through its calcium-dependent binding to phosphorylcholine. Can interact with DNA and histones and may scavenge nuclear material released from damaged circulating cells (224 aa)",liver,P02741,APLTKPLK
+SRM,CRP,"C-reactive protein, pentraxin-related"," Displays several functions associated with host defense- it promotes agglutination, bacterial capsular swelling, phagocytosis and complement fixation through its calcium-dependent binding to phosphorylcholine. Can interact with DNA and histones and may scavenge nuclear material released from damaged circulating cells (224 aa)",liver,P02741,ESDTSYVSLK
+SRM,CPB2,Carboxypeptidase B2,Cleaves C-terminal arginine or lysine residues from biologically active peptides such as kinins or anaphylatoxins in the circulation thereby regulating their activities. Down-regulates fibrinolysis by removing C-terminal lysine residues from fibrin that has already been partially degraded by plasmin.,liver,Q96IY4,SFYANNHCIGTDLNR
+SRM,CPB2,Carboxypeptidase B2,Cleaves C-terminal arginine or lysine residues from biologically active peptides such as kinins or anaphylatoxins in the circulation thereby regulating their activities. Down-regulates fibrinolysis by removing C-terminal lysine residues from fibrin that has already been partially degraded by plasmin.,liver,Q96IY4,YSFTIELR
+SRM,CPN1,"carboxypeptidase N, polypeptide 1",Protects the body from potent vasoactive and inflammatory peptides containing C-terminal Arg or Lys (such as kinins or anaphylatoxins) which are released into the circulation (458 aa),liver,P15169,VQNECPGITR
+SRM,CPN2,"carboxypeptidase N, polypeptide 2",The 83 kDa subunit binds and stabilizes the catalytic subunit at 37 degrees Celsius and keeps it in circulation. Under some circumstances it may be an allosteric modifier of the catalytic subunit (545 aa),liver,P22792,LLNIQTYCAGPAYLK
+SRM,CP,Ceruloplasmin,"Ceruloplasmin is a blue, copper-binding (6-7 atoms per molecule) glycoprotein. It has ferroxidase activity oxidizing Fe2+ to Fe3+ without releasing radical oxygen species. It is involved in iron transport across the cell membrane. Provides Cu2+ ions for the ascorbate-mediated deaminase degradation of the heparan sulfate chains of GPC1. May also play a role in fetal lung development or pulmonary antioxidant defense (By similarity).",liver,P00450,ALYLQYTDETFR
+SRM,CP,Ceruloplasmin,"Ceruloplasmin is a blue, copper-binding (6-7 atoms per molecule) glycoprotein. It has ferroxidase activity oxidizing Fe2+ to Fe3+ without releasing radical oxygen species. It is involved in iron transport across the cell membrane. Provides Cu2+ ions for the ascorbate-mediated deaminase degradation of the heparan sulfate chains of GPC1. May also play a role in fetal lung development or pulmonary antioxidant defense (By similarity).",liver,P00450,TTIEKPVWLGFLGPIIK
+SRM,F9,Coagulation factor IX,"Factor IX is a vitamin K-dependent plasma protein that participates in the intrinsic pathway of blood coagulation by converting factor X to its active form in the presence of Ca2+ ions, phospholipids, and factor VIIIa.",liver,P00740,SCEPAVPFPCGR
+SRM,F9,Coagulation factor IX,"Factor IX is a vitamin K-dependent plasma protein that participates in the intrinsic pathway of blood coagulation by converting factor X to its active form in the presence of Ca2+ ions, phospholipids, and factor VIIIa.",liver,P00740,SALVLQYLR
+SRM,C4BPB,"complement component 4 binding protein, beta"," Controls the classical pathway of complement activation. It binds as a cofactor to C3b/C4b inactivator (C3bINA), which then hydrolyzes the complement fragment C4b. It also accelerates the degradation of the C4bC2a complex (C3 convertase) by dissociating the complement fragment C2a. It also interacts with anticoagulant protein S and with serum amyloid P component. The beta chain binds protein S (252 aa)",liver,P20851,ALLAFQESK
+SRM,C8B,Complement component C8 beta chain,Constituent of the membrane attack complex (MAC) that plays a key role in the innate and adaptive immune response by forming pores in the plasma membrane of target cells.,liver,P07358,GDYTLNNVHACAK
+SRM,C8B,Complement component C8 beta chain,Constituent of the membrane attack complex (MAC) that plays a key role in the innate and adaptive immune response by forming pores in the plasma membrane of target cells.,liver,P07358,IPGIFELGISSQSDR
+SRM,C8B,Complement component C8 beta chain,Constituent of the membrane attack complex (MAC) that plays a key role in the innate and adaptive immune response by forming pores in the plasma membrane of target cells.,liver,P07358,SGFSFGFK
+SRM,CFHR1,Complement factor H-related protein 1,Involved in complement regulation. The dimerized forms have avidity for tissue-bound complement fragments and efficiently compete with the physiological complement inhibitor CFH. Can associate with lipoproteins and may play a role in lipid metabolism.,liver,Q03591,ITCTEEGWSPTPK
+SRM,CFHR1,Complement factor H-related protein 1,Involved in complement regulation. The dimerized forms have avidity for tissue-bound complement fragments and efficiently compete with the physiological complement inhibitor CFH. Can associate with lipoproteins and may play a role in lipid metabolism.,liver,Q03591,STDTSCVNPPTVQNAHILSR
+SRM,ALDOB,Fructose-bisphosphate aldolase B,,liver,P05062,ALQASALAAWGGK
+SRM,ALDOB,Fructose-bisphosphate aldolase B,,liver,P05062,ELSEIAQSIVANGK
+SRM,GC,group-specific component (vitamin D binding protein)," Multifunctional protein found in plasma, ascitic fluid, cerebrospinal fluid, and urine and on the surface of many cell types. In plasma, it carries the vitamin D sterols and prevents polymerization of actin by binding its monomers. DBP associates with membrane-bound immunoglobulin on the surface of B-lymphocytes and with IgG Fc receptor on the membranes of T-lymphocytes (474 aa)",liver,P02774,ELSSFIDK
+SRM,GC,group-specific component (vitamin D binding protein)," Multifunctional protein found in plasma, ascitic fluid, cerebrospinal fluid, and urine and on the surface of many cell types. In plasma, it carries the vitamin D sterols and prevents polymerization of actin by binding its monomers. DBP associates with membrane-bound immunoglobulin on the surface of B-lymphocytes and with IgG Fc receptor on the membranes of T-lymphocytes (474 aa)",liver,P02774,HLSLLTTLSNR
+SRM,HGFAC,HGF activator,Activates hepatocyte growth factor (HGF) by converting it from a single chain to a heterodimeric form (655 aa),liver,Q04756,VANYVDWINDR
+SRM,HGFAC,HGF activator,Activates hepatocyte growth factor (HGF) by converting it from a single chain to a heterodimeric form (655 aa),liver,Q04756,YEYLEGGDR
+SRM,HRG,Histidine-rich glycoprotein,"Plasma glycoprotein that binds a number of ligands such as heme, heparin, heparan sulfate, thrombospondin, plasminogen, and divalent metal ions. Binds heparin and heparin/glycosaminoglycans in a zinc-dependent manner. Binds heparan sulfate on the surface of liver, lung, kidney and heart endothelial cells. Binds to N-sulfated polysaccharide chains on the surface of liver endothelial cells. Inhibits rosette formation. Acts as an adapter protein and is implicated in regulating many processes such as immune complex and pathogen clearance, cell chemotaxis, cell adhesion, angiogenesis, coagulation and fibrinolysis. Mediates clearance of necrotic cells through enhancing the phagocytosis of necrotic cells in a heparan sulfate-dependent pathway. This process can be regulated by the presence of certain HRG ligands such as heparin and zinc ions. Binds to IgG subclasses of immunoglobins containing kappa and lambda light chains with different affinities regulating their clearance and inhibiting the formation of insoluble immune complexes. Tethers plasminogen to the cell surface. Binds T-cells and alters the cell morphology. Modulates angiogenesis by blocking the CD6-mediated antiangiongenic effect of thrombospondins, THBS1 and THBS2. Acts as a regulator of the vascular endothelial growth factor (VEGF) signaling pathway; inhibits endothelial cell motility by reducing VEGF-induced complex formation between PXN/paxillin and ILK/integrin-linked protein kinase and by promoting inhibition of VEGF-induced tyrosine phosphorylation of focal adhesion kinases and alpha-actinins in endothelial cells. Also plays a role in the regulation of tumor angiogenesis and tumor immune surveillance. Normalizes tumor vessels and promotes antitumor immunity by polarizing tumor-associated macrophages, leading to decreased tumor growth and metastasis.",liver,P04196,ADLFYDVEALDLESPK
+SRM,HRG,Histidine-rich glycoprotein,"Plasma glycoprotein that binds a number of ligands such as heme, heparin, heparan sulfate, thrombospondin, plasminogen, and divalent metal ions. Binds heparin and heparin/glycosaminoglycans in a zinc-dependent manner. Binds heparan sulfate on the surface of liver, lung, kidney and heart endothelial cells. Binds to N-sulfated polysaccharide chains on the surface of liver endothelial cells. Inhibits rosette formation. Acts as an adapter protein and is implicated in regulating many processes such as immune complex and pathogen clearance, cell chemotaxis, cell adhesion, angiogenesis, coagulation and fibrinolysis. Mediates clearance of necrotic cells through enhancing the phagocytosis of necrotic cells in a heparan sulfate-dependent pathway. This process can be regulated by the presence of certain HRG ligands such as heparin and zinc ions. Binds to IgG subclasses of immunoglobins containing kappa and lambda light chains with different affinities regulating their clearance and inhibiting the formation of insoluble immune complexes. Tethers plasminogen to the cell surface. Binds T-cells and alters the cell morphology. Modulates angiogenesis by blocking the CD6-mediated antiangiongenic effect of thrombospondins, THBS1 and THBS2. Acts as a regulator of the vascular endothelial growth factor (VEGF) signaling pathway; inhibits endothelial cell motility by reducing VEGF-induced complex formation between PXN/paxillin and ILK/integrin-linked protein kinase and by promoting inhibition of VEGF-induced tyrosine phosphorylation of focal adhesion kinases and alpha-actinins in endothelial cells. Also plays a role in the regulation of tumor angiogenesis and tumor immune surveillance. Normalizes tumor vessels and promotes antitumor immunity by polarizing tumor-associated macrophages, leading to decreased tumor growth and metastasis.",liver,P04196,DSPVLIDFFEDTER
+SRM,HABP2,hyaluronan binding protein 2,Cleaves the alpha-chain at multiple sites and the beta- chain between 'Lys-53' and 'Lys-54' but not the gamma-chain of fibrinogen and therefore does not initiate the formation of the fibrin clot and does not cause the fibrinolysis directly. It does not cleave (activate) prothrombin and plasminogen but converts the inactive single chain urinary plasminogen activator (pro- urokinase) to the active two chain form. Activates coagulation factor VII (560 aa),liver,Q14520,LIANTLCNSR
+SRM,HABP2,hyaluronan binding protein 2,Cleaves the alpha-chain at multiple sites and the beta- chain between 'Lys-53' and 'Lys-54' but not the gamma-chain of fibrinogen and therefore does not initiate the formation of the fibrin clot and does not cause the fibrinolysis directly. It does not cleave (activate) prothrombin and plasminogen but converts the inactive single chain urinary plasminogen activator (pro- urokinase) to the active two chain form. Activates coagulation factor VII (560 aa),liver,Q14520,LPGFDSCGK
+SRM,INHBC,"inhibin, beta C"," Inhibins and activins inhibit and activate, respectively, the secretion of follitropin by the pituitary gland. Inhibins/activins are involved in regulating a number of diverse functions such as hypothalamic and pituitary hormone secretion, gonadal hormone secretion, germ cell development and maturation, erythroid differentiation, insulin secretion, nerve cell survival, embryonic axial development or bone growth, depending on their subunit composition. Inhibins appear to oppose the functions of activins (352 aa)",liver,P55103,LDFHFSSDR
+SRM,IGFALS,"insulin-like growth factor binding protein, acid labile subunit"," Involved in protein-protein interactions that result in protein complexes, receptor-ligand binding or cell adhesion (605 aa)",liver,P35858,DFALQNPSAVPR
+SRM,IGFALS,"insulin-like growth factor binding protein, acid labile subunit"," Involved in protein-protein interactions that result in protein complexes, receptor-ligand binding or cell adhesion (605 aa)",liver,P35858,LAYLQPALFSGLAELR
+SRM,ITIH4,inter-alpha (globulin) inhibitor H4 (plasma Kallikrein-sensitive glycoprotein),May be involved in acute phase reactions (930 aa),liver,Q14624,ILDDLSPR
+SRM,ITIH4,inter-alpha (globulin) inhibitor H4 (plasma Kallikrein-sensitive glycoprotein),May be involved in acute phase reactions (930 aa),liver,Q14624,LGVYELLLK
+SRM,LCAT,lecithin-cholesterol acyltransferase,Central enzyme in the extracellular metabolism of plasma lipoproteins. Among other substrates it esterifies the free cholesterol transported in plasma lipoproteins (440 aa),liver,P04180,SSGLVSNAPGVQIR
+SRM,LCAT,lecithin-cholesterol acyltransferase,Central enzyme in the extracellular metabolism of plasma lipoproteins. Among other substrates it esterifies the free cholesterol transported in plasma lipoproteins (440 aa),liver,P04180,TYSVEYLDSSK
+SRM,MASP2,Mannan-binding lectin serine protease 2,"Serum protease that plays an important role in the activation of the complement system via mannose-binding lectin. After activation by auto-catalytic cleavage it cleaves C2 and C4, leading to their activation and to the formation of C3 convertase.",liver,O00187,WPEPVFGR
+SRM,MASP2,Mannan-binding lectin serine protease 2,"Serum protease that plays an important role in the activation of the complement system via mannose-binding lectin. After activation by auto-catalytic cleavage it cleaves C2 and C4, leading to their activation and to the formation of C3 convertase.",liver,O00187,WTLTAPPGYR
+SRM,MBL2,Mannose-binding protein C,"Calcium-dependent lectin involved in innate immune defense. Binds mannose, fucose and N-acetylglucosamine on different microorganisms and activates the lectin complement pathway. Binds to late apoptotic cells, as well as to apoptotic blebs and to necrotic cells, but not to early apoptotic cells, facilitating their uptake by macrophages. May bind DNA.",liver,P11226,FQASVATPR
+SRM,MBL2,Mannose-binding protein C,"Calcium-dependent lectin involved in innate immune defense. Binds mannose, fucose and N-acetylglucosamine on different microorganisms and activates the lectin complement pathway. Binds to late apoptotic cells, as well as to apoptotic blebs and to necrotic cells, but not to early apoptotic cells, facilitating their uptake by macrophages. May bind DNA.",liver,P11226,TEGQFVDLTGNR
+SRM,PGLYRP2,N-acetylmuramoyl-L-alanine amidase,May play a scavenger role by digesting biologically active peptidoglycan (PGN) into biologically inactive fragments. Has no direct bacteriolytic activity.,liver,Q96PD5,EFTEAFLGCPAIHPR
+SRM,PGLYRP2,N-acetylmuramoyl-L-alanine amidase,May play a scavenger role by digesting biologically active peptidoglycan (PGN) into biologically inactive fragments. Has no direct bacteriolytic activity.,liver,Q96PD5,GCPDVQASLPDAK
+SRM,PON1,paraoxonase 1,Hydrolyzes the toxic metabolites of a variety of organophosphorus insecticides. Capable of hydrolyzing a broad spectrum of organophosphate substrates and a number of aromatic carboxylic acid esters. May mediate an enzymatic protection of low density lipoproteins against oxidative modification and the consequent series of events leading to atheroma formation (355 aa),liver,P27169,IFFYDSENPPASEVLR
+SRM,PON1,paraoxonase 1,Hydrolyzes the toxic metabolites of a variety of organophosphorus insecticides. Capable of hydrolyzing a broad spectrum of organophosphate substrates and a number of aromatic carboxylic acid esters. May mediate an enzymatic protection of low density lipoproteins against oxidative modification and the consequent series of events leading to atheroma formation (355 aa),liver,P27169,IQNILTEEPK
+SRM,PLG,Plasminogen,"Plasmin dissolves the fibrin of blood clots and acts as a proteolytic factor in a variety of other processes including embryonic development, tissue remodeling, tumor invasion, and inflammation. In ovulation, weakens the walls of the Graafian follicle. It activates the urokinase-type plasminogen activator, collagenases and several complement zymogens, such as C1 and C5. Cleavage of fibronectin and laminin leads to cell detachment and apoptosis. Also cleaves fibrin, thrombospondin and von Willebrand factor. Its role in tissue remodeling and tumor invasion may be modulated by CSPG4. Binds to cells.",liver,P00747,EAQLPVIENK
+SRM,PLG,Plasminogen,"Plasmin dissolves the fibrin of blood clots and acts as a proteolytic factor in a variety of other processes including embryonic development, tissue remodeling, tumor invasion, and inflammation. In ovulation, weakens the walls of the Graafian follicle. It activates the urokinase-type plasminogen activator, collagenases and several complement zymogens, such as C1 and C5. Cleavage of fibronectin and laminin leads to cell detachment and apoptosis. Also cleaves fibrin, thrombospondin and von Willebrand factor. Its role in tissue remodeling and tumor invasion may be modulated by CSPG4. Binds to cells.",liver,P00747,HSIFTPETNPR
+SRM,RBP4,Retinol-binding protein 4,"Delivers retinol from the liver stores to the peripheral tissues. In plasma, the RBP-retinol complex interacts with transthyretin, this prevents its loss by filtration through the kidney glomeruli.",liver,P02753,GNDDHWIVDTDYDTYAVQYSCR
+SRM,RBP4,Retinol-binding protein 4,"Delivers retinol from the liver stores to the peripheral tissues. In plasma, the RBP-retinol complex interacts with transthyretin, this prevents its loss by filtration through the kidney glomeruli.",liver,P02753,YWGVASFLQK
+SRM,SPP2,Secreted phosphoprotein 24,Could coordinate an aspect of bone turnover.,liver,Q13103,VNSQSLSPYLFR
+SRM,SPP2,Secreted phosphoprotein 24,Could coordinate an aspect of bone turnover.,liver,Q13103,DYYVSTAVCR
+SRM,SERPINC1,"serpin peptidase inhibitor, clade C (antithrombin), member 1"," Most important serine protease inhibitor in plasma that regulates the blood coagulation cascade. AT-III inhibits thrombin as well as factors IXa, Xa and XIa. Its inhibitory activity is greatly enhanced in the presence of heparin (464 aa)",liver,P01008,DDLYVSDAFHK
+SRM,SERPINC1,"serpin peptidase inhibitor, clade C (antithrombin), member 1"," Most important serine protease inhibitor in plasma that regulates the blood coagulation cascade. AT-III inhibits thrombin as well as factors IXa, Xa and XIa. Its inhibitory activity is greatly enhanced in the presence of heparin (464 aa)",liver,P01008,TSDQIHFFFAK
+SRM,VTN,vitronectin,Vitronectin is a cell adhesion and spreading factor found in serum and tissues. Vitronectin interact with glycosaminoglycans and proteoglycans. Is recognized by certain members of the integrin family and serves as a cell-to-substrate adhesion molecule. Inhibitor of the membrane-damaging effect of the terminal cytolytic complement pathway (478 aa),liver,P04004,DVWGIEGPIDAAFTR
+SRM,VTN,vitronectin,Vitronectin is a cell adhesion and spreading factor found in serum and tissues. Vitronectin interact with glycosaminoglycans and proteoglycans. Is recognized by certain members of the integrin family and serves as a cell-to-substrate adhesion molecule. Inhibitor of the membrane-damaging effect of the terminal cytolytic complement pathway (478 aa),liver,P04004,VDTVDPPYPR
+SRM,APOBR,Apolipoprotein B receptor,"Macrophage receptor that binds to the apolipoprotein B48 (APOB) of dietary triglyceride (TG)-rich lipoproteins (TRL) or to a like domain of APOB in hypertriglyceridemic very low density lipoprotein (HTG-VLDL). Binds and internalizes TRL when out of the context of the macrophage. May provide essential lipids to reticuloendothelial cells. Could also be involved in foam cell formation with elevated TRL and remnant lipoprotein (RLP). Mediates the rapid high-affinity uptake of chylomicrons (CM), HTG-VLDL, and trypsinized (tryp) VLDL devoid of APOE in vitro in macrophages.",wbc,Q0VD83,AWGTWGPGAEPEDWGILGR
+SRM,CTSS,Cathepsin S,Thiol protease. Key protease responsible for the removal of the invariant chain from MHC class II molecules. The bond-specificity of this proteinase is in part similar to the specificities of cathepsin L and cathepsin N.,wbc,P25774,GIDSDASYPYK
+SRM,CTSS,Cathepsin S,Thiol protease. Key protease responsible for the removal of the invariant chain from MHC class II molecules. The bond-specificity of this proteinase is in part similar to the specificities of cathepsin L and cathepsin N.,wbc,P25774,YTELPYGR
+SRM,CD160,CD160 antigen,Receptor showing broad specificity for both classical and non-classical MHC class I molecules.,wbc,O95971,LNLICTVWHK
+SRM,CD160,CD160 antigen,Receptor showing broad specificity for both classical and non-classical MHC class I molecules.,wbc,O95971,LQGHFFSILFTETGNYTVTGLK
+SRM,CYBB,Cytochrome b-245 heavy chain,Critical component of the membrane-bound oxidase of phagocytes that generates superoxide. It is the terminal component of a respiratory chain that transfers single electrons from cytoplasmic NADPH across the plasma membrane to molecular oxygen on the exterior. Also functions as a voltage-gated proton channel that mediates the H+ currents of resting phagocytes. It participates in the regulation of cellular pH and is blocked by zinc.,wbc,P04839,IVGDWTEGLFNACGCDK
+SRM,CYBB,Cytochrome b-245 heavy chain,Critical component of the membrane-bound oxidase of phagocytes that generates superoxide. It is the terminal component of a respiratory chain that transfers single electrons from cytoplasmic NADPH across the plasma membrane to molecular oxygen on the exterior. Also functions as a voltage-gated proton channel that mediates the H+ currents of resting phagocytes. It participates in the regulation of cellular pH and is blocked by zinc.,wbc,P04839,QNESYLNFAR
+SRM,FCRL1,Fc receptor-like protein 1,May function as an activating coreceptor in B-cells. May function in B-cells activation and differentiation.,wbc,Q96LA6,AQAAVEDVLELHCEALR
+SRM,FCRL1,Fc receptor-like protein 1,May function as an activating coreceptor in B-cells. May function in B-cells activation and differentiation.,wbc,Q96LA6,SLTAEYEIPSVR
+SRM,FLT3LG,Fms-related tyrosine kinase 3 ligand,Stimulates the proliferation of early hematopoietic cells by activating FLT3. Synergizes well with a number of other colony stimulating factors and interleukins.,wbc,P49771,FVQTNISR
+SRM,FLT3LG,Fms-related tyrosine kinase 3 ligand,Stimulates the proliferation of early hematopoietic cells by activating FLT3. Synergizes well with a number of other colony stimulating factors and interleukins.,wbc,P49771,LLQETSEQLVALKPWITR
+SRM,GCA,Grancalcin,Calcium-binding protein that may play a role in the adhesion of neutrophils to fibronectin. May play a role in the formation of focal adhesions.,wbc,P28676,ELWAALNAWK
+SRM,GCA,Grancalcin,Calcium-binding protein that may play a role in the adhesion of neutrophils to fibronectin. May play a role in the formation of focal adhesions.,wbc,P28676,LSPQTLTTIVK
+SRM,GZMB,Granzyme B,"This enzyme is necessary for target cell lysis in cell-mediated immune responses. It cleaves after Asp. Seems to be linked to an activation cascade of caspases (aspartate-specific cysteine proteases) responsible for apoptosis execution. Cleaves caspase-3, -7, -9 and 10 to give rise to active enzymes mediating apoptosis.",wbc,P10144,EQEPTQQFIPVK
+SRM,GZMB,Granzyme B,"This enzyme is necessary for target cell lysis in cell-mediated immune responses. It cleaves after Asp. Seems to be linked to an activation cascade of caspases (aspartate-specific cysteine proteases) responsible for apoptosis execution. Cleaves caspase-3, -7, -9 and 10 to give rise to active enzymes mediating apoptosis.",wbc,P10144,HYYDSTIELCVGDPEIK
+SRM,GZMH,Granzyme H,Cytotoxic chymotrypsin-like serine protease with preference for bulky and aromatic residues at the P1 position and acidic residues at the P3' and P4' sites. Probably necessary for target cell lysis in cell-mediated immune responses. Participates in the antiviral response via direct cleavage of several proteins essential for viral replication.,wbc,P20718,DVAQGILSYGNK
+SRM,GZMH,Granzyme H,Cytotoxic chymotrypsin-like serine protease with preference for bulky and aromatic residues at the P1 position and acidic residues at the P3' and P4' sites. Probably necessary for target cell lysis in cell-mediated immune responses. Participates in the antiviral response via direct cleavage of several proteins essential for viral replication.,wbc,P20718,TQQFIPVK
+SRM,IL2RB,Interleukin-2 receptor subunit beta,Receptor for interleukin-2. This beta subunit is involved in receptor mediated endocytosis and transduces the mitogenic signals of IL2.,wbc,P14784,EGVSFPWSRPPGQGEFR
+SRM,IL2RB,Interleukin-2 receptor subunit beta,Receptor for interleukin-2. This beta subunit is involved in receptor mediated endocytosis and transduces the mitogenic signals of IL2.,wbc,P14784,FFSQLSSEHGGDVQK
+SRM,IL4R,Interleukin-4 receptor subunit alpha,"Receptor for both interleukin 4 and interleukin 13. Couples to the JAK1/2/3-STAT6 pathway. The IL4 response is involved in promoting Th2 differentiation. The IL4/IL13 responses are involved in regulating IgE production and, chemokine and mucus production at sites of allergic inflammation. In certain cell types, can signal through activation of insulin receptor substrates, IRS1/IRS2.",wbc,P24394,ELGPDPLLAR
+SRM,IL4R,Interleukin-4 receptor subunit alpha,"Receptor for both interleukin 4 and interleukin 13. Couples to the JAK1/2/3-STAT6 pathway. The IL4 response is involved in promoting Th2 differentiation. The IL4/IL13 responses are involved in regulating IgE production and, chemokine and mucus production at sites of allergic inflammation. In certain cell types, can signal through activation of insulin receptor substrates, IRS1/IRS2.",wbc,P24394,IYNVTYLEPSLR
+SRM,IL7R,Interleukin-7 receptor subunit alpha,Receptor for interleukin-7. Also acts as a receptor for thymic stromal lymphopoietin (TSLP).,wbc,P16871,EGANDFVVTFNTSHLQK
+SRM,IL7R,Interleukin-7 receptor subunit alpha,Receptor for interleukin-7. Also acts as a receptor for thymic stromal lymphopoietin (TSLP).,wbc,P16871,WTHVNLSSTK
+SRM,KIR2DL1.KIR2DS2,Killer cell immunoglobulin-like receptor 2DL1 and 2DS2,,wbc,P43626.P43631,VNGTFQADFPLGPATHGGTYR
+SRM,KIR2DL2,Killer cell immunoglobulin-like receptor 2DL2,"Receptor on natural killer (NK) cells for HLA-Cw1, 3, 7, and 8 allotypes. Inhibits the activity of NK cells thus preventing cell lysis.",wbc,P43627,SEETVILQCWSDVR
+SRM,SELL,L-selectin,Cell surface adhesion protein. Mediates the adherence of lymphocytes to endothelial cells of high endothelial venules in peripheral lymph nodes. Promotes initial tethering and rolling of leukocytes in endothelia.,wbc,P14151,IGGIWTWVGTNK
+SRM,SELL,L-selectin,Cell surface adhesion protein. Mediates the adherence of lymphocytes to endothelial cells of high endothelial venules in peripheral lymph nodes. Promotes initial tethering and rolling of leukocytes in endothelia.,wbc,P14151,SLTEEAENWGDGEPNNK
+SRM,LILRA3,Leukocyte immunoglobulin-like receptor subfamily A member 3,"Acts as soluble receptor for class I MHC antigens. Binds both classical and non-classical HLA class I molecules but with reduced affinities compared to LILRB1 or LILRB2. Binds with high affinity to the surface of monocytes, leading to abolish LPS-induced TNF-alpha production by monocytes.",wbc,Q8N6C8,QPQAGLSQANFTLGPVSR
+SRM,LILRB2,Leukocyte immunoglobulin-like receptor subfamily B member 2,"Receptor for class I MHC antigens. Recognizes a broad spectrum of HLA-A, HLA-B, HLA-C and HLA-G alleles. Involved in the down-regulation of the immune response and the development of tolerance. Competes with CD8A for binding to class I MHC antigens. Inhibits FCGR1A-mediated phosphorylation of cellular proteins and mobilization of intracellular calcium ions.",wbc,Q8N423,AIFSVGPVSPNR
+SRM,LST1,Leukocyte-specific transcript 1 protein,Possible role in modulating immune responses. Induces morphological changes including production of filopodia and microspikes when overexpressed in a variety of cell types and may be involved in dendritic cell maturation. Isoform 1 and isoform 2 have an inhibitory effect on lymphocyte proliferation.,wbc,O00453,LPVPSSEGPDLR
+SRM,LST1,Leukocyte-specific transcript 1 protein,Possible role in modulating immune responses. Induces morphological changes including production of filopodia and microspikes when overexpressed in a variety of cell types and may be involved in dendritic cell maturation. Isoform 1 and isoform 2 have an inhibitory effect on lymphocyte proliferation.,wbc,O00453,SWAQGSSEQELHYASLQR
+SRM,MATK,Megakaryocyte-associated tyrosine-protein kinase,Could play a significant role in the signal transduction of hematopoietic cells. May regulate tyrosine kinase activity of SRC-family members in brain by specifically phosphorylating their C-terminal regulatory tyrosine residue which acts as a negative regulatory site. It may play an inhibitory role in the control of T-cell proliferation.,wbc,P42679,HHTSGQEGLLAAGALR
+SRM,MATK,Megakaryocyte-associated tyrosine-protein kinase,Could play a significant role in the signal transduction of hematopoietic cells. May regulate tyrosine kinase activity of SRC-family members in brain by specifically phosphorylating their C-terminal regulatory tyrosine residue which acts as a negative regulatory site. It may play an inhibitory role in the control of T-cell proliferation.,wbc,P42679,NILVSEDLVAK
+SRM,MNDA,Myeloid cell nuclear differentiation antigen,May act as a transcriptional activator/repressor in the myeloid lineage. Plays a role in the granulocyte/monocyte cell-specific response to interferon. Stimulates the DNA binding of the transcriptional repressor protein YY1.,wbc,P41218,INQEEVGLAAPAPTAR
+SRM,MNDA,Myeloid cell nuclear differentiation antigen,May act as a transcriptional activator/repressor in the myeloid lineage. Plays a role in the granulocyte/monocyte cell-specific response to interferon. Stimulates the DNA binding of the transcriptional repressor protein YY1.,wbc,P41218,SLLAYDLGLTTK
+SRM,NCR1,Natural cytotoxicity triggering receptor 1,Cytotoxicity-activating receptor that may contribute to the increased efficiency of activated natural killer (NK) cells to mediate tumor cell lysis.,wbc,O76036,CFGSYNNHAWSFPSEPVK
+SRM,NCR1,Natural cytotoxicity triggering receptor 1,Cytotoxicity-activating receptor that may contribute to the increased efficiency of activated natural killer (NK) cells to mediate tumor cell lysis.,wbc,O76036,VQAEFPLGPVTTAHR
+SRM,NCR3,Natural cytotoxicity triggering receptor 3,"Cytotoxicity-activating receptor that contributes to the increased efficiency of activated natural killer (NK) cells to mediate tumor cell lysis. Engagement of NCR3 by BAG6 also promotes dendritic cell (DC) maturation, both through killing those DCs that did not properly acquire a mature phenotype, and inducing NK cells to release TNFA and IFNG, which promotes DC maturation.",wbc,O14931,FLHDHQAELHIR
+SRM,NCR3,Natural cytotoxicity triggering receptor 3,"Cytotoxicity-activating receptor that contributes to the increased efficiency of activated natural killer (NK) cells to mediate tumor cell lysis. Engagement of NCR3 by BAG6 also promotes dendritic cell (DC) maturation, both through killing those DCs that did not properly acquire a mature phenotype, and inducing NK cells to release TNFA and IFNG, which promotes DC maturation.",wbc,O14931,VEVLGLGVGTGNGTR
+SRM,NCF2,Neutrophil cytosol factor 2,"NCF2, NCF1, and a membrane bound cytochrome b558 are required for activation of the latent NADPH oxidase (necessary for superoxide production).",wbc,P19878,LYEPVVIPVGK
+SRM,NCF2,Neutrophil cytosol factor 2,"NCF2, NCF1, and a membrane bound cytochrome b558 are required for activation of the latent NADPH oxidase (necessary for superoxide production).",wbc,P19878,VLFGFVPETK
+SRM,PPBP,Platelet basic protein,"LA-PF4 stimulates DNA synthesis, mitosis, glycolysis, intracellular cAMP accumulation, prostaglandin E2 secretion, and synthesis of hyaluronic acid and sulfated glycosaminoglycan. It also stimulates the formation and secretion of plasminogen activator by human synovial cells. NAP-2 is a ligand for CXCR1 and CXCR2, and NAP-2, NAP-2(73), NAP-2(74), NAP-2(1-66), and most potent NAP-2(1-63) are chemoattractants and activators for neutrophils. TC-1 and TC-2 are antibacterial proteins, in vitro released from activated platelet alpha-granules. CTAP-III(1-81) is more potent than CTAP-III desensitize chemokine-induced neutrophil activation.",wbc,P02775,GTHCNQVEVIATLK
+SRM,PPBP,Platelet basic protein,"LA-PF4 stimulates DNA synthesis, mitosis, glycolysis, intracellular cAMP accumulation, prostaglandin E2 secretion, and synthesis of hyaluronic acid and sulfated glycosaminoglycan. It also stimulates the formation and secretion of plasminogen activator by human synovial cells. NAP-2 is a ligand for CXCR1 and CXCR2, and NAP-2, NAP-2(73), NAP-2(74), NAP-2(1-66), and most potent NAP-2(1-63) are chemoattractants and activators for neutrophils. TC-1 and TC-2 are antibacterial proteins, in vitro released from activated platelet alpha-granules. CTAP-III(1-81) is more potent than CTAP-III desensitize chemokine-induced neutrophil activation.",wbc,P02775,ICLDPDAPR
+SRM,CFP,Properdin,A positive regulator of the alternate pathway of complement. It binds to and stabilizes the C3- and C5-convertase enzyme complexes.,wbc,P27918,SISCQEIPGQQSR
+SRM,CFP,Properdin,A positive regulator of the alternate pathway of complement. It binds to and stabilizes the C3- and C5-convertase enzyme complexes.,wbc,P27918,TCNHPVPQHGGPFCAGDATR
+SRM,THEMIS,Protein THEMIS,Plays a central role in late thymocyte development by controlling both positive and negative T-cell selection. Required to sustain and/or integrate signals required for proper lineage commitment and maturation of T-cells. Regulates T-cell development through T-cell antigen receptor (TCR) signaling and in particular through the regulation of calcium influx and phosphorylation of Erk (By similarity).,wbc,Q8N1K5,EFPTAYDLEIAK
+SRM,THEMIS,Protein THEMIS,Plays a central role in late thymocyte development by controlling both positive and negative T-cell selection. Required to sustain and/or integrate signals required for proper lineage commitment and maturation of T-cells. Regulates T-cell development through T-cell antigen receptor (TCR) signaling and in particular through the regulation of calcium influx and phosphorylation of Erk (By similarity).,wbc,Q8N1K5,TVNLTDFSNK
+SRM,PTPRC,Receptor-type tyrosine-protein phosphatase C,"Protein tyrosine-protein phosphatase required for T-cell activation through the antigen receptor. Acts as a positive regulator of T-cell coactivation upon binding to DPP4. The first PTPase domain has enzymatic activity, while the second one seems to affect the substrate specificity of the first one. Upon T-cell activation, recruits and dephosphorylates SKAP1 and FYN. Dephosphorylates LYN, and thereby modulates LYN activity (By similarity).",wbc,P08575,LFLAEFQSIPR
+SRM,PTPRC,Receptor-type tyrosine-protein phosphatase C,"Protein tyrosine-protein phosphatase required for T-cell activation through the antigen receptor. Acts as a positive regulator of T-cell coactivation upon binding to DPP4. The first PTPase domain has enzymatic activity, while the second one seems to affect the substrate specificity of the first one. Upon T-cell activation, recruits and dephosphorylates SKAP1 and FYN. Dephosphorylates LYN, and thereby modulates LYN activity (By similarity).",wbc,P08575,SEAAHQGVITWNPPQR
+SRM,RNASE6,Ribonuclease K6,May have a role in host defense.,wbc,Q93091,AHWFEIQHIQPSPLQCNR
+SRM,RNASE6,Ribonuclease K6,May have a role in host defense.,wbc,Q93091,YSAAAQYK
+SRM,ATM,Serine-protein kinase ATM,"Serine/threonine protein kinase which activates checkpoint signaling upon double strand breaks (DSBs), apoptosis and genotoxic stresses such as ionizing ultraviolet A light (UVA), thereby acting as a DNA damage sensor. Recognizes the substrate consensus sequence [ST]-Q. Phosphorylates 'Ser-139' of histone variant H2AX/H2AFX at double strand breaks (DSBs), thereby regulating DNA damage response mechanism. Also plays a role in pre-B cell allelic exclusion, a process leading to expression of a single immunoglobulin heavy chain allele to enforce clonality and monospecific recognition by the B-cell antigen receptor (BCR) expressed on individual B-lymphocytes. After the introduction of DNA breaks by the RAG complex on one immunoglobulin allele, acts by mediating a repositioning of the second allele to pericentromeric heterochromatin, preventing accessibility to the RAG complex and recombination of the second allele. Also involved in signal transduction and cell cycle control. May function as a tumor suppressor. Necessary for activation of ABL1 and SAPK. Phosphorylates DYRK2, CHEK2, p53/TP53, FANCD2, NFKBIA, BRCA1, CTIP, nibrin (NBN), TERF1, RAD9 and DCLRE1C. May play a role in vesicle and/or protein transport. Could play a role in T-cell development, gonad and neurological function. Plays a role in replication-dependent histone mRNA degradation. Binds DNA ends. Phosphorylation of DYRK2 in nucleus in response to genotoxic stress prevents its MDM2-mediated ubiquitination and subsequent proteasome degradation. Phosphorylates ATF2 which stimulates its function in DNA damage response.",wbc,Q13315,LVVNLLQLSK
+SRM,ATM,Serine-protein kinase ATM,"Serine/threonine protein kinase which activates checkpoint signaling upon double strand breaks (DSBs), apoptosis and genotoxic stresses such as ionizing ultraviolet A light (UVA), thereby acting as a DNA damage sensor. Recognizes the substrate consensus sequence [ST]-Q. Phosphorylates 'Ser-139' of histone variant H2AX/H2AFX at double strand breaks (DSBs), thereby regulating DNA damage response mechanism. Also plays a role in pre-B cell allelic exclusion, a process leading to expression of a single immunoglobulin heavy chain allele to enforce clonality and monospecific recognition by the B-cell antigen receptor (BCR) expressed on individual B-lymphocytes. After the introduction of DNA breaks by the RAG complex on one immunoglobulin allele, acts by mediating a repositioning of the second allele to pericentromeric heterochromatin, preventing accessibility to the RAG complex and recombination of the second allele. Also involved in signal transduction and cell cycle control. May function as a tumor suppressor. Necessary for activation of ABL1 and SAPK. Phosphorylates DYRK2, CHEK2, p53/TP53, FANCD2, NFKBIA, BRCA1, CTIP, nibrin (NBN), TERF1, RAD9 and DCLRE1C. May play a role in vesicle and/or protein transport. Could play a role in T-cell development, gonad and neurological function. Plays a role in replication-dependent histone mRNA degradation. Binds DNA ends. Phosphorylation of DYRK2 in nucleus in response to genotoxic stress prevents its MDM2-mediated ubiquitination and subsequent proteasome degradation. Phosphorylates ATF2 which stimulates its function in DNA damage response.",wbc,Q13315,SGLGGAWAFVLR
+SRM,S1PR5,Sphingosine 1-phosphate receptor 5,Receptor for the lysosphingolipid sphingosine 1-phosphate (S1P). S1P is a bioactive lysophospholipid that elicits diverse physiological effect on most types of cells and tissues. Is coupled to both the G(i/0)alpha and G(12) subclass of heteromeric G-proteins (By similarity). May play a regulatory role in the transformation of radial glial cells into astrocytes and may affect proliferative activity of these cells.,wbc,Q9H228,DGLDTSGSTGSPGAPTAAR
+SRM,S1PR5,Sphingosine 1-phosphate receptor 5,Receptor for the lysosphingolipid sphingosine 1-phosphate (S1P). S1P is a bioactive lysophospholipid that elicits diverse physiological effect on most types of cells and tissues. Is coupled to both the G(i/0)alpha and G(12) subclass of heteromeric G-proteins (By similarity). May play a regulatory role in the transformation of radial glial cells into astrocytes and may affect proliferative activity of these cells.,wbc,Q9H228,DPSGSQQSASAAEASGGLR
+SRM,CD247,T-cell surface glycoprotein CD3 zeta chain,Probable role in assembly and expression of the TCR complex as well as signal transduction upon antigen triggering.,wbc,P20963,EEYDVLDK
+SRM,CD247,T-cell surface glycoprotein CD3 zeta chain,Probable role in assembly and expression of the TCR complex as well as signal transduction upon antigen triggering.,wbc,P20963,GHDGLYQGLSTATK
+SRM,TRAF3IP3,TRAF3-interacting JNK-activating modulator,,wbc,Q9Y228,SFPNEVEPEGTGK
+SRM,TRAF3IP3,TRAF3-interacting JNK-activating modulator,,wbc,Q9Y228,VQQLQGLLQNQSLQLQEQEK

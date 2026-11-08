@@ -1,5 +1,6 @@
 """Offline, focused tests for real-data download safety and resumable transfers."""
 import io
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -51,6 +52,17 @@ class DownloaderTests(unittest.TestCase):
             self.assertEqual(runner.existing, 1)
             self.assertTrue((Path(root) / "raw/p100/download_manifest.json").exists())
 
+    def test_ipop_uses_published_processed_source_when_s3_is_unavailable(self):
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), False, 1.0, 1.0)
+            with patch.dict(sys.modules, {"boto3": None}), patch.object(runner, "https") as download:
+                runner.ipop()
+            download.assert_called_once_with(
+                "ipop", "seasonal/Multi_Omics_Seasonal.RData",
+                "https://ndownloader.figshare.com/files/22807673",
+            )
+            self.assertEqual(runner.failed, 0)
+
     def test_http_range_resumes_incomplete_file(self):
         with tempfile.TemporaryDirectory() as root:
             dataset = Path(root) / "raw" / "covaar"
@@ -73,3 +85,4 @@ class DownloaderTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

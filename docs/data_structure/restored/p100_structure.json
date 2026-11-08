@@ -1,0 +1,1186 @@
+{
+  "files": [
+    {
+      "file": "41587_2017_BFnbt3870_MOESM26_ESM.pdf",
+      "bytes": 2352615,
+      "sha256": "76cf0cb31362b18286a8827664200e54c7e2c38033932cdf457f4b14d5f070cf"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM27_ESM.zip",
+      "bytes": 220066,
+      "sha256": "cc9efcdc9ee73ec0c934302ac2dc11d83719ee604003b254f1fc09b102c11485"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM28_ESM.zip",
+      "bytes": 174054,
+      "sha256": "7c86618ded5fb5d125902535594c671861600c00390a71017fa9919f6947bad0"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "bytes": 74404,
+      "sha256": "3b223ca3ec0d7525d810430151ec1e661c7ad3576fb66d2774c49dca9471ff8a"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM30_ESM.xlsx",
+      "bytes": 325567,
+      "sha256": "987933469fe9e7bd9a0c7448e9f18bc9c3a8dd0fbacc342e2e1d8fefc3887ea3"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM31_ESM.xlsx",
+      "bytes": 253924,
+      "sha256": "ae9711f928a1033d02f73af70ed93bb9fa2d9e2eab267e2e64da0257f1b3b0b9"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM32_ESM.xlsx",
+      "bytes": 1270450,
+      "sha256": "570356b3e227134fd60e22d4a0746100720f3fd57ffb8d2cb75720ce1c0598ec"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM33_ESM.xlsx",
+      "bytes": 195941,
+      "sha256": "6f37e4832ebc68b17752c44f91547a39fc981be0e19e2595c7f000e4bcbb66cc"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM34_ESM.xlsx",
+      "bytes": 1878234,
+      "sha256": "dc68da9a802cc6e900d949a3339445a92877ee6e268afbf2ba820d6df6aff7a0"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM35_ESM.xlsx",
+      "bytes": 52662,
+      "sha256": "91cca258214fbc6a9049e90a36105365705021ecf49aa4670a6754837f571015"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM36_ESM.xlsx",
+      "bytes": 83873,
+      "sha256": "c73ef30e1c5ea12499abd7cd6f78a714778909961275673a0a44053b8b2a0308"
+    }
+  ],
+  "worksheets": [
+    {
+      "file": "41587_2017_BFnbt3870_MOESM30_ESM.xlsx",
+      "sheet": "Legend",
+      "worksheet_rows": 14,
+      "worksheet_columns": 2,
+      "nonempty_rows": 9,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 11,
+      "header_row": null,
+      "data_rows": null,
+      "raw_headers": null,
+      "nonempty_cells_by_row": [
+        {
+          "row": 1,
+          "cells": [
+            "Supplementary Table 1: All analytes measured in the P100",
+            null
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "This table lists all analytes measured in each data type as well as participant demographics",
+            null
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Sheet",
+            null
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "Demographics",
+            "Participant demographics and counts of all observations across all datatypes"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "Genetic Traits",
+            "All genetic traits used for polygenic scores"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "Clinical Lab Tests",
+            "All clinical tests from the two testing companies, Genova and Quest"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "Metabolomics",
+            "All metabolites measured by Metabolon. Metabolites with asterisks (*) represent analytes that have not been confirmed by a standard."
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "Proteomics",
+            "All proteins measured by SRM and Olink"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "Microbiome",
+            "Taxonomy of observed OTUs by Second Genome"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM30_ESM.xlsx",
+      "sheet": "Demographics",
+      "worksheet_rows": 109,
+      "worksheet_columns": 32,
+      "nonempty_rows": 109,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 109,
+      "header_row": 1,
+      "data_rows": 108,
+      "raw_headers": [
+        "participant_id",
+        "sex",
+        "age",
+        "ancestry",
+        "Do you currently use tobacco?",
+        "How many years have you smoked?",
+        "How many cigarettes per day?",
+        "If you smoked in the past, how many years did you smoke?",
+        "If you smoked in the past, how many cigarettes per day?",
+        "Do you drink alcohol?",
+        "Average number of drinks per week:",
+        "genome_id",
+        "genome_tech",
+        "clinical.Genova.1",
+        "clinical.Genova.2",
+        "clinical.Genova.3",
+        "clinical.Quest.1",
+        "clinical.Quest.2",
+        "clinical.Quest.3",
+        "metabolomics.metabolon.1",
+        "metabolomics.metabolon.2",
+        "metabolomics.metabolon.3",
+        "proteomics.olink.1",
+        "proteomics.olink.2",
+        "proteomics.olink.3",
+        "proteomics.srm_mass_spec.1",
+        "proteomics.srm_mass_spec.2",
+        "proteomics.srm_mass_spec.3",
+        "microbiome.secondgenome.1",
+        "microbiome.secondgenome.2",
+        "microbiome.secondgenome.3",
+        "average.activity.fitbit"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM30_ESM.xlsx",
+      "sheet": "Genetic Traits",
+      "worksheet_rows": 131,
+      "worksheet_columns": 12,
+      "nonempty_rows": 131,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 131,
+      "header_row": 1,
+      "data_rows": 130,
+      "raw_headers": [
+        "trait_name",
+        "initial_size_total",
+        "replication_size_total",
+        "total",
+        "num_variants",
+        "author",
+        "date_published",
+        "initial_sample_description",
+        "replication_sample_description",
+        "journal",
+        "pubmed",
+        "title"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM30_ESM.xlsx",
+      "sheet": "Clinical Lab Tests",
+      "worksheet_rows": 219,
+      "worksheet_columns": 6,
+      "nonempty_rows": 219,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 219,
+      "header_row": 1,
+      "data_rows": 218,
+      "raw_headers": [
+        "name",
+        "unit",
+        "vendor",
+        "vendor_id",
+        "hmdb_id",
+        "source"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM30_ESM.xlsx",
+      "sheet": "Metabolomics",
+      "worksheet_rows": 644,
+      "worksheet_columns": 12,
+      "nonempty_rows": 644,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 644,
+      "header_row": 1,
+      "data_rows": 643,
+      "raw_headers": [
+        "biochemical",
+        "super_pathway",
+        "sub_pathway",
+        "comp_id",
+        "platform",
+        "chemical_id",
+        "ri",
+        "mass",
+        "cas",
+        "pubchem",
+        "kegg",
+        "hmdb"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM30_ESM.xlsx",
+      "sheet": "Proteomics",
+      "worksheet_rows": 385,
+      "worksheet_columns": 7,
+      "nonempty_rows": 385,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 385,
+      "header_row": 1,
+      "data_rows": 384,
+      "raw_headers": [
+        "source",
+        "abbreviation",
+        "name",
+        "description",
+        "category",
+        "uniprot",
+        "peptide"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM30_ESM.xlsx",
+      "sheet": "Microbiome",
+      "worksheet_rows": 4617,
+      "worksheet_columns": 8,
+      "nonempty_rows": 4617,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 4617,
+      "header_row": 1,
+      "data_rows": 4616,
+      "raw_headers": [
+        null,
+        "Kingdom",
+        "Phylum",
+        "Class",
+        "Order",
+        "Family",
+        "Genus",
+        "Species"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM31_ESM.xlsx",
+      "sheet": "Legend",
+      "worksheet_rows": 11,
+      "worksheet_columns": 2,
+      "nonempty_rows": 9,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 11,
+      "header_row": null,
+      "data_rows": null,
+      "raw_headers": null,
+      "nonempty_cells_by_row": [
+        {
+          "row": 1,
+          "cells": [
+            "Supplementary Table 2: Complete inter-omic correlation network for cross-sectional correlations",
+            null
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "This table contains all significant (p_adj<0.05) inter-omic cross-sectional correlations identified using Spearman",
+            null
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Column",
+            null
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "coefficient",
+            "Spearman coefficient from the correlation network"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "pval",
+            "Unadjusted p-value for the pairwise correlation"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "pval_adj",
+            "Adjusted p-value for the pairwise correlation"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "test",
+            "Test that was performed"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "annotations_1",
+            "Name of the first analyte being compared in the pairwise correlation"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "annotations_2",
+            "Name of the second analyte being compared in the pairwise correlation"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM31_ESM.xlsx",
+      "sheet": "Table",
+      "worksheet_rows": 3471,
+      "worksheet_columns": 6,
+      "nonempty_rows": 3471,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 3471,
+      "header_row": 1,
+      "data_rows": 3470,
+      "raw_headers": [
+        "coefficient",
+        "pval",
+        "pval_adj",
+        "test",
+        "annotations_1",
+        "annotations_2"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM32_ESM.xlsx",
+      "sheet": "Legend",
+      "worksheet_rows": 18,
+      "worksheet_columns": 2,
+      "nonempty_rows": 9,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 11,
+      "header_row": null,
+      "data_rows": null,
+      "raw_headers": null,
+      "nonempty_cells_by_row": [
+        {
+          "row": 1,
+          "cells": [
+            "Supplementary Table 3: Complete intra- and inter-omic correlation network for cross-sectional correlations",
+            null
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "This table contains all significant (p_adj<0.05) intra- and inter-omic cross-sectional correlations identified using Spearman",
+            null
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Column",
+            null
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "coefficient",
+            "Spearman coefficient from the correlation network"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "pval",
+            "Unadjusted p-value for the pairwise correlation"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "pval_adj",
+            "Adjusted p-value for the pairwise correlation"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "test",
+            "Test that was performed"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "annotations_1",
+            "Name of the first analyte being compared in the pairwise correlation"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "annotations_2",
+            "Name of the second analyte being compared in the pairwise correlation"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM32_ESM.xlsx",
+      "sheet": "Table",
+      "worksheet_rows": 21126,
+      "worksheet_columns": 6,
+      "nonempty_rows": 21126,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 21126,
+      "header_row": 1,
+      "data_rows": 21125,
+      "raw_headers": [
+        "coefficient",
+        "pval",
+        "pval_adj",
+        "test",
+        "annotations_1",
+        "annotations_2"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM33_ESM.xlsx",
+      "sheet": "Legend",
+      "worksheet_rows": 18,
+      "worksheet_columns": 2,
+      "nonempty_rows": 9,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 11,
+      "header_row": null,
+      "data_rows": null,
+      "raw_headers": null,
+      "nonempty_cells_by_row": [
+        {
+          "row": 1,
+          "cells": [
+            "Supplementary Table 4: Complete inter-omic correlation network for delta correlations",
+            null
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "This table contains all significant (p_adj<0.05) inter-omic delta correlations identified using Spearman",
+            null
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Column",
+            null
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "coefficient",
+            "Spearman coefficient from the correlation network"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "pval",
+            "Unadjusted p-value for the pairwise correlation"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "pval_adj",
+            "Adjusted p-value for the pairwise correlation"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "test",
+            "Test that was performed"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "annotations_1",
+            "Name of the first analyte being compared in the pairwise correlation"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "annotations_2",
+            "Name of the second analyte being compared in the pairwise correlation"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM33_ESM.xlsx",
+      "sheet": "Table",
+      "worksheet_rows": 2407,
+      "worksheet_columns": 6,
+      "nonempty_rows": 2407,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 2407,
+      "header_row": 1,
+      "data_rows": 2406,
+      "raw_headers": [
+        "coefficient",
+        "pval",
+        "pval_adj",
+        "test",
+        "annotations_1",
+        "annotations_2"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM34_ESM.xlsx",
+      "sheet": "Legend",
+      "worksheet_rows": 18,
+      "worksheet_columns": 2,
+      "nonempty_rows": 9,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 11,
+      "header_row": null,
+      "data_rows": null,
+      "raw_headers": null,
+      "nonempty_cells_by_row": [
+        {
+          "row": 1,
+          "cells": [
+            "Supplementary Table 5: Complete intra- and inter-omic correlation network for delta correlations",
+            null
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "This table contains all signficant (p_adj<0.05) intra- and inter-omic delta correlations identified using Spearman",
+            null
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Column",
+            null
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "coefficient",
+            "Spearman coefficient from the correlation network"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "pval",
+            "Unadjusted p-value for the pairwise correlation"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "pval_adj",
+            "Adjusted p-value for the pairwise correlation"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "test",
+            "Test that was performed"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "annotations_1",
+            "Name of the first analyte being compared in the pairwise correlation"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "annotations_2",
+            "Name of the second analyte being compared in the pairwise correlation"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM34_ESM.xlsx",
+      "sheet": "Table",
+      "worksheet_rows": 31223,
+      "worksheet_columns": 6,
+      "nonempty_rows": 31223,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 31223,
+      "header_row": 1,
+      "data_rows": 31222,
+      "raw_headers": [
+        "coefficient",
+        "pval",
+        "pval_adj",
+        "test",
+        "annotations_1",
+        "annotations_2"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM35_ESM.xlsx",
+      "sheet": "Legend",
+      "worksheet_rows": 18,
+      "worksheet_columns": 2,
+      "nonempty_rows": 11,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 13,
+      "header_row": null,
+      "data_rows": null,
+      "raw_headers": null,
+      "nonempty_cells_by_row": [
+        {
+          "row": 1,
+          "cells": [
+            "Supplementary Table 8: Polygenic score quantitative traits tested in the P100",
+            null
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "This table contains all targeted comparisons between polygenic scores for quantitative traits and the corresponding clinical measurements",
+            null
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Column",
+            null
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "genetic trait",
+            "The trait for which a polygenic score was calculated"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "clinical lab",
+            "The corresponding value measured by a clinical lab"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "coefficient",
+            "Spearman's rho for the correlation between polygenic score and clinical lab measurement"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "pvalue",
+            "P-value for the correlation"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "first author",
+            "First author of the study from which the polygenic score was calculated"
+          ]
+        },
+        {
+          "row": 11,
+          "cells": [
+            "journal",
+            "Journal of the study from which the polygenic score was calculated"
+          ]
+        },
+        {
+          "row": 12,
+          "cells": [
+            "pubmed_id",
+            "Pubmed ID of the study from which the polygenic score was calculated"
+          ]
+        },
+        {
+          "row": 13,
+          "cells": [
+            "title",
+            "Title of the study from which the polygenic score was calculated"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM35_ESM.xlsx",
+      "sheet": "Table",
+      "worksheet_rows": 24,
+      "worksheet_columns": 8,
+      "nonempty_rows": 24,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 24,
+      "header_row": 1,
+      "data_rows": 23,
+      "raw_headers": [
+        "genetic trait",
+        "clinical lab",
+        "coefficient",
+        "p-value",
+        "first author",
+        "journal",
+        "pubmed_id",
+        "title"
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM36_ESM.xlsx",
+      "sheet": "Legend",
+      "worksheet_rows": 18,
+      "worksheet_columns": 2,
+      "nonempty_rows": 8,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 10,
+      "header_row": null,
+      "data_rows": null,
+      "raw_headers": null,
+      "nonempty_cells_by_row": [
+        {
+          "row": 1,
+          "cells": [
+            "Supplementary Table 14: Age and sex adjustments for the correlation networks",
+            null
+          ]
+        },
+        {
+          "row": 3,
+          "cells": [
+            "This table contains all pvalues for adjustments for age and sex",
+            null
+          ]
+        },
+        {
+          "row": 5,
+          "cells": [
+            "Column",
+            null
+          ]
+        },
+        {
+          "row": 6,
+          "cells": [
+            "analyte",
+            "Name of the analyte used as dependent variable in the regression model"
+          ]
+        },
+        {
+          "row": 7,
+          "cells": [
+            "age_pvalue",
+            "Pvalue for the independent variable age in the regression model"
+          ]
+        },
+        {
+          "row": 8,
+          "cells": [
+            "age_transformed",
+            "Indicator if residuals for this analyte were used in place of the original values"
+          ]
+        },
+        {
+          "row": 9,
+          "cells": [
+            "sex_pvalue",
+            "Pvalue for the independent variable sex in the regression model"
+          ]
+        },
+        {
+          "row": 10,
+          "cells": [
+            "sex_transformed",
+            "Indicator if residuals for this analyte were used in place of the original values"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM36_ESM.xlsx",
+      "sheet": "Table",
+      "worksheet_rows": 1261,
+      "worksheet_columns": 5,
+      "nonempty_rows": 1261,
+      "first_nonempty_row": 1,
+      "last_nonempty_row": 1261,
+      "header_row": 1,
+      "data_rows": 1260,
+      "raw_headers": [
+        "analyte",
+        "age_pvalue",
+        "age_transformed",
+        "sex_pvalue",
+        "sex_transformed"
+      ]
+    }
+  ],
+  "zip_members": [
+    {
+      "file": "41587_2017_BFnbt3870_MOESM27_ESM.zip",
+      "member": "nbt.3870-S2.cys",
+      "bytes": 230382,
+      "nested_members": [
+        "CytoscapeSession-2016_05_19-10_26/3.0.0.version",
+        "CytoscapeSession-2016_05_19-10_26/networks/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt.xgmml",
+        "CytoscapeSession-2016_05_19-10_26/views/62-3278-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt.xgmml",
+        "CytoscapeSession-2016_05_19-10_26/tables/52-52/HIDDEN-org.cytoscape.model.CyNetwork-52+hidden+network.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/SHARED_ATTRS-org.cytoscape.model.CyNetwork-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt+root+shared++network.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/52-52/LOCAL_ATTRS-org.cytoscape.model.CyNode-52+default+node.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/62-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/HIDDEN-org.cytoscape.model.CyEdge-62+hidden+edge.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/52-52/HIDDEN-org.cytoscape.model.CyNode-52+hidden+node.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/SHARED_ATTRS-org.cytoscape.model.CyNode-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt+root+shared++node.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/HIDDEN-org.cytoscape.model.CyEdge-36+hidden+edge.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/62-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/LOCAL_ATTRS-org.cytoscape.model.CyNetwork-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt+default+network.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/SHARED_ATTRS-org.cytoscape.model.CyEdge-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt+root+shared++edge.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/52-52/LOCAL_ATTRS-org.cytoscape.model.CyEdge-52+default+edge.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/62-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/HIDDEN-org.cytoscape.model.CyNode-62+hidden+node.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/52-52/HIDDEN-org.cytoscape.model.CyEdge-52+hidden+edge.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/LOCAL_ATTRS-org.cytoscape.model.CyNode-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt+root+default++node.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/52-52/LOCAL_ATTRS-org.cytoscape.model.CyNetwork-52+default+network.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/HIDDEN-org.cytoscape.model.CyNode-36+hidden+node.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/62-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/HIDDEN-org.cytoscape.model.CyNetwork-62+hidden+network.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/HIDDEN-org.cytoscape.model.CyNetwork-36+hidden+network.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/62-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/LOCAL_ATTRS-org.cytoscape.model.CyEdge-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt+default+edge.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/LOCAL_ATTRS-org.cytoscape.model.CyNetwork-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt+root+default++network.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/62-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/LOCAL_ATTRS-org.cytoscape.model.CyNode-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt+default+node.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/36-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt/LOCAL_ATTRS-org.cytoscape.model.CyEdge-community.full.05.61.abs_weight.cleaned.nodups.sig.260.txt+root+default++edge.cytable",
+        "CytoscapeSession-2016_05_19-10_26/tables/cytables.xml",
+        "CytoscapeSession-2016_05_19-10_26/session_vizmap.xml",
+        "CytoscapeSession-2016_05_19-10_26/properties/session_bookmarks.xml",
+        "CytoscapeSession-2016_05_19-10_26/properties/groupSettings.props",
+        "CytoscapeSession-2016_05_19-10_26/apps/org.cytoscape.ding.customgraphicsmgr/image_metadata.props",
+        "CytoscapeSession-2016_05_19-10_26/apps/org.cytoscape.swing-application/session_state.xml",
+        "CytoscapeSession-2016_05_19-10_26/apps/org.cytoscape.swing-application/network_list.xml",
+        "CytoscapeSession-2016_05_19-10_26/apps/org.cytoscape.filter/filters.json",
+        "CytoscapeSession-2016_05_19-10_26/apps/org.cytoscape.filter/filterChains.json",
+        "CytoscapeSession-2016_05_19-10_26/apps/org.cytoscape.browser/UnassignedTables.props",
+        "CytoscapeSession-2016_05_19-10_26/apps/org.cytoscape.browser/NodeTable.props",
+        "CytoscapeSession-2016_05_19-10_26/apps/org.cytoscape.browser/NetworkTable.props",
+        "CytoscapeSession-2016_05_19-10_26/apps/org.cytoscape.browser/EdgeTable.props"
+      ],
+      "content_type": "Cytoscape session / correlation network"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM28_ESM.zip",
+      "member": "nbt.3870-S3.cys",
+      "bytes": 185055,
+      "nested_members": [
+        "CytoscapeSession-2016_05_19-17_03/3.0.0.version",
+        "CytoscapeSession-2016_05_19-17_03/networks/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt.xgmml",
+        "CytoscapeSession-2016_05_19-17_03/views/62-2846-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt.xgmml",
+        "CytoscapeSession-2016_05_19-17_03/tables/52-52/HIDDEN-org.cytoscape.model.CyNode-52+hidden+node.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/SHARED_ATTRS-org.cytoscape.model.CyNode-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt+root+shared++node.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/LOCAL_ATTRS-org.cytoscape.model.CyNode-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt+root+default++node.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/62-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/LOCAL_ATTRS-org.cytoscape.model.CyEdge-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt+default+edge.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/62-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/LOCAL_ATTRS-org.cytoscape.model.CyNetwork-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt+default+network.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/52-52/LOCAL_ATTRS-org.cytoscape.model.CyNode-52+default+node.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/SHARED_ATTRS-org.cytoscape.model.CyNetwork-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt+root+shared++network.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/HIDDEN-org.cytoscape.model.CyNode-36+hidden+node.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/52-52/HIDDEN-org.cytoscape.model.CyNetwork-52+hidden+network.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/62-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/HIDDEN-org.cytoscape.model.CyEdge-62+hidden+edge.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/LOCAL_ATTRS-org.cytoscape.model.CyNetwork-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt+root+default++network.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/52-52/HIDDEN-org.cytoscape.model.CyEdge-52+hidden+edge.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/SHARED_ATTRS-org.cytoscape.model.CyEdge-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt+root+shared++edge.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/HIDDEN-org.cytoscape.model.CyNetwork-36+hidden+network.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/LOCAL_ATTRS-org.cytoscape.model.CyEdge-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt+root+default++edge.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/62-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/HIDDEN-org.cytoscape.model.CyNetwork-62+hidden+network.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/36-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/HIDDEN-org.cytoscape.model.CyEdge-36+hidden+edge.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/62-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/LOCAL_ATTRS-org.cytoscape.model.CyNode-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt+default+node.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/62-community.full.05.20.abs_weight.cleaned.nodups.sig.delta.258.txt/HIDDEN-org.cytoscape.model.CyNode-62+hidden+node.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/52-52/LOCAL_ATTRS-org.cytoscape.model.CyNetwork-52+default+network.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/52-52/LOCAL_ATTRS-org.cytoscape.model.CyEdge-52+default+edge.cytable",
+        "CytoscapeSession-2016_05_19-17_03/tables/cytables.xml",
+        "CytoscapeSession-2016_05_19-17_03/session_vizmap.xml",
+        "CytoscapeSession-2016_05_19-17_03/properties/groupSettings.props",
+        "CytoscapeSession-2016_05_19-17_03/properties/session_bookmarks.xml",
+        "CytoscapeSession-2016_05_19-17_03/apps/org.cytoscape.ding.customgraphicsmgr/image_metadata.props",
+        "CytoscapeSession-2016_05_19-17_03/apps/org.cytoscape.swing-application/session_state.xml",
+        "CytoscapeSession-2016_05_19-17_03/apps/org.cytoscape.swing-application/network_list.xml",
+        "CytoscapeSession-2016_05_19-17_03/apps/org.cytoscape.filter/filters.json",
+        "CytoscapeSession-2016_05_19-17_03/apps/org.cytoscape.filter/filterChains.json",
+        "CytoscapeSession-2016_05_19-17_03/apps/org.cytoscape.browser/UnassignedTables.props",
+        "CytoscapeSession-2016_05_19-17_03/apps/org.cytoscape.browser/EdgeTable.props",
+        "CytoscapeSession-2016_05_19-17_03/apps/org.cytoscape.browser/NetworkTable.props",
+        "CytoscapeSession-2016_05_19-17_03/apps/org.cytoscape.browser/NodeTable.props"
+      ],
+      "content_type": "Cytoscape session / correlation network"
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/",
+      "bytes": 0
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/.gitignore",
+      "bytes": 142
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/Community Generation-DELTA.ipynb",
+      "bytes": 55607
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/Community Generation.ipynb",
+      "bytes": 49150
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/Convert csvs to pickles.ipynb",
+      "bytes": 26970
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/GEE longitudinal clinical changes.ipynb",
+      "bytes": 10283
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/Generate correlation network-DELTA.ipynb",
+      "bytes": 6638
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/Generate correlation network.ipynb",
+      "bytes": 7600
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/README.md",
+      "bytes": 2573
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/correlationsnodb/",
+      "bytes": 0
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/correlationsnodb/__init__.py",
+      "bytes": 1
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/correlationsnodb/analysis.py",
+      "bytes": 15505
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/correlationsnodb/dataframeops.py",
+      "bytes": 3934
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/correlationsnodb/datasource.py",
+      "bytes": 19876
+    },
+    {
+      "file": "41587_2017_BFnbt3870_MOESM29_ESM.zip",
+      "member": "p100-network-code-v-release/start-notebook.sh",
+      "bytes": 1127
+    }
+  ],
+  "availability_count_fields": {
+    "clinical.Genova.1": {
+      "nonmissing_subjects": 107,
+      "positive_count_subjects": 107,
+      "min_feature_count": 33.0,
+      "max_feature_count": 170.0
+    },
+    "clinical.Genova.2": {
+      "nonmissing_subjects": 102,
+      "positive_count_subjects": 102,
+      "min_feature_count": 33.0,
+      "max_feature_count": 170.0
+    },
+    "clinical.Genova.3": {
+      "nonmissing_subjects": 98,
+      "positive_count_subjects": 98,
+      "min_feature_count": 13.0,
+      "max_feature_count": 170.0
+    },
+    "clinical.Quest.1": {
+      "nonmissing_subjects": 107,
+      "positive_count_subjects": 107,
+      "min_feature_count": 33.0,
+      "max_feature_count": 34.0
+    },
+    "clinical.Quest.2": {
+      "nonmissing_subjects": 102,
+      "positive_count_subjects": 102,
+      "min_feature_count": 31.0,
+      "max_feature_count": 35.0
+    },
+    "clinical.Quest.3": {
+      "nonmissing_subjects": 98,
+      "positive_count_subjects": 98,
+      "min_feature_count": 33.0,
+      "max_feature_count": 35.0
+    },
+    "metabolomics.metabolon.1": {
+      "nonmissing_subjects": 104,
+      "positive_count_subjects": 104,
+      "min_feature_count": 639.0,
+      "max_feature_count": 642.0
+    },
+    "metabolomics.metabolon.2": {
+      "nonmissing_subjects": 100,
+      "positive_count_subjects": 100,
+      "min_feature_count": 640.0,
+      "max_feature_count": 642.0
+    },
+    "metabolomics.metabolon.3": {
+      "nonmissing_subjects": 91,
+      "positive_count_subjects": 91,
+      "min_feature_count": 610.0,
+      "max_feature_count": 642.0
+    },
+    "proteomics.olink.1": {
+      "nonmissing_subjects": 80,
+      "positive_count_subjects": 80,
+      "min_feature_count": 184.0,
+      "max_feature_count": 184.0
+    },
+    "proteomics.olink.2": {
+      "nonmissing_subjects": 80,
+      "positive_count_subjects": 80,
+      "min_feature_count": 184.0,
+      "max_feature_count": 184.0
+    },
+    "proteomics.olink.3": {
+      "nonmissing_subjects": 80,
+      "positive_count_subjects": 80,
+      "min_feature_count": 184.0,
+      "max_feature_count": 184.0
+    },
+    "proteomics.srm_mass_spec.1": {
+      "nonmissing_subjects": 97,
+      "positive_count_subjects": 97,
+      "min_feature_count": 63.0,
+      "max_feature_count": 79.0
+    },
+    "proteomics.srm_mass_spec.2": {
+      "nonmissing_subjects": 87,
+      "positive_count_subjects": 87,
+      "min_feature_count": 68.0,
+      "max_feature_count": 79.0
+    },
+    "proteomics.srm_mass_spec.3": {
+      "nonmissing_subjects": 89,
+      "positive_count_subjects": 89,
+      "min_feature_count": 74.0,
+      "max_feature_count": 77.0
+    },
+    "microbiome.secondgenome.1": {
+      "nonmissing_subjects": 93,
+      "positive_count_subjects": 93,
+      "min_feature_count": 167.0,
+      "max_feature_count": 453.0
+    },
+    "microbiome.secondgenome.2": {
+      "nonmissing_subjects": 89,
+      "positive_count_subjects": 89,
+      "min_feature_count": 91.0,
+      "max_feature_count": 447.0
+    },
+    "microbiome.secondgenome.3": {
+      "nonmissing_subjects": 83,
+      "positive_count_subjects": 83,
+      "min_feature_count": 151.0,
+      "max_feature_count": 479.0
+    }
+  },
+  "paired_round_availability": {
+    "olink": {
+      "round_1_2_3": [
+        80,
+        79,
+        75
+      ],
+      "subjects_at_least_two_rounds": 79,
+      "subjects_three_rounds": 75,
+      "basis": "positive per-participant analyte counts; no measurement matrix or specimen identifiers supplied"
+    },
+    "srm_mass_spec": {
+      "round_1_2_3": [
+        96,
+        87,
+        89
+      ],
+      "subjects_at_least_two_rounds": 94,
+      "subjects_three_rounds": 71,
+      "basis": "positive per-participant analyte counts; no measurement matrix or specimen identifiers supplied"
+    },
+    "either": {
+      "round_1_2_3": [
+        104,
+        99,
+        91
+      ],
+      "subjects_at_least_two_rounds": 100,
+      "subjects_three_rounds": 86,
+      "basis": "positive per-participant analyte counts; no measurement matrix or specimen identifiers supplied"
+    }
+  }
+}

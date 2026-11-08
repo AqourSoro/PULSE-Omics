@@ -1,0 +1,376 @@
+{
+  "file": "Multi_Omics_Seasonal.RData",
+  "bytes": 53439956,
+  "sha256": "2763c0db3d98fed964435a190439a50257259f560e502601714bf49124b504e0",
+  "objects": [
+    {
+      "object": "Clinical_labs_annotation_colData",
+      "rows": 969,
+      "columns": 5,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "V2",
+        "V3",
+        "V4"
+      ],
+      "missing_cells": 250,
+      "subjects_with_nonmissing_ID": 104,
+      "missing_subject_rows": 0,
+      "duplicate_subject_date_rows": 0,
+      "missing_by_field": {
+        "SubjectID": 0,
+        "Date": 0,
+        "BMI": 3,
+        "IRIS": 247,
+        "Time": 0
+      }
+    },
+    {
+      "object": "clinical_labs_Data",
+      "rows": 969,
+      "columns": 51,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "1",
+        "2",
+        "3"
+      ],
+      "missing_cells": 3480,
+      "finite_cells": 45939,
+      "constant_features": 0,
+      "value_quantiles_0_1_50_99_100_percent": [
+        0.0,
+        0.03,
+        13.7,
+        242.0,
+        767.0
+      ]
+    },
+    {
+      "object": "Cytokines_annotation_colData",
+      "rows": 964,
+      "columns": 5,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "V2",
+        "V3",
+        "V4"
+      ],
+      "missing_cells": 252,
+      "subjects_with_nonmissing_ID": 101,
+      "missing_subject_rows": 1,
+      "duplicate_subject_date_rows": 1,
+      "missing_by_field": {
+        "SubjectID": 1,
+        "Date": 0,
+        "IRIS": 249,
+        "BMI": 2,
+        "Time": 0
+      }
+    },
+    {
+      "object": "Cytokines_df_Data",
+      "rows": 964,
+      "columns": 66,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "1",
+        "2",
+        "3"
+      ],
+      "missing_cells": 0,
+      "finite_cells": 63624,
+      "constant_features": 0,
+      "value_quantiles_0_1_50_99_100_percent": [
+        0.0,
+        12.37844921,
+        74.43083085,
+        15932.953708999996,
+        18553.60334
+      ]
+    },
+    {
+      "object": "Gut_annotation_colData",
+      "rows": 855,
+      "columns": 5,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "V2",
+        "V3",
+        "V4"
+      ],
+      "missing_cells": 1712,
+      "subjects_with_nonmissing_ID": 96,
+      "missing_subject_rows": 0,
+      "duplicate_subject_date_rows": 759,
+      "missing_by_field": {
+        "SubjectID": 0,
+        "Date": 855,
+        "IRIS": 0,
+        "BMI": 2,
+        "Time": 855
+      }
+    },
+    {
+      "object": "gut_df_Data",
+      "rows": 855,
+      "columns": 96,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "1",
+        "2",
+        "3"
+      ],
+      "missing_cells": 0,
+      "finite_cells": 82080,
+      "constant_features": 0,
+      "value_quantiles_0_1_50_99_100_percent": [
+        0.0,
+        0.0,
+        0.002383196,
+        0.672078616,
+        0.999046832
+      ]
+    },
+    {
+      "object": "Metabolomics_annotation_colData",
+      "rows": 981,
+      "columns": 5,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "V2",
+        "V3",
+        "V4"
+      ],
+      "missing_cells": 240,
+      "subjects_with_nonmissing_ID": 102,
+      "missing_subject_rows": 0,
+      "duplicate_subject_date_rows": 0,
+      "missing_by_field": {
+        "SubjectID": 0,
+        "Date": 0,
+        "IRIS": 237,
+        "BMI": 3,
+        "Time": 0
+      }
+    },
+    {
+      "object": "Metabolomics_df_Data",
+      "rows": 981,
+      "columns": 724,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "1",
+        "2",
+        "3"
+      ],
+      "missing_cells": 0,
+      "finite_cells": 710244,
+      "constant_features": 0,
+      "value_quantiles_0_1_50_99_100_percent": [
+        0.195553,
+        2284.4762499999997,
+        205793.25,
+        44535216.89999989,
+        226000000000.0
+      ]
+    },
+    {
+      "object": "Nasal_annotation_colData",
+      "rows": 837,
+      "columns": 5,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "V2",
+        "V3",
+        "V4"
+      ],
+      "missing_cells": 228,
+      "subjects_with_nonmissing_ID": 104,
+      "missing_subject_rows": 2,
+      "duplicate_subject_date_rows": 0,
+      "missing_by_field": {
+        "SubjectID": 2,
+        "Date": 0,
+        "IRIS": 222,
+        "BMI": 4,
+        "Time": 0
+      }
+    },
+    {
+      "object": "Nasal_df_Data",
+      "rows": 837,
+      "columns": 80,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "1",
+        "2",
+        "3"
+      ],
+      "missing_cells": 0,
+      "finite_cells": 66960,
+      "constant_features": 0,
+      "value_quantiles_0_1_50_99_100_percent": [
+        0.0,
+        0.0,
+        0.000922495,
+        0.7974244808100001,
+        0.982850912
+      ]
+    },
+    {
+      "object": "Proteomics_annotation_colData",
+      "rows": 950,
+      "columns": 5,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "V2",
+        "V3",
+        "V4"
+      ],
+      "missing_cells": 253,
+      "subjects_with_nonmissing_ID": 106,
+      "missing_subject_rows": 1,
+      "duplicate_subject_date_rows": 0,
+      "missing_by_field": {
+        "SubjectID": 1,
+        "Date": 0,
+        "IRIS": 248,
+        "BMI": 4,
+        "Time": 0
+      }
+    },
+    {
+      "object": "Proteomics_df_Data",
+      "rows": 950,
+      "columns": 302,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "1",
+        "2",
+        "3"
+      ],
+      "missing_cells": 0,
+      "finite_cells": 286900,
+      "constant_features": 0,
+      "value_quantiles_0_1_50_99_100_percent": [
+        -11.38575,
+        -7.1111520200000005,
+        -1.1877675,
+        9.116381310000001,
+        12.71131
+      ]
+    },
+    {
+      "object": "RNA_annotation_colData",
+      "rows": 882,
+      "columns": 5,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "V2",
+        "V3",
+        "V4"
+      ],
+      "missing_cells": 241,
+      "subjects_with_nonmissing_ID": 102,
+      "missing_subject_rows": 1,
+      "duplicate_subject_date_rows": 2,
+      "missing_by_field": {
+        "SubjectID": 1,
+        "Date": 7,
+        "IRIS": 223,
+        "BMI": 3,
+        "Time": 7
+      }
+    },
+    {
+      "object": "RNA_df_Data",
+      "rows": 882,
+      "columns": 10339,
+      "row_index_unique": true,
+      "row_index_examples": [
+        "1",
+        "2",
+        "3"
+      ],
+      "missing_cells": 0,
+      "finite_cells": 9118998,
+      "constant_features": 0,
+      "value_quantiles_0_1_50_99_100_percent": [
+        0.0,
+        0.0,
+        1.996031,
+        7.880721329999993,
+        20.239584
+      ]
+    }
+  ],
+  "join_basis": [
+    "SubjectID",
+    "Date"
+  ],
+  "protein_metabolite_metadata_intersection": {
+    "paired_subject_date_records": 912,
+    "paired_subjects": 102,
+    "subjects_at_least_two_paired_dates": 91,
+    "subjects_at_least_three_paired_dates": 85,
+    "paired_date_count_distribution": {
+      "1": 11,
+      "2": 6,
+      "3": 10,
+      "4": 5,
+      "5": 10,
+      "6": 6,
+      "7": 7,
+      "8": 8,
+      "9": 5,
+      "10": 4,
+      "11": 3,
+      "12": 4,
+      "13": 3,
+      "14": 3,
+      "15": 3,
+      "16": 3,
+      "17": 1,
+      "18": 1,
+      "19": 1,
+      "22": 2,
+      "23": 2,
+      "27": 2,
+      "40": 1,
+      "62": 1
+    },
+    "protein_only_valid_key_records": 37,
+    "metabolite_only_valid_key_records": 69,
+    "protein_missing_subject_records_excluded": 1,
+    "metabolite_missing_subject_records_excluded": 0,
+    "gap_count": 810,
+    "gap_days_min_q25_median_q75_max": [
+      1.0,
+      14.0,
+      75.0,
+      104.0,
+      551.0
+    ],
+    "specimen_identity": "subject/date metadata match; no native specimen ID in this release",
+    "matrix_row_identity": "matrix row labels and metadata row labels differ; no positional measurement join exported"
+  },
+  "native_date_encoding": {
+    "protein": {
+      "raw_seconds_min": -61745904422.0,
+      "raw_seconds_max": -61629955622.0,
+      "decoded_UTC_min": "0013-05-08 07:52:58",
+      "decoded_UTC_max": "0017-01-09 07:52:58",
+      "time_field_disagrees_with_day_of_year": 0,
+      "calendar_status": "years outside study period; retained without correction"
+    },
+    "metabolite": {
+      "raw_seconds_min": -61844054822.0,
+      "raw_seconds_max": -61629955622.0,
+      "decoded_UTC_min": "0010-03-29 07:52:58",
+      "decoded_UTC_max": "0017-01-09 07:52:58",
+      "time_field_disagrees_with_day_of_year": 0,
+      "calendar_status": "years outside study period; retained without correction"
+    }
+  }
+}

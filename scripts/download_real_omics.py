@@ -43,12 +43,22 @@ COVAAR = {
         "GSE325178/matrix/GSE325178_series_matrix.txt.gz"
     ),
 }
+# Direct attachments from the publisher's actual supplementary-information list.
+# Dataset 1/2 are Cytoscape sessions, not participant-level omics matrices.
+P100_MEDIA = (
+    "https://static-content.springer.com/esm/art%3A10.1038%2Fnbt.3870/"
+    "MediaObjects/"
+)
 P100 = {
-    "p100_public_supplements.zip": (
-        "https://www.ebi.ac.uk/europepmc/webservices/rest/"
-        "PMC5568837/supplementaryFiles"
+    f"41587_2017_BFnbt3870_MOESM{number}_ESM.{extension}":
+        P100_MEDIA + f"41587_2017_BFnbt3870_MOESM{number}_ESM.{extension}"
+    for number, extension in (
+        (26, "pdf"), (27, "zip"), (28, "zip"), (29, "zip"),
+        (30, "xlsx"), (31, "xlsx"), (32, "xlsx"), (33, "xlsx"),
+        (34, "xlsx"), (35, "xlsx"), (36, "xlsx"),
     )
 }
+IPOP_SEASONAL_URL = "https://ndownloader.figshare.com/files/22807673"
 CSIRO_LIST_API = (
     "https://data.csiro.au/dap/ws/v2/collections/77992/files/list"
 )
@@ -193,6 +203,10 @@ class Downloader:
             })
 
     def ipop(self) -> None:
+        processed = self.root / "raw/ipop/seasonal/Multi_Omics_Seasonal.RData"
+        if processed.exists():
+            self.https("ipop", "seasonal/Multi_Omics_Seasonal.RData", IPOP_SEASONAL_URL)
+            return
         try:
             import boto3
             from botocore import UNSIGNED
@@ -228,10 +242,16 @@ class Downloader:
                     continue
                 self.s3("ipop", f"{label}/{relative}", client, key, size)
         except Exception as exc:
-            self.failed += 1
             message = f"{type(exc).__name__}: {exc}"
-            print(f"FAILED iPOP discovery: {message}", file=sys.stderr)
-            self.record("ipop", {"status": "discovery_failed", "error": message})
+            print(f"iPOP S3 discovery unavailable: {message}; using the published "
+                  "seasonal-study processed data", file=sys.stderr)
+            self.record("ipop", {
+                "status": "discovery_failed", "source": "s3://hmpdcc/ihmp/t2d/host/",
+                "error": message,
+            })
+            # Sailani et al. 2020 explicitly links Figshare article 12376508 v1.
+            # This is an annotated processed release, not a copy of all S3 data.
+            self.https("ipop", "seasonal/Multi_Omics_Seasonal.RData", IPOP_SEASONAL_URL)
 
     def s3(self, dataset: str, relative: str, client, key: str, size: int) -> None:
         dest = safe_path(self.root / "raw" / dataset, relative)
@@ -391,3 +411,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

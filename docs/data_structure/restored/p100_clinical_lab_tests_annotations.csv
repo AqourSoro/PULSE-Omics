@@ -1,0 +1,219 @@
+name,unit,vendor,vendor_id,hmdb_id,source
+1_methylhistidine_plasma,micromol/dL,Genova,M1MQ,HMDB00001,blood
+2_hydroxyphenylacetic_acid,mmol/mol creatinine,Genova,M2HL3,HMDB00669,urine
+3_hydroxyisovaleric_acid,mmol/mol creatinine,Genova,3HIA3,HMDB00754,urine
+3_hydroxyphenylacetic_acid,mmol/mol creatinine,Genova,3HPA3,HMDB00440,urine
+3_hydroxypropionic_acid,mmol/mol creatinine,Genova,M3HP3,HMDB00700,urine
+3_methyl_4_hydroxyphenylglycol,mmol/mol creatinine,Genova,M3M43,HMDB01490,urine
+3_methylhistidine_plasma,micromole/dL,Genova,M3MQ,HMDB00479,blood
+4_hydroxyphenylacetic_acid,mmol/mol creatinine,Genova,4HPA3,HMDB00020,urine
+5_hydroxyindoeacetic_acid,mmol/mol creatinine,Genova,M5HY3,HMDB00763,urine
+8_ohdg,mcg/g creatinine,Genova,8OH00,HMDB03333,urine
+a_keto_b_methylvaleric_acid,mmol/mol creatinine,Genova,MAKB3,HMDB00491,urine
+a_ketoisocaproic_acid,mmol/mol creatinine,Genova,MAKT3,HMDB00695,urine
+a_ketoisovaleric_acid,mmol/mol creatinine,Genova,MAKE3,HMDB00019,urine
+adipic_acid,mmol/mol creatinine,Genova,MAA3,HMDB00448,urine
+adiponectin,mcg/mL,Genova,ADIPO,NULL,blood
+age,years,Genova,AGE,NULL,questionnaire
+alanine_plasma,micromoles/dL,Genova,MALAQ,HMDB00161,blood
+alpha_amino_n_butyric_acid_plasma,micromole/dL,Genova,MAABQ,HMDB00452,blood
+alpha_aminoadipic_acid_plasma,micromole/dL,Genova,MAAAQ,HMDB00510,blood
+alpha_hydroxyisobutyric_acid,mmol/mol creatinine,Genova,AHIA3,HMDB00729,urine
+alpha_ketoadipic_acid,mmol/mol creatinine,Genova,MAKD3,HMDB00225,urine
+alpha_ketoglutaric_acid,mmol/mol creatinine,Genova,MAKA3,HMDB00208,urine
+alpha_ketophenylacetic_acid,mmol/mol creatinine,Genova,AKPA3,HMDB01587,urine
+alpha_linolenic_acid,wt%,Genova,MXALN,HMDB01388,blood
+ammonia_plasma,micromoles/dL,Genova,MAMMQ,HMDB00051,blood
+antimony,mcg/g,Genova,RSB,HMDB04118,blood
+arabinose,mmol/mol creatinine,Genova,MARA3,HMDB00646,urine
+arachidic_acid,wt%,Genova,MXADC,HMDB02212,blood
+arachidonic_acid,wt%,Genova,MXADN,HMDB01043,blood
+arachidonic_eicosapentaenoic,(calc),Genova,MAE,NULL,blood
+arginine_plasma,micromoles/dL,Genova,MARGQ,HMDB00517,blood
+arsenic,mcg/g,Genova,RAS,HMDB02290,blood
+asparagine_plasma,micromoles/dL,Genova,MASPQ,HMDB00168,blood
+aspartic_acid_plasma,micromoles/dL,Genova,MAPAQ,HMDB00191,blood
+average_inflammation_score,(calc),Genova,BPAIS,NULL,blood
+behenic_acid,wt%,Genova,MXBEH,HMDB00944,blood
+benzoic_acid,mmol/mol creat,Genova,MBEN3,HMDB01870,urine
+beta_alanine_plasma,micromoles/dL,Genova,MBAQ,HMDB00056,blood
+beta_aminoisobutyric_acid_plasma,micromoles/dL,Genova,MBAAQ,HMDB03911,blood
+beta_hydroxybutyric_acid,mmol/mol creat,Genova,MBHA3,HMDB00357,urine
+body_mass_index,(calc),Genova,CBMI,NULL,questionnaire
+c_peptide,ng/mL,Genova,CPEPT,NULL,blood
+cadmium,mcg/g,Genova,RCD,HMDB03638,blood
+cis_aconitic_acid,mmol/mol creat,Genova,MCAA3,HMDB00072,urine
+citramalic_acid,micromoles/dL,Genova,MCTR3,HMDB00426,urine
+citric_acid,mmol/mol creat,Genova,MCA23,HMDB00094,urine
+citrulline_plasma,micromoles/dL,Genova,MCITQ,HMDB00904,blood
+coenzyme_q10_ubiquinone_plasma,mcg/mL,Genova,COQ10,NULL,blood
+copper,mcg/g,Genova,RCU,HMDB00657,blood
+cortisol_7_9,mcg/dL,Genova,C7A,,saliva
+cortisol_11_1,mcg/dL,Genova,C11A,,saliva
+cortisol_3_5,mcg/dL,Genova,C3P,,saliva
+cortisol_10_12,mcg/dL,Genova,C10P,,saliva
+cyst_e_ine,micromoles/dL,Genova,MCCYS,NULL,blood
+cystathionine_plasma,micromoles/dL,Genova,MCYSQ,HMDB00099,blood
+cysteine_plasma,micromoles/dL,Genova,MCQ,HMDB00574,blood
+cystine_plasma,micromoles/dL,Genova,MCTQ,HMDB00192,blood
+dhea,pg/mL,Genova,EDHE2,,saliva
+dihomo_gamma_linolenic_acid,wt%,Genova,MXDGL,HMDB02925,blood
+dihydroxyphenylproprionic_acid,mmol/mol creatinine,Genova,MDHP3,HMDB00423,urine
+docosahexaenoic_acid,wt%,Genova,MXDO6,HMDB02183,blood
+docosapentaenoic_acid,wt%,Genova,MXDO5,HMDB06528,blood
+docosatetraenoic_acid,wt%,Genova,MXDO4,HMDB02226,blood
+eicosadienoic_acid,wt%,Genova,MXEI4,HMDB05060,blood
+eicosapentaenoic_acid,wt%,Genova,MXEI5,HMDB01999,blood
+elaidic_acid,wt%,Genova,MXELA,HMDB00573,blood
+ethanolamine_plasma,micromoles/dL,Genova,METHQ,HMDB00149,blood
+figlu,micromoles/dL,Genova,MFIG3,HMDB00854,urine
+gamma_aminobutyric_acid_plasma,micromoles/dL,Genova,MGAAQ,HMDB00112,blood
+gamma_linolenic_acid,wt%,Genova,MXGLL,HMDB03073,blood
+glucose,mg/dL,Genova,BPGLU,NULL,blood
+glutamic_acid_plasma,micromoles/dL,Genova,MGLAQ,HMDB00148,blood
+glutamine_plasma,micromoles/dL,Genova,MGLUQ,HMDB00641,blood
+glutaric_acid,mmol/mol creat,Genova,MGLT3,HMDB00661,urine
+glutathione,micromol/L,Genova,TFGSH,HMDB00125,blood
+glycine_plasma,micromoles/dL,Genova,MGLYQ,HMDB00123,blood
+gondoic_acid,wt%,Genova,MXGON,HMDB02231,blood
+hba1c,%,Genova,HBA1C,NULL,blood
+hdl_cholesterol,mg/dL,Genova,HDLC2,NULL,blood
+hdl_particle,nmol/L,Genova,HDLP,NULL,blood
+hdl_size,NULL,Genova,NRHDL,NULL,blood
+height,inches,Genova,HT1,NULL,questionnaire
+hippuric_acid,mmol/mol creat,Genova,MHIP3,HMDB00714,urine
+histidine_plasma,micromoles/dL,Genova,MHISQ,HMDB00177,blood
+homa_ir,(calc),Genova,HOMIR,NULL,blood
+homogentisic_acid,mmol/mol creat,Genova,MHGE3,HMDB00130,urine
+homovanillic_acid,mmol/mol creat,Genova,MHVA3,HMDB00118,urine
+hs_crp,mcg/mL,Genova,HSCRP,NULL,blood
+hs_crp_relative_risk,(calc),Genova,RRBP1,NULL,blood
+indoleacetic_acid,mmol/mol creat,Genova,MIND3,HMDB00197,urine
+insulin,IU/ml,Genova,INSLF,NULL,blood
+interleukin_il6,pg/mL,Genova,ILIL6,NULL,blood
+interleukin_il8,pg/mL,Genova,ILIL8,NULL,blood
+interleukin_il8_relative_risk,(calc),Genova,RRBP3,NULL,blood
+interlueukin_il6_relative_risk,(calc),Genova,RRBP2,NULL,blood
+isocitric_acid,mmol/mol creat,Genova,MIA3,HMDB00193,urine
+isoleucine_plasma,micromoles/dL,Genova,MISOQ,HMDB00172,blood
+isovalerylglycine,mmol/mol creatinine,Genova,IVA3,HMDB00678,urine
+kynurenic_acid,mmol/mol creat,Genova,MKYN3,HMDB00715,urine
+kynurenic_quinolinic_ratio,(calc),Genova,KQR,NULL,urine
+lactic_acid,mmol/mol creat,Genova,MLA3,HMDB00190,urine
+large_hdl_particle,NULL,Genova,NLHDL,NULL,blood
+large_vldl_particle,NULL,Genova,NLVDL,NULL,blood
+ldl_cholesterol,mg/dL,Genova,LDLC2,NULL,blood
+ldl_particle,nmol/L,Genova,LDLP2,NULL,blood
+ldl_size,NULL,Genova,NRLDL,NULL,blood
+lead,mcg/g,Genova,RPB,HMDB04628,blood
+leptin,ng/mL,Genova,LEPTI,NULL,blood
+leucine_plasma,micromoles/dL,Genova,MLEUQ,HMDB00687,blood
+lignoceric_acid,wt%,Genova,MXLIG,HMDB02003,blood
+linoleic_acid,wt%,Genova,MXLIN,HMDB00673,blood
+linoleic_dihomo_y_linoleic,(calc),Genova,MLD,NULL,blood
+lipid_peroxides_urine,micromol/g creat,Genova,ULPC0,NULL,urine
+lp_ir_score,(calc),Genova,NRIRS,NULL,blood
+lysine_plasma,micromoles/dL,Genova,MLYSQ,HMDB00182,blood
+magnesium,mcg/g,Genova,RMG,HMDB00547,blood
+malic_acid,mmol/mol creat,Genova,MLMA3,HMDB00156,urine
+manganese,mcg/g,Genova,RMN,HMDB01333,blood
+margaric_acid,wt%,Genova,MXMAR,HMDB02259,blood
+medication_cholesterol,bool,Genova,YNCHO,NULL,questionnaire
+medication_diabetes,bool,Genova,YNDM,NULL,questionnaire
+medication_hypertension,bool,Genova,YNAH,NULL,questionnaire
+mercury,mcg/g,Genova,RHG,HMDB03625,blood
+methionine_plasma,micromoles/dL,Genova,MMETQ,HMDB00696,blood
+methylglutaric_acid,mmol/mol creat,Genova,MBHM3,HMDB00752,urine
+methylmalonic_acid,mmol/mol creat,Genova,MMMA3,HMDB00202,urine
+nervonic_acid,wt%,Genova,MXNER,HMDB02368,blood
+oleic_acid,wt%,Genova,MXOLE,HMDB00207,blood
+omega_3_index,(calc),Genova,O3INX,NULL,blood
+ornithine_plasma,micromoles/dL,Genova,MORNQ,HMDB00214,blood
+orotic_acid,mmol/mol creat,Genova,MORO3,HMDB00226,urine
+pai_1_relative_risk,(calc),Genova,RRBP5,NULL,blood
+pai1,NULL,Genova,PAIT1,NULL,blood
+palmitic_acid,wt%,Genova,MXPLM,HMDB00220,blood
+palmitoleic_acid,wt%,Genova,MXPLC,HMDB03229,blood
+pentadecanoic_acid,wt%,Genova,MXPEN,HMDB00826,blood
+phenylacetic_acid,mmol/mol creat,Genova,MPHE3,HMDB00209,urine
+phenylalanine_plasma,micromol/dL,Genova,MPHNQ,HMDB00159,blood
+phosphoethanolamine_plasma,micromol/dL,Genova,MPPEQ,HMDB00224,blood
+phosphoserine_plasma,micromol/dL,Genova,MPPSQ,HMDB00272,blood
+plasma_rep_index,(calc),Genova,PRI01,NULL,blood
+potassium,mcg/g,Genova,RK,HMDB00586,blood
+proinsulin,NULL,Genova,PROIN,NULL,blood
+proline_plasma,micromol/dL,Genova,MPROQ,HMDB00162,blood
+pyroglutamic_acid,mmol/mol creat,Genova,MPYR3,HMDB00267,urine
+pyruvic_acid,mmol/mol creat,Genova,MPA3,HMDB00243,urine
+quinolinic_acid,mmol/mol creat,Genova,QA3,HMDB00232,urine
+ratio_om6_om3,(calc),Genova,MO63A,NULL,blood
+ratio_plasma_asn_asp,(calc),Genova,PASN,NULL,blood
+ratio_plasma_gln_gln,(calc),Genova,PGLN,NULL,blood
+rbc_sample_weight,(calc),Genova,RBCWT,NULL,blood
+sarcosine_plasma,micromol/dL,Genova,MSARQ,HMDB00271,blood
+selenium,mcg/g,Genova,RSE,HMDB01349,blood
+serine_plasma,micromol/dL,Genova,MSERQ,HMDB00187,blood
+small_ldl_particle,nmol/L,Genova,LLDL2,NULL,blood
+stearic_acid,wt%,Genova,MXSTE,HMDB00827,blood
+suberic_acid,mmol/mol creat,Genova,MSUB3,HMDB00893,urine
+succinic_acid,mmol/mol creat,Genova,MSA3,HMDB00254,urine
+tartaric_acid,mmol/mol creat,Genova,MTAR3,HMDB00956,urine
+taurine_plasma,micromol/dL,Genova,MTAUQ,HMDB00251,blood
+threonine_plasma,micromol/dL,Genova,MTHRQ,HMDB00167,blood
+tin,mcg/g,Genova,RSN,HMDB01960,blood
+tnfalpha,pg/mL,Genova,BTNFA,NULL,blood
+tnfalpha_relative_risk,(calc),Genova,RRBP4,NULL,blood
+total_cholesterol,mg/dL,Genova,CHOLL,NULL,blood
+total_lc_omega9,%,Genova,MLC9,NULL,blood
+total_omega3,%,Genova,MOM3,NULL,blood
+total_omega6,%,Genova,MOM6A,NULL,blood
+total_saturated,%,Genova,MSAT,NULL,blood
+tricosanoic_acid,wt%,Genova,MXTRI,HMDB01160,blood
+triglycerides,mg/dL,Genova,TRIGL,NULL,blood
+tryptophan_plasma,micromol/dL,Genova,MTRYQ,HMDB00929,blood
+tyrosine_plasma,micromol/dL,Genova,MTYRQ,HMDB00158,blood
+urea_plasma,micromol/dL,Genova,MUREQ,HMDB00294,blood
+urine_creatinine_organic_acids,mmol/L,Genova,OACR,HMDB00562,urine
+vaccenic_acid,wt%,Genova,MXVAC,HMDB03231,blood
+valine_plasma,micromol/dL,Genova,MVALQ,HMDB00883,blood
+vanilmandelic_acid,mmol/mol creat,Genova,MVAN3,HMDB00291,urine
+vitamin_d,ng/mL,Genova,D25OH,NULL,blood
+vldl_size,NULL,Genova,NRVDL,NULL,blood
+weight,lbs,Genova,WT1,NULL,questionnaire
+xanthurenic_acid,mmol/mol creat,Genova,XA3,HMDB00881,urine
+zinc,mcg/g,Genova,RZN,HMDB15532,blood
+albumin_globulin_ratio_quest,(calc),Quest,25001600,NULL,blood
+albumin_quest,g/dL,Quest,25001400,NULL,blood
+alkaline_phosphatase_quest,U/L,Quest,25002000,NULL,blood
+alt_quest,U/L,Quest,25002400,NULL,blood
+ast_quest,U/L,Quest,25002300,NULL,blood
+bilirubin_direct_quest,mg/dL,Quest,25001800,NULL,blood
+bilirubin_total_quest,mg/dL,Quest,25001700,NULL,blood
+bun_creatinine_ratio_quest,(calc),Quest,25000300,NULL,blood
+calcium_quest,mg/dL,Quest,25001000,NULL,blood
+carbon_dioxide_quest,mmol/L,Quest,25000700,NULL,blood
+chloride_quest,mmol/L,Quest,25000600,NULL,blood
+cholesterol_total_quest,mg/dL,Quest,25003000,NULL,blood
+creatinine_quest,mg/dL,Quest,25000200,NULL,blood
+egfr_african_american_quest,mL/min/1.73m2,Quest,25000220,NULL,blood
+egfr_non_afr_american_quest,mL/min/1.73m2,Quest,25000210,NULL,blood
+ferritin_quest,ng/mL,Quest,55059300,NULL,blood
+ggt_quest,U/L,Quest,25002200,NULL,blood
+globulin_quest,g/dL (calc),Quest,25001500,NULL,blood
+glucose_quest,mg/dL,Quest,25000000,NULL,blood
+hdl_large_quest,nmol/L,Quest,86006295,NULL,blood
+homocysteine_quest,umol/L,Quest,50131900,NULL,blood
+ld_quest,U/L,Quest,25002100,NULL,blood
+ldl_medium_quest,nmol/L,Quest,86009433,NULL,blood
+ldl_particle_number_quest,nmol/L,Quest,86002760,NULL,blood
+ldl_pattern_quest,pattern,Quest,86002762,NULL,blood
+ldl_peak_size_quest,Angstrom,Quest,86002761,NULL,blood
+ldl_small_quest,nmol/L,Quest,86009431,NULL,blood
+methylmalonic_acid_quest,nmol/L,Quest,86008456,NULL,blood
+phosphate_quest,mg/dL,Quest,25001200,NULL,blood
+potassium_quest,mmol/L,Quest,25000500,NULL,blood
+protein_total_quest,g/dL,Quest,25001300,NULL,blood
+sodium_quest,mmol/L,Quest,25000400,NULL,blood
+triglycerides_quest,mg/dL,Quest,25002900,NULL,blood
+urea_nitrogen_quest,mg/dL,Quest,25000100,NULL,blood
+uric_acid_quest,mg/dL,Quest,25002500,NULL,blood
