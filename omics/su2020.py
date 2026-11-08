@@ -186,6 +186,21 @@ def _patient_sample_labels(
     return matched, sources
 
 
+def _assay_id_formats(assay: pd.DataFrame) -> dict[str, int]:
+    counts = {"incov": 0, "covid": 0, "numeric": 0, "other": 0}
+    for sample_id in assay.index:
+        name = str(sample_id).upper()
+        if name.startswith("INCOV"):
+            counts["incov"] += 1
+        elif name.startswith("COVID_"):
+            counts["covid"] += 1
+        elif name.isdecimal():
+            counts["numeric"] += 1
+        else:
+            counts["other"] += 1
+    return counts
+
+
 def _atomic_csv(frame: pd.DataFrame, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
@@ -231,6 +246,10 @@ def prepare(workbook: Path, output_dir: Path) -> dict:
         "clinical_patients": int(len(counts)),
         "clinical_patients_with_two_draws": sum(n == 2 for n in counts.values()),
         "assay_rows": {"protein": int(len(protein)), "metab": int(len(metab))},
+        "assay_id_formats": {
+            "protein": _assay_id_formats(protein),
+            "metab": _assay_id_formats(metab),
+        },
         "assay_features": {"protein": len(protein_features), "metab": len(metab_features)},
         "assay_shared_sample_ids": len(shared_assay_ids),
         "assay_missing_feature_fractions": {
