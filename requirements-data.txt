@@ -1,0 +1,2 @@
+-r requirements-omics.txt
+boto3>=1.34,<2
