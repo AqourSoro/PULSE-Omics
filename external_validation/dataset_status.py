@@ -22,7 +22,15 @@ def status(root: Path) -> pd.DataFrame:
         raw=root/'raw'/name
         prepared=root/'processed'/'external_validation'/name
         manifest=raw/'download_manifest.json'
+        raw_files = 0
+        partial_files = 0
+        if raw.is_dir():
+            for file in raw.rglob('*'):
+                if file.is_file():
+                    partial_files += file.name.endswith('.part')
+                    raw_files += not file.name.endswith('.part') and file.name not in ('download_manifest.json', 'download_events.jsonl')
         entry={'dataset':name, 'raw_present':raw.exists(),
+               'raw_files_present':raw_files, 'partial_files':partial_files,
                'manifest_present':manifest.is_file(),
                'download_state':'no_manifest', 'files_checked_last_pass':None,
                'last_pass_issues':None, 'listed_sources':None,
