@@ -160,6 +160,8 @@ def main(argv=None):
         if 'rdata' in report:
             details = report['rdata']
             print(f'  iPOP RData: {details["status"]}, {len(details.get("objects",{}))} objects')
+            if details.get('error'):
+                print(f'    decoder error: {details["error"]}')
             for name, obj in details.get('objects', {}).items():
                 if 'rows' in obj:
                     overlap = sorted(obj['index_matches'].items(), key=lambda x: -x[1])[:2]
