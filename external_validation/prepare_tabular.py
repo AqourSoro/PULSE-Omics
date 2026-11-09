@@ -138,7 +138,14 @@ def prepare(root: Path, config: dict, *, inspect_only: bool = False) -> dict:
             raise ValueError(f'Crosswalk: duplicate assay specimen {col}')
     if bridge.duplicated(['patient_id', 'visit_order']).any():
         raise ValueError('Crosswalk: duplicate patient/visit')
-    pair = bridge.loc[bridge.protein_id.isin(protein.index) & bridge.metab_id.isin(metab.index)].copy()
+    availability = (bridge.protein_id.isin(protein.index) & bridge.metab_id.isin(metab.index))
+    pair = bridge.loc[availability].copy()
+    # An annotated sample can be present in a file but have no measured values.
+    good_protein = protein.notna().any(axis=1)
+    good_metab = metab.notna().any(axis=1)
+    detected = pair.protein_id.map(good_protein) & pair.metab_id.map(good_metab)
+    unmeasured = int((~detected).sum())
+    pair = pair.loc[detected].copy()
     pair = pair.sort_values(['patient_id', 'visit_order']).reset_index(drop=True)
     pair.insert(0, 'sample_id', [f'{dataset}_{i:06d}' for i in range(len(pair))])
     counts = pair.patient_id.value_counts()
@@ -147,6 +154,7 @@ def prepare(root: Path, config: dict, *, inspect_only: bool = False) -> dict:
         'protein_source_samples': int(len(protein)),
         'metab_source_samples': int(len(metab)),
         'crosswalk_entries': int(len(bridge)),
+        'listed_pairs_without_both_measurements': unmeasured,
         'verified_paired_samples': int(len(pair)),
         'paired_subjects': int(pair.patient_id.nunique()),
         'subjects_with_two_or_more_pairs': int((counts >= 2).sum()),
