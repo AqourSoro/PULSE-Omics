@@ -54,6 +54,21 @@ class IpopPreparationTests(unittest.TestCase):
             self.assertEqual(set(a.visit_order),{0.,59.})
             self.assertTrue(a.sample_id.is_unique)
 
+    def test_generic_equal_indexes_are_not_native_sample_ids(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            f=root/'raw/ipop/seasonal/Multi_Omics_Seasonal.RData'
+            f.parent.mkdir(parents=True);f.write_bytes(b'fixture')
+            data=records()
+            for frame in data.values():
+                frame.index=pd.RangeIndex(len(frame))
+            with patch('external_validation.prepare_ipop.read_ipop',return_value=data):
+                with self.assertRaisesRegex(ValueError,'generic row positions'):
+                    prepare(root,inspect_only=True)
+                report=prepare(root,inspect_only=True,permit_release_row_order=True)
+            self.assertEqual(report['paired_samples'],24)
+            self.assertEqual(report['protein']['join_mode'],'published_parallel_row_order')
+
     def test_two_digit_r_date_requires_documented_offset(self):
         seconds=(datetime(15,3,1)-datetime(1970,1,1)).total_seconds()
         d,repaired=_date(seconds)
