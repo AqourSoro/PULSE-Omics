@@ -24,7 +24,8 @@ from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse, urljoin, unquote
+from urllib.parse import urlparse, urljoin, unquote, parse_qs
+from html import unescape
 from urllib.request import Request, urlopen
 
 ROOT = "/mnt/f/datasets/pulse-omics"
@@ -144,6 +145,42 @@ DATA_EXTENSIONS = (
     ".biom", ".biom.gz", ".tsv.gz", ".csv.gz", ".txt.gz",
     ".rds", ".h5", ".h5ad", ".h5mu",
 )
+
+
+def csiro_download_targets(raw_text: str) -> list[tuple[str, str]]:
+    """Resolve direct files and official ?fileName= links from CSIRO's text list.
+
+    The published collection API returns links; some valid download URLs
+    have no file extension in their URL path. Keep the original URL intact.
+    """
+    extensions = {
+        ".zip", ".xlsx", ".xls", ".csv", ".tsv", ".txt",
+        ".pdf", ".gz", ".rdata", ".rds", ".h5", ".biom",
+        ".mzml", ".raw", ".7z", ".tar", ".parquet",
+    }
+    found = {}
+    for match in re.findall(r"https://[^\\s<>\\\"']+", unescape(raw_text)):
+        url = match.rstrip("),;")
+        parsed = urlparse(url)
+        host = (parsed.hostname or "").lower()
+        if parsed.scheme != "https" or not (
+            host in {"csiro.au", "csirocdn.com.au"}
+            or host.endswith(".csiro.au")
+            or host.endswith(".csirocdn.com.au")
+        ):
+            continue
+        remote_name = unquote(Path(parsed.path).name)
+        file_name = parse_qs(parsed.query).get("fileName", [""])[0]
+        if Path(remote_name).suffix.lower() not in extensions:
+            if not parsed.path.rstrip("/").endswith("/downloadfile") or not file_name:
+                continue
+            remote_name = Path(file_name.replace("\\\\", "/")).name
+        if Path(remote_name).suffix.lower() not in extensions:
+            continue
+        if remote_name in {"", ".", ".."}:
+            continue
+        found[url] = remote_name
+    return [(url, found[url]) for url in sorted(found)]
 
 
 def safe_path(base: Path, relative: str) -> Path:
@@ -688,28 +725,16 @@ class Downloader:
             with urlopen(req, timeout=40) as response:
                 body = response.read(5 * 1024 * 1024)
             text = body.decode("utf-8", errors="replace")
-            urls = sorted(set(re.findall(r"https://[^\s<>\"']+", text)))
-            downloads = [
-                url.rstrip("),;") for url in urls
-                if (urlparse(url).hostname or "").endswith(
-                    ("csiro.au", "csirocdn.com.au")
-                ) and Path(urlparse(url).path).suffix.lower() in {
-                    ".zip", ".xlsx", ".xls", ".csv", ".tsv", ".txt",
-                    ".pdf", ".gz", ".rdata", ".rds", ".h5", ".biom",
-                    ".mzml", ".raw", ".7z", ".tar", ".parquet",
-                }
-            ]
+            downloads = csiro_download_targets(text)
             if not downloads:
                 raise ValueError(
-                    "CSIRO collection file list did not expose direct public file URLs"
+                    "CSIRO collection list returned no supported public data-file URLs"
                 )
             self.mark_discovery("csiro", CSIRO_LIST_API, len(downloads))
             self.inventory["csiro"][-1]["files"] = [
-                {"name": Path(urlparse(url).path).name, "url": url}
-                for url in downloads
+                {"name": name, "url": url} for url, name in downloads
             ]
-            for index, url in enumerate(downloads):
-                name = Path(urlparse(url).path).name
+            for index, (url, name) in enumerate(downloads):
                 self.https("csiro", f"{index:03d}_{name}", url)
         except Exception as exc:
             self.failed += 1
