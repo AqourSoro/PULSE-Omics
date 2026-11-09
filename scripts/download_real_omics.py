@@ -8,6 +8,8 @@ All data and manifests stay on the F: data drive, never in GitHub.
 from __future__ import annotations
 
 import argparse
+from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 import errno
 import hashlib
 from http.client import HTTPException
@@ -17,6 +19,7 @@ import re
 import shutil
 import sys
 import time
+from threading import RLock
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
@@ -176,7 +179,7 @@ def checksum(path: Path) -> str:
 
 
 class Downloader:
-    def __init__(self, root: Path, dry_run: bool, max_file_gb: float, max_total_gb: float):
+    def __init__(self, root: Path, dry_run: bool, max_file_gb: float, max_total_gb: float, workers: int = 4):
         self.root = root
         self.dry_run = dry_run
         # Zero means unlimited. A cap is opt-in, not a hidden file-selection rule.
@@ -193,31 +196,54 @@ class Downloader:
         self.stats = {}
         self._last_status = 0.0
         self._status_visible = False
+        self._lock = RLock()
+        self._progress_samples = {}
+        self.workers = workers
 
     def progress(self, dataset: str, *, force: bool = False, note: str = "") -> None:
-        """One in-place terminal status line; no per-file stdout messages."""
+        """Refresh one terminal line with recent processing rate and approximate ETA."""
         if not sys.stdout.isatty():
             return
-        now = time.monotonic()
-        if not force and now - self._last_status < 0.5:
-            return
-        self._last_status = now
-        stats = self.stats.get(dataset, {})
-        done = sum(stats.get(k, 0) for k in ("downloaded", "existing", "failed", "candidate"))
-        total = self.planned.get(dataset)
-        count = f"{done}/{total}" if total is not None else str(done)
-        size = self.used / (1024 ** 2)
-        line = (
-            f"{dataset.upper()} {count} | new {stats.get('downloaded', 0)} "
-            f"| existing {stats.get('existing', 0)} | failed {stats.get('failed', 0)} "
-            f"| transferred {size:.1f} MiB"
-        )
-        if note:
-            line += f" | {note}"
-        cols = shutil.get_terminal_size(fallback=(100, 20)).columns
-        sys.stdout.write("\r\033[2K" + line[:max(1, cols - 1)])
-        sys.stdout.flush()
-        self._status_visible = True
+        with self._lock:
+            now = time.monotonic()
+            if not force and now - self._last_status < 0.5:
+                return
+            self._last_status = now
+            stats = self.stats.get(dataset, {})
+            done = sum(stats.get(k, 0) for k in
+                       ("downloaded", "existing", "failed", "candidate"))
+            total = self.planned.get(dataset)
+            count = f"{done}/{total}" if total is not None else str(done)
+
+            samples = self._progress_samples.setdefault(dataset, deque())
+            samples.append((now, done, self.used))
+            while len(samples) > 2 and now - samples[0][0] > 45:
+                samples.popleft()
+            elapsed = now - samples[0][0]
+            rate_label = "estimating"
+            eta_label = "calculating"
+            if elapsed >= 8 and done > samples[0][1]:
+                rate = (done - samples[0][1]) / elapsed
+                rate_label = f"{rate:.1f} files/s"
+                if total is not None and rate > 0:
+                    seconds = max(0, int((total - done) / rate))
+                    hours, remainder = divmod(seconds, 3600)
+                    minutes = (remainder + 59) // 60
+                    eta_label = f"~{hours}h{minutes:02d}m" if hours else f"~{minutes}m"
+
+            line = (
+                f"{dataset.upper()} {count} | ETA {eta_label} | {rate_label} "
+                f"| new {stats.get('downloaded', 0)} "
+                f"| existing {stats.get('existing', 0)} "
+                f"| failed {stats.get('failed', 0)} "
+                f"| {self.used / (1024 ** 2):.1f} MiB"
+            )
+            if note:
+                line += f" | {note}"
+            cols = shutil.get_terminal_size(fallback=(100, 20)).columns
+            sys.stdout.write("\r\033[2K" + line[:max(1, cols - 1)])
+            sys.stdout.flush()
+            self._status_visible = True
 
     def finish_dataset(self, dataset: str) -> None:
         if self._status_visible:
@@ -243,17 +269,18 @@ class Downloader:
             self.incomplete.add(dataset)
 
     def record(self, dataset: str, entry: dict) -> None:
-        self.report.setdefault(dataset, []).append(entry)
-        status = entry.get("status")
-        if status in ("downloaded", "existing", "failed", "candidate"):
-            counts = self.stats.setdefault(dataset, {})
-            counts[status] = counts.get(status, 0) + 1
-        if not self.dry_run:
-            folder = self.root / "raw" / dataset
-            folder.mkdir(parents=True, exist_ok=True)
-            with (folder / "download_events.jsonl").open("a", encoding="utf-8") as stream:
-                stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
-        self.progress(dataset)
+        with self._lock:
+            self.report.setdefault(dataset, []).append(entry)
+            status = entry.get("status")
+            if status in ("downloaded", "existing", "failed", "candidate"):
+                counts = self.stats.setdefault(dataset, {})
+                counts[status] = counts.get(status, 0) + 1
+            if not self.dry_run:
+                folder = self.root / "raw" / dataset
+                folder.mkdir(parents=True, exist_ok=True)
+                with (folder / "download_events.jsonl").open("a", encoding="utf-8") as stream:
+                    stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
+            self.progress(dataset)
 
     def flush(self, dataset: str) -> None:
         if self.dry_run:
@@ -283,7 +310,8 @@ class Downloader:
             try:
                 check_format(dest)
                 sha = checksum(dest)
-                self.existing += 1
+                with self._lock:
+                    self.existing += 1
                 self.record(dataset, {
                     "file": relative, "source": url, "sha256": sha,
                     "bytes": dest.stat().st_size, "status": "existing",
@@ -331,13 +359,14 @@ class Downloader:
                         while block := response.read(1024 * 1024):
                             if stream.tell() + len(block) > self.max_file:
                                 raise ValueError("File exceeds per-file size cap")
-                            if self.used + len(block) > self.max_total:
-                                raise ValueError("Session exceeds total download cap")
-                            if shutil.disk_usage(dest.parent).free < len(block) + 10 * 1024 ** 3:
-                                raise ValueError("Insufficient free disk space (10 GiB reserve)")
-                            stream.write(block)
-                            received += len(block)
-                            self.used += len(block)
+                            with self._lock:
+                                if self.used + len(block) > self.max_total:
+                                    raise ValueError("Session exceeds total download cap")
+                                if shutil.disk_usage(dest.parent).free < len(block) + 10 * 1024 ** 3:
+                                    raise ValueError("Insufficient free disk space (10 GiB reserve)")
+                                stream.write(block)
+                                received += len(block)
+                                self.used += len(block)
                             self.progress(dataset)
                     if expected and received != expected:
                         raise OSError(
@@ -347,7 +376,8 @@ class Downloader:
                 check_format(temp)
                 size, sha = temp.stat().st_size, checksum(temp)
                 temp.replace(dest)
-                self.downloaded += 1
+                with self._lock:
+                    self.downloaded += 1
                 self.record(dataset, {
                     "file": relative, "source": url, "sha256": sha,
                     "bytes": size, "status": "downloaded",
@@ -374,8 +404,9 @@ class Downloader:
                     self.progress(dataset, force=True, note=f"retry {attempt}/{max_attempts}")
                     time.sleep(min(2 ** (attempt - 1), 8))
                     continue
-                self.failed += 1
-                self.incomplete.add(dataset)
+                with self._lock:
+                    self.failed += 1
+                    self.incomplete.add(dataset)
                 message = f"{type(exc).__name__}: {exc}"
                 self.record(dataset, {
                     "file": relative, "source": url, "status": "failed",
@@ -423,8 +454,14 @@ class Downloader:
                     "error": f"{type(exc).__name__}: {exc}",
                 })
         self.planned["hmp2"] = len(listed) + 1
-        for name, url in sorted(listed.items()):
-            self.https("hmp2", name, url)
+        items = sorted(listed.items())
+        if self.workers == 1:
+            for name, url in items:
+                self.https("hmp2", name, url)
+        else:
+            with ThreadPoolExecutor(max_workers=self.workers) as pool:
+                for _ in pool.map(lambda item: self.https("hmp2", *item), items):
+                    pass
         # Existing clinical metadata from the published HMP2 release.
         self.https("hmp2", "hmp2_metadata_2018-08-20.csv", HMP2["hmp2_metadata_2018-08-20.csv"])
 
@@ -672,6 +709,8 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="Discover only, do not download")
     parser.add_argument("--include-raw", action="store_true",
                         help="Also fetch publicly indexed HMP2 raw FASTQ/instrument files")
+    parser.add_argument("--workers", type=int, default=4,
+                        help="Concurrent HMP2 file downloads (default 4; set 1 for serial)")
     parser.add_argument("--max-file-gb", type=float, default=0.0,
                         help="Optional maximum individual file size in GiB; 0 means unlimited")
     parser.add_argument("--max-total-gb", type=float, default=0.0,
@@ -679,11 +718,14 @@ def main() -> None:
     args = parser.parse_args()
     if args.max_file_gb < 0 or args.max_total_gb < 0:
         parser.error("Download size limits must be nonnegative")
+    if not 1 <= args.workers <= 16:
+        parser.error("--workers must be between 1 and 16")
     runner = Downloader(
         Path(args.data_root).expanduser(),
         args.dry_run,
         args.max_file_gb,
         args.max_total_gb,
+        workers=args.workers,
     )
     for dataset in dict.fromkeys(args.datasets):
         print(f"\n=== {dataset.upper()} ===", flush=True)
