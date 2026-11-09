@@ -8,12 +8,15 @@ All data and manifests stay on the F: data drive, never in GitHub.
 from __future__ import annotations
 
 import argparse
+import errno
 import hashlib
+from http.client import HTTPException
 import json
 import os
 import re
 import shutil
 import sys
+import time
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
@@ -236,7 +239,7 @@ class Downloader:
                 print(f"EXISTS {dataset}/{relative} [{dest.stat().st_size} bytes]")
                 self.record(dataset, {
                     "file": relative, "source": url, "sha256": sha,
-                    "bytes": dest.stat().st_size, "status": "existing"
+                    "bytes": dest.stat().st_size, "status": "existing",
                 })
                 return
             except (OSError, ValueError) as exc:
@@ -244,58 +247,101 @@ class Downloader:
         if self.dry_run:
             print(f"CANDIDATE {dataset}/{relative} <= {url}")
             return
+
         dest.parent.mkdir(parents=True, exist_ok=True)
         temp = dest.with_name(dest.name + ".part")
-        try:
-            already = temp.stat().st_size if temp.exists() else 0
-            if already >= self.max_file:
-                raise ValueError("Incomplete transfer already exceeds file-size cap")
-            request_headers = {"User-Agent": "PULSE-Omics/1.0 academic research"}
-            if already:
-                request_headers["Range"] = f"bytes={already}-"
-            req = Request(url, headers=request_headers)
-            with urlopen(req, timeout=100) as response:
-                status = response.status
-                if status not in (200, 206):
-                    raise ValueError(f"Unexpected HTTP status {status}")
-                append = status == 206 and already > 0
-                expected = int(response.headers.get("Content-Length") or 0)
-                if expected and expected + (already if append else 0) > self.max_file:
-                    raise ValueError("File exceeds per-file size cap")
-                received = 0
-                with temp.open("ab" if append else "wb") as stream:
-                    while block := response.read(1024 * 1024):
-                        if stream.tell() + len(block) > self.max_file:
-                            raise ValueError("File exceeds per-file size cap")
-                        if self.used + len(block) > self.max_total:
-                            raise ValueError("Session exceeds total download cap")
-                        if shutil.disk_usage(dest.parent).free < len(block) + 10 * 1024 ** 3:
-                            raise ValueError("Insufficient free disk space (10 GiB reserve)")
-                        stream.write(block)
-                        received += len(block)
-                        self.used += len(block)
-                if expected and received != expected:
-                    raise ValueError(
-                        f"Incomplete HTTP body: received {received} of {expected} bytes"
+        max_attempts = 5
+        for attempt in range(1, max_attempts + 1):
+            try:
+                already = temp.stat().st_size if temp.exists() else 0
+                if already >= self.max_file:
+                    raise ValueError("Incomplete transfer already exceeds file-size cap")
+
+                headers = {"User-Agent": "PULSE-Omics/1.0 academic research"}
+                if already:
+                    headers["Range"] = f"bytes={already}-"
+                request = Request(url, headers=headers)
+                with urlopen(request, timeout=100) as response:
+                    status = response.status
+                    if status not in (200, 206):
+                        raise ValueError(f"Unexpected HTTP status {status}")
+                    if status == 206:
+                        content_range = response.headers.get("Content-Range", "")
+                        if not content_range.startswith(f"bytes {already}-"):
+                            raise ValueError(
+                                f"Invalid HTTP Content-Range for offset {already}: "
+                                f"{content_range!r}"
+                            )
+                    # HTTP 200 means the remote endpoint ignored Range:
+                    # restart this particular file, never append a full response.
+                    append = status == 206 and already > 0
+                    expected = int(response.headers.get("Content-Length") or 0)
+                    if expected and expected + (already if append else 0) > self.max_file:
+                        raise ValueError("File exceeds per-file size cap")
+
+                    received = 0
+                    with temp.open("ab" if append else "wb") as stream:
+                        while block := response.read(1024 * 1024):
+                            if stream.tell() + len(block) > self.max_file:
+                                raise ValueError("File exceeds per-file size cap")
+                            if self.used + len(block) > self.max_total:
+                                raise ValueError("Session exceeds total download cap")
+                            if shutil.disk_usage(dest.parent).free < len(block) + 10 * 1024 ** 3:
+                                raise ValueError("Insufficient free disk space (10 GiB reserve)")
+                            stream.write(block)
+                            received += len(block)
+                            self.used += len(block)
+                    if expected and received != expected:
+                        raise OSError(
+                            f"HTTP body ended early: received {received} of {expected} bytes"
+                        )
+
+                check_format(temp)
+                size, sha = temp.stat().st_size, checksum(temp)
+                temp.replace(dest)
+                self.downloaded += 1
+                print(f"OK {dataset}/{relative} [{size} bytes] sha256={sha}")
+                self.record(dataset, {
+                    "file": relative, "source": url, "sha256": sha,
+                    "bytes": size, "status": "downloaded",
+                })
+                return
+            except (HTTPError, URLError, OSError, HTTPException, ValueError) as exc:
+                # IncompleteRead is an HTTPException, not an OSError. The bytes
+                # already written to .part are preserved and requested by Range.
+                # Bytes in IncompleteRead.partial were not written, so the new
+                # request must start at the actual on-disk file size.
+                permanent_http = isinstance(exc, HTTPError) and exc.code not in {
+                    408, 425, 429, 500, 502, 503, 504,
+                }
+                disk_error = isinstance(exc, OSError) and exc.errno in {
+                    errno.ENOSPC, errno.EACCES, errno.EPERM, errno.EROFS,
+                }
+                transient = (
+                    not permanent_http
+                    and not disk_error
+                    and not isinstance(exc, ValueError)
+                )
+                if transient and attempt < max_attempts:
+                    partial_bytes = temp.stat().st_size if temp.exists() else 0
+                    print(
+                        f"RETRY {dataset}/{relative} "
+                        f"({attempt}/{max_attempts}; saved {partial_bytes} bytes): "
+                        f"{type(exc).__name__}: {exc}",
+                        file=sys.stderr,
                     )
-            check_format(temp)
-            size, sha = temp.stat().st_size, checksum(temp)
-            temp.replace(dest)
-            self.downloaded += 1
-            print(f"OK {dataset}/{relative} [{size} bytes] sha256={sha}")
-            self.record(dataset, {
-                "file": relative, "source": url, "sha256": sha,
-                "bytes": size, "status": "downloaded",
-            })
-        except (HTTPError, URLError, OSError, ValueError) as exc:
-            self.failed += 1
-            self.incomplete.add(dataset)
-            message = f"{type(exc).__name__}: {exc}"
-            print(f"FAILED {dataset}/{relative}: {message}", file=sys.stderr)
-            self.record(dataset, {
-                "file": relative, "source": url,
-                "status": "failed", "error": message,
-            })
+                    time.sleep(min(2 ** (attempt - 1), 8))
+                    continue
+                self.failed += 1
+                self.incomplete.add(dataset)
+                message = f"{type(exc).__name__}: {exc}"
+                print(f"FAILED {dataset}/{relative}: {message}", file=sys.stderr)
+                self.record(dataset, {
+                    "file": relative, "source": url, "status": "failed",
+                    "error": message, "attempts": attempt,
+                    "partial_bytes": temp.stat().st_size if temp.exists() else 0,
+                })
+                return
 
     def hmp2_all_products(self, include_raw: bool = False) -> None:
         """Enumerate all HMP2 processed products, optionally source raw files."""
