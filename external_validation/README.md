@@ -27,7 +27,7 @@ python -m py_compile external_validation/run.py
 python -m unittest discover -s external_validation/tests -q
 ```
 
-The original Su2020 file must exist at `/mnt/f/datasets/pulse-omics/raw/su2020/table_s1.xlsx`. Build canonical inputs **only under the isolated namespace**:
+The original Su2020 Table S1 must exist at either `raw/su2020/table_s1.xlsx` or `raw/su2020/pmc/mmc1.xlsx` under the data root. Build canonical inputs **only under the isolated namespace**:
 
 `--inspect-only` examines existing canonical files and **does not run the Su2020 preparer**. For first-time preparation without training, run the existing source adapter explicitly:
 
