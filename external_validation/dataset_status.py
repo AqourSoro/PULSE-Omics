@@ -64,8 +64,38 @@ def main(argv=None):
     p.add_argument('--output',type=Path,help='Optional CSV output; no output file by default')
     a=p.parse_args(argv)
     table=status(a.data_root.expanduser())
-    print(table.to_string(index=False,na_rep='—'))
-    print('\nNOTE: enumerated_in_this_run means the last source enumeration/download pass had no recorded issues; it does not prove that raw data are fully parsed, clinically paired, or ready for model training.')
+    print('\\nPULSE-Omics 数据状态')
+    print('─' * 35)
+    ready_count = 0
+    for _, row in table.iterrows():
+        name = str(row['dataset']).upper() if row['dataset'] == 'hmp2' else str(row['dataset'])
+        ready = bool(row['canonical_ready'])
+        ready_count += int(ready)
+        prepared = int(row['canonical_files_present'])
+        experimental = '可运行' if ready else '尚未准备好'
+        if row['dataset'] == 'p100' and not ready:
+            experimental = '受限（缺少授权的个体级组学数据）'
+        print(f'{name}  |  实验：{experimental}（标准化输入 {prepared}/3）')
+        state = str(row['download_state'])
+        issues = row['last_pass_issues']
+        if state == 'incomplete':
+            note = (f'最近记录有 {int(issues)} 项异常'
+                    if pd.notna(issues) else '最近记录显示未完成')
+        elif state == 'enumerated_in_this_run':
+            note = '最近一次检查无记录异常'
+        elif state == 'unreported':
+            note = '旧记录未报告状态'
+        elif state == 'no_manifest':
+            note = '没有下载记录'
+        elif state.startswith('invalid_manifest'):
+            note = '下载记录读取失败'
+        else:
+            note = f'下载记录状态：{state}'
+        print(f"  下载：本地 {int(row['raw_files_present']):,} 个文件；"
+              f"未完成片段 {int(row['partial_files'])} 个；{note}")
+        print()
+    print(f'实验输入齐全：{ready_count}/{len(table)} 个数据集')
+    print('说明：本地文件数不代表下载完整；实验输入齐全仅表示所需文件存在。')
     if a.output:
         a.output.parent.mkdir(parents=True,exist_ok=True)
         table.to_csv(a.output,index=False)
