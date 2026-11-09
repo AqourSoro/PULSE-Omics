@@ -234,6 +234,58 @@ class DownloaderTests(unittest.TestCase):
         self.assertIn("checked 2/2", output.getvalue())
         self.assertNotIn("one.biom", output.getvalue())
 
+    def test_eta_uses_recent_file_completion_rate(self):
+        class TTYBuffer(io.StringIO):
+            def isatty(self):
+                return True
+
+        output = TTYBuffer()
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), True, 0, 0)
+            runner.planned["hmp2"] = 20
+            with patch("scripts.download_real_omics.time.monotonic",
+                       side_effect=[1.0, 11.0]), redirect_stdout(output):
+                runner.record("hmp2", {"status": "candidate", "file": "a.tsv"})
+                runner.record("hmp2", {"status": "candidate", "file": "b.tsv"})
+                runner.finish_dataset("hmp2")
+        self.assertIn("ETA ~3m", output.getvalue())
+        self.assertIn("0.1 files/s", output.getvalue())
+        self.assertEqual(output.getvalue().count("\n"), 1)
+
+    def test_hmp2_uses_bounded_parallel_workers(self):
+        from threading import Lock
+        from time import sleep
+        urls = [
+            f"https://g-227ca.190ebd.75bc.data.globus.org/"
+            f"ibdmdb/products/HMP2/MPX/data_{i}.tsv"
+            for i in range(8)
+        ]
+        active = 0
+        peak = 0
+        calls = []
+        lock = Lock()
+
+        def fake_download(dataset, relative, url):
+            nonlocal active, peak
+            with lock:
+                calls.append(relative)
+                active += 1
+                peak = max(peak, active)
+            sleep(0.02)
+            with lock:
+                active -= 1
+
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), True, 0, 0, workers=4)
+            with patch("scripts.download_real_omics.HMP2_PRODUCT_PAGES",
+                       ("one.html",)), patch(
+                "scripts.download_real_omics.list_http_files", return_value=urls
+            ), patch.object(runner, "https", side_effect=fake_download):
+                runner.hmp2_all_products()
+        self.assertEqual(len(calls), 9)  # eight products and metadata
+        self.assertGreaterEqual(peak, 2)
+        self.assertLessEqual(peak, 4)
+
     def test_http_range_resumes_incomplete_file(self):
         with tempfile.TemporaryDirectory() as root:
             dataset = Path(root) / "raw" / "covaar"
