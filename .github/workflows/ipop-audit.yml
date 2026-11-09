@@ -1,0 +1,32 @@
+name: iPOP source audit (temporary)
+on:
+  push:
+    branches: [omics]
+    paths: ['.github/workflows/ipop-audit.yml']
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install source parser
+        run: python -m pip install 'numpy>=1.24,<3' 'pandas>=2,<3' 'rdata==1.1.0' 'openpyxl>=3.1'
+      - name: Retrieve publisher's iPOP RData and verify checksum
+        run: |
+          mkdir -p "$RUNNER_TEMP/data/raw/ipop/seasonal"
+          curl -fL --retry 3 --connect-timeout 30 --max-time 300 -o "$RUNNER_TEMP/data/raw/ipop/seasonal/Multi_Omics_Seasonal.RData" 'https://ndownloader.figshare.com/files/22807673'
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,os
+          p=Path(os.environ['RUNNER_TEMP'])/'data/raw/ipop/seasonal/Multi_Omics_Seasonal.RData'
+          b=p.read_bytes()
+          print('RData size',len(b),'sha256',hashlib.sha256(b).hexdigest())
+          assert len(b)==53439956
+          assert hashlib.sha256(b).hexdigest()=='2763c0db3d98fed964435a190439a50257259f560e502601714bf49124b504e0'
+          PY
+      - name: Inspect real iPOP paired assays
+        run: |
+          python -m external_validation.prepare_ipop --data-root "$RUNNER_TEMP/data" --inspect-only --permit-release-row-order
