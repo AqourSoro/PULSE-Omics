@@ -114,8 +114,11 @@ class Normalizer:
             frame = raw[mod]
             train = frame.loc[train_samples].to_numpy(dtype=float)
             n = np.isfinite(train).sum(axis=0)
-            var = np.nanvar(train, axis=0)
-            use = (n >= minimum) & np.isfinite(var) & (var > 1e-12)
+            enough = n >= minimum
+            var = np.full(train.shape[1], np.nan)
+            if enough.any():
+                var[enough] = np.nanvar(train[:, enough], axis=0)
+            use = enough & np.isfinite(var) & (var > 1e-12)
             if use.sum() == 0:
                 raise ValueError(f'{mod}: no nonconstant features with >= {minimum} training observations')
             self.names[mod] = np.array(frame.columns)[use].tolist()
