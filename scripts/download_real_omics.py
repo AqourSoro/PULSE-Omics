@@ -303,12 +303,22 @@ class Downloader:
         temp.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         temp.replace(out)
 
-    def https(self, dataset: str, relative: str, url: str) -> None:
+    def https(self, dataset: str, relative: str, url: str,
+              expected_size: int | None = None, expected_md5: str | None = None) -> None:
         folder = self.root / "raw" / dataset
         dest = safe_path(folder, relative)
         if dest.exists():
             try:
                 check_format(dest)
+                if expected_size is not None and dest.stat().st_size != expected_size:
+                    raise ValueError("Existing file size differs from publisher manifest")
+                if expected_md5:
+                    md5 = hashlib.md5()
+                    with dest.open("rb") as source:
+                        for block in iter(lambda: source.read(1024 * 1024), b""):
+                            md5.update(block)
+                    if md5.hexdigest().lower() != expected_md5.lower():
+                        raise ValueError("Existing file MD5 differs from publisher manifest")
                 sha = checksum(dest)
                 with self._lock:
                     self.existing += 1
@@ -325,6 +335,30 @@ class Downloader:
 
         dest.parent.mkdir(parents=True, exist_ok=True)
         temp = dest.with_name(dest.name + ".part")
+        if expected_size is not None and temp.exists():
+            partial_size = temp.stat().st_size
+            if partial_size > expected_size:
+                temp.unlink()
+            elif partial_size == expected_size:
+                try:
+                    check_format(temp)
+                    if expected_md5:
+                        md5 = hashlib.md5()
+                        with temp.open("rb") as source:
+                            for block in iter(lambda: source.read(1024 * 1024), b""):
+                                md5.update(block)
+                        if md5.hexdigest().lower() != expected_md5.lower():
+                            raise ValueError("Incomplete file MD5 mismatch")
+                    temp.replace(dest)
+                    with self._lock:
+                        self.downloaded += 1
+                    self.record(dataset, {
+                        "file": relative, "source": url, "sha256": checksum(dest),
+                        "bytes": expected_size, "status": "downloaded",
+                    })
+                    return
+                except (OSError, ValueError):
+                    temp.unlink(missing_ok=True)
         max_attempts = 5
         for attempt in range(1, max_attempts + 1):
             try:
@@ -374,7 +408,19 @@ class Downloader:
                         )
 
                 check_format(temp)
-                size, sha = temp.stat().st_size, checksum(temp)
+                size = temp.stat().st_size
+                if expected_size is not None and size != expected_size:
+                    if size < expected_size:
+                        raise OSError(f"Truncated response: got {size}, expected {expected_size} bytes")
+                    raise ValueError(f"Oversize response: got {size}, expected {expected_size} bytes")
+                if expected_md5:
+                    md5 = hashlib.md5()
+                    with temp.open("rb") as source:
+                        for block in iter(lambda: source.read(1024 * 1024), b""):
+                            md5.update(block)
+                    if md5.hexdigest().lower() != expected_md5.lower():
+                        raise ValueError("Downloaded file MD5 differs from publisher manifest")
+                sha = checksum(temp)
                 temp.replace(dest)
                 with self._lock:
                     self.downloaded += 1
@@ -521,56 +567,17 @@ class Downloader:
             self.https("su2020", f"pmc/{name}", SU2020_PMC_AWS_PREFIX + name)
 
     def ipop(self) -> None:
+        """Download the complete published iPOP seasonal processed release.
+
+        Do not mix the broader iHMP T2D host repository into the Sailani
+        seasonal-study cohort: its subject/visit identity is not established.
+        The 2020 paper identifies Figshare article 12376508 as the processed
+        multi-omics release, containing multiple tables in one RData file.
+        """
         self.figshare_article("ipop", 12376508, "seasonal")
-        try:
-            import boto3
-            from botocore import UNSIGNED
-            from botocore.config import Config
-            client = boto3.client(
-                "s3", config=Config(
-                    signature_version=UNSIGNED,
-                    retries={"max_attempts": 3, "mode": "standard"},
-                ),
-            )
-            paginator = client.get_paginator("list_objects_v2")
-            entries = []
-            for label, prefix in S3_PREFIXES.items():
-                for page in paginator.paginate(Bucket="hmpdcc", Prefix=prefix):
-                    for obj in page.get("Contents", []):
-                        key = obj["Key"]
-                        if key.endswith("/"):
-                            continue
-                        size = int(obj["Size"])
-                        relative = key[len(prefix):]
-                        if not relative:
-                            continue
-                        if size > self.max_file:
-                            self.incomplete.add("ipop")
-                            continue
-                        entries.append((size, label, relative, key))
-            self.mark_discovery("ipop", "s3://hmpdcc/ihmp/t2d/host/", len(entries))
-            print(f"iPOP public host objects enumerated: {len(entries)}")
-            if not entries:
-                raise ValueError("No candidate processed omics objects found")
-            # Small processed tables first; do not copy arbitrary raw MS/sequencing data.
-            for size, label, relative, key in sorted(entries):
-                if self.used + size > self.max_total:
-                    self.incomplete.add("ipop")
-                    continue
-                self.s3("ipop", f"{label}/{relative}", client, key, size)
-        except Exception as exc:
-            message = f"{type(exc).__name__}: {exc}"
-            self.failed += 1
-            self.mark_discovery("ipop", "s3://hmpdcc/ihmp/t2d/host/", None, message)
-            print(f"iPOP S3 discovery unavailable: {message}; using the published "
-                  "seasonal-study processed data", file=sys.stderr)
-            self.record("ipop", {
-                "status": "discovery_failed", "source": "s3://hmpdcc/ihmp/t2d/host/",
-                "error": message,
-            })
-            # Sailani et al. 2020 explicitly links Figshare article 12376508 v1.
-            # This is an annotated processed release, not a copy of all S3 data.
-            self.https("ipop", "seasonal/Multi_Omics_Seasonal.RData", IPOP_SEASONAL_URL)
+        # Stable publisher file-ID fallback, retained at its established path.
+        # If already obtained by the article listing, https() simply reuses it.
+        self.https("ipop", "seasonal/Multi_Omics_Seasonal.RData", IPOP_SEASONAL_URL)
 
     def s3(self, dataset: str, relative: str, client, key: str, size: int) -> None:
         dest = safe_path(self.root / "raw" / dataset, relative)
@@ -640,11 +647,22 @@ class Downloader:
             if not files:
                 raise ValueError("Figshare record has no public downloadable files")
             self.mark_discovery(dataset, api, len(files))
+            # Track the authoritative file inventory, not just a count.
+            self.inventory[dataset][-1]["files"] = [
+                {"name": str(item.get("name", "")), "bytes": item.get("size"),
+                 "md5": item.get("computed_md5") or item.get("supplied_md5")}
+                for item in files
+            ]
             for item in files:
                 name = item.get("name")
                 url = item.get("download_url")
                 if name and url and urlparse(url).scheme == "https":
-                    self.https(dataset, f"{subdir}/{Path(name).name}", url)
+                    remote_size = item.get("size")
+                    self.https(
+                        dataset, f"{subdir}/{Path(name).name}", url,
+                        expected_size=int(remote_size) if remote_size is not None else None,
+                        expected_md5=item.get("computed_md5") or item.get("supplied_md5"),
+                    )
                 else:
                     raise ValueError("Figshare listed file without a usable public URL")
         except Exception as exc:
