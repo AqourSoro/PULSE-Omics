@@ -51,9 +51,14 @@ def read_ipop(path: Path) -> dict:
     constructors["factor"] = factor
     # Keep serialized POSIXct seconds intact; do not silently repair the years.
     constructors["POSIXct"] = lambda obj, attrs: obj
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        return rdata.read_rda(path, constructor_dict=constructors)
+    # R's serialization includes harmless attributes unsupported by rdata.
+    # Do not turn these warnings into fatal parse errors; validate objects below.
+    with warnings.catch_warnings(record=True) as received:
+        warnings.simplefilter("always")
+        objects = rdata.read_rda(path, constructor_dict=constructors)
+    if not isinstance(objects, dict) or not objects:
+        raise ValueError("No named objects decoded from published seasonal RData")
+    return objects
 
 
 def inspect_ipop(path: Path, output: Path, private: Path | None) -> dict:
