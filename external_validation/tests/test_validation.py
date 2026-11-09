@@ -89,6 +89,24 @@ class ExternalValidationTests(unittest.TestCase):
         self.assertAlmostEqual(summary['mae_micro'],1)
         self.assertEqual(detail.n.tolist(),[4,4])
 
+    def test_hmp2_sparse_feature_selection_is_train_only_and_bounded(self):
+        ids=[f's{i}' for i in range(20)]
+        train_ids=ids[:10]
+        x=np.stack([
+            [float(10+i), float(i%3+1), float(i%2), float(i+1) if i>=10 else 0.]
+            for i in range(20)
+        ])
+        frame=pd.DataFrame(x, index=ids, columns=['common','moderate','rare','test_only'])
+        raw={'protein':frame,'metab':frame.copy()}
+        policy=experiment.feature_policy('hmp2',hmp2_min_nonzero_fraction=.5,
+                                         hmp2_max_features=2)
+        norm=experiment.Normalizer(raw,train_ids,minimum=3,**policy)
+        self.assertEqual(len(norm.names['protein']),2)
+        self.assertNotIn('test_only',norm.names['protein'])
+        self.assertEqual(norm.selection['protein']['maximum_features'],2)
+        self.assertEqual(norm.selection['protein']['minimum_nonzero_training_samples'],5)
+        self.assertEqual(experiment.feature_policy('su2020')['max_features'],0)
+
     def test_run_end_to_end_and_isolation(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)
