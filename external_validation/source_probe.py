@@ -87,6 +87,12 @@ def _ipop_rdata_structure(path: Path) -> dict:
         return {'status':'rdata_dependency_unavailable','error':str(e)}
     try:
         obj=read_ipop(path)
+    except ModuleNotFoundError as e:
+        if e.name == 'rdata':
+            return {'status':'dependency_missing',
+                    'error':'rdata is not installed in the active conda environment',
+                    'install':'python -m pip install -r external_validation/requirements-structure.txt'}
+        return {'status':'cannot_read_rdata','error':f'{type(e).__name__}: {e}'}
     except Exception as e:
         return {'status':'cannot_read_rdata','error':f'{type(e).__name__}: {e}'}
     items={}
@@ -162,6 +168,8 @@ def main(argv=None):
             print(f'  iPOP RData: {details["status"]}, {len(details.get("objects",{}))} objects')
             if details.get('error'):
                 print(f'    decoder error: {details["error"]}')
+            if details.get('install'):
+                print(f'    install: {details["install"]}')
             for name, obj in details.get('objects', {}).items():
                 if 'rows' in obj:
                     overlap = sorted(obj['index_matches'].items(), key=lambda x: -x[1])[:2]
