@@ -60,7 +60,7 @@ class DownloaderTests(unittest.TestCase):
             self.assertEqual(runner.existing, 1)
             self.assertTrue((Path(root) / "raw/p100/download_manifest.json").exists())
 
-    def test_ipop_keeps_figshare_and_records_unavailable_s3(self):
+    def test_ipop_downloads_only_the_published_seasonal_release(self):
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), False, 1.0, 1.0)
             with patch.dict(sys.modules, {"boto3": None}), patch.object(
@@ -68,9 +68,70 @@ class DownloaderTests(unittest.TestCase):
             ) as figshare, patch.object(runner, "https") as download:
                 runner.ipop()
             figshare.assert_called_once_with("ipop", 12376508, "seasonal")
-            download.assert_called_once()
-            self.assertEqual(runner.failed, 1)
-            self.assertIn("ipop", runner.incomplete)
+            download.assert_called_once_with(
+                "ipop", "seasonal/Multi_Omics_Seasonal.RData",
+                "https://ndownloader.figshare.com/files/22807673",
+            )
+            self.assertEqual(runner.failed, 0)
+            self.assertNotIn("ipop", runner.incomplete)
+
+    def test_figshare_uses_publisher_file_size_and_md5(self):
+        import json
+        metadata = {"files": [{
+            "name": "assays.xlsx", "download_url": "https://ndownloader.figshare.com/files/12345",
+            "size": 12, "computed_md5": "abcdef",
+        }]}
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), False, 0, 0)
+            with patch(
+                "scripts.download_real_omics.urlopen",
+                return_value=FakeResponse(json.dumps(metadata).encode()),
+            ), patch.object(runner, "https") as download:
+                runner.figshare_article("covaar", 31685023, "figshare")
+            download.assert_called_once_with(
+                "covaar", "figshare/assays.xlsx",
+                "https://ndownloader.figshare.com/files/12345",
+                expected_size=12, expected_md5="abcdef",
+            )
+            self.assertEqual(runner.inventory["covaar"][0]["files"][0]["bytes"], 12)
+
+    def test_figshare_bad_existing_file_is_replaced_using_md5(self):
+        import hashlib
+        payload = b"PK\\x03\\x04" + b"correct-data"
+        expected = hashlib.md5(payload).hexdigest()
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root) / "raw" / "covaar"
+            folder.mkdir(parents=True)
+            (folder / "sample.xlsx").write_bytes(b"PK\\x03\\x04" + b"old-wrong-value")
+            runner = Downloader(Path(root), False, 0, 0)
+            with patch(
+                "scripts.download_real_omics.urlopen",
+                return_value=FakeResponse(payload),
+            ) as request:
+                runner.https(
+                    "covaar", "sample.xlsx", "https://example.org/sample.xlsx",
+                    expected_size=len(payload), expected_md5=expected,
+                )
+            self.assertEqual(request.call_count, 1)
+            self.assertEqual((folder / "sample.xlsx").read_bytes(), payload)
+            self.assertEqual(runner.downloaded, 1)
+
+    def test_figshare_fully_downloaded_part_is_finalized_without_http(self):
+        import hashlib
+        payload = b"PK\\x03\\x04" + b"complete-file"
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root) / "raw" / "covaar"
+            folder.mkdir(parents=True)
+            (folder / "sample.xlsx.part").write_bytes(payload)
+            runner = Downloader(Path(root), False, 0, 0)
+            with patch("scripts.download_real_omics.urlopen") as request:
+                runner.https(
+                    "covaar", "sample.xlsx", "https://example.org/sample.xlsx",
+                    expected_size=len(payload), expected_md5=hashlib.md5(payload).hexdigest(),
+                )
+            request.assert_not_called()
+            self.assertEqual((folder / "sample.xlsx").read_bytes(), payload)
+            self.assertFalse((folder / "sample.xlsx.part").exists())
 
     def test_complete_hmp2_indexes_all_links(self):
         """The downloader must enumerate source links, not just hard-coded matrices."""
