@@ -120,7 +120,7 @@ def clinical_group_candidates(info: dict) -> list[dict]:
             values = [norm(row[col]) for row in rows[header_row + 1:]]
             counts = Counter(value for value in values if value is not None)
             n_repeated = sum(number > 1 for number in counts.values())
-            if len(counts) >= 20 and n_repeated >= 10:
+            if len(counts) >= 10 and n_repeated >= 10:
                 choices.append({
                     "header_row": header_row + 1,
                     "column": col + 1,
