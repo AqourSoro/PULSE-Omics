@@ -159,7 +159,7 @@ def csiro_download_targets(raw_text: str) -> list[tuple[str, str]]:
         ".mzml", ".raw", ".7z", ".tar", ".parquet",
     }
     found = {}
-    for match in re.findall(r"https://[^\\s<>\\\"']+", unescape(raw_text)):
+    for match in re.findall(r"https://[^\s<>\"']+", unescape(raw_text)):
         url = match.rstrip("),;")
         parsed = urlparse(url)
         host = (parsed.hostname or "").lower()
@@ -174,7 +174,7 @@ def csiro_download_targets(raw_text: str) -> list[tuple[str, str]]:
         if Path(remote_name).suffix.lower() not in extensions:
             if not parsed.path.rstrip("/").endswith("/downloadfile") or not file_name:
                 continue
-            remote_name = Path(file_name.replace("\\\\", "/")).name
+            remote_name = Path(file_name.replace("\\", "/")).name
         if Path(remote_name).suffix.lower() not in extensions:
             continue
         if remote_name in {"", ".", ".."}:
