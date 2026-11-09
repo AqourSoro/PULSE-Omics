@@ -1,5 +1,6 @@
 """Offline, focused tests for real-data download safety and resumable transfers."""
 import io
+from contextlib import redirect_stdout
 from http.client import IncompleteRead
 import sys
 import tempfile
@@ -197,6 +198,41 @@ class DownloaderTests(unittest.TestCase):
                 runner.https("hmp2", "second.tsv", "https://example.org/second.tsv")
             self.assertEqual(runner.downloaded, 1)
             self.assertTrue((Path(root) / "raw/hmp2/second.tsv").exists())
+
+    def test_noninteractive_download_status_only_prints_summary(self):
+        output = io.StringIO()
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), True, 0, 0)
+            runner.planned["hmp2"] = 200
+            with redirect_stdout(output):
+                for i in range(200):
+                    runner.record("hmp2", {
+                        "status": "candidate",
+                        "file": f"private/individual_sample_{i}.tsv",
+                    })
+                runner.finish_dataset("hmp2")
+        self.assertEqual(output.getvalue().count("\n"), 1)
+        self.assertIn("checked 200/200", output.getvalue())
+        self.assertNotIn("individual_sample_", output.getvalue())
+
+    def test_interactive_progress_rewrites_one_line(self):
+        class TTYBuffer(io.StringIO):
+            def isatty(self):
+                return True
+
+        output = TTYBuffer()
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), True, 0, 0)
+            runner.planned["hmp2"] = 2
+            with redirect_stdout(output):
+                runner.record("hmp2", {"status": "candidate", "file": "one.biom"})
+                runner.record("hmp2", {"status": "candidate", "file": "two.biom"})
+                runner.progress("hmp2", force=True)
+                runner.finish_dataset("hmp2")
+        self.assertEqual(output.getvalue().count("\n"), 1)
+        self.assertIn("\r", output.getvalue())
+        self.assertIn("checked 2/2", output.getvalue())
+        self.assertNotIn("one.biom", output.getvalue())
 
     def test_http_range_resumes_incomplete_file(self):
         with tempfile.TemporaryDirectory() as root:
