@@ -1,19 +1,25 @@
 """Offline, focused tests for real-data download safety and resumable transfers."""
 import io
+from http.client import IncompleteRead
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from urllib.error import URLError
 from unittest.mock import patch
 
 from scripts.download_real_omics import Downloader, check_format, safe_path
 
 
 class FakeResponse:
-    def __init__(self, payload: bytes, status=200):
+    def __init__(self, payload: bytes, status=200, range_start=0):
         self.payload = io.BytesIO(payload)
         self.status = status
         self.headers = {"Content-Length": str(len(payload))}
+        if status == 206:
+            self.headers["Content-Range"] = (
+                f"bytes {range_start}-{range_start+len(payload)-1}/*"
+            )
 
     def __enter__(self):
         return self
@@ -58,9 +64,10 @@ class DownloaderTests(unittest.TestCase):
             runner = Downloader(Path(root), False, 1.0, 1.0)
             with patch.dict(sys.modules, {"boto3": None}), patch.object(
                 runner, "figshare_article"
-            ) as figshare:
+            ) as figshare, patch.object(runner, "https") as download:
                 runner.ipop()
             figshare.assert_called_once_with("ipop", 12376508, "seasonal")
+            download.assert_called_once()
             self.assertEqual(runner.failed, 1)
             self.assertIn("ipop", runner.incomplete)
 
@@ -135,6 +142,62 @@ class DownloaderTests(unittest.TestCase):
         self.assertEqual(runner.max_file, float("inf"))
         self.assertEqual(runner.max_total, float("inf"))
 
+    def test_chunked_incomplete_read_resumes_and_keeps_exact_bytes(self):
+        content = b"\x1f\x8b" + b"abcdefghijklm"
+        class BrokenStream(FakeResponse):
+            def __init__(self):
+                super().__init__(content)
+
+            def read(self, size):
+                if self.payload.tell() < 7:
+                    return self.payload.read(7)
+                raise IncompleteRead(content[7:10], len(content) - 7)
+
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), False, 0, 0)
+            with patch("scripts.download_real_omics.urlopen", side_effect=[
+                BrokenStream(),
+                FakeResponse(content[7:], status=206, range_start=7),
+            ]) as urlopen, patch("scripts.download_real_omics.time.sleep"):
+                runner.https("hmp2", "sample.gz", "https://example.org/sample.gz")
+            self.assertEqual(urlopen.call_count, 2)
+            self.assertEqual(
+                urlopen.call_args_list[1].args[0].headers["Range"], "bytes=7-",
+            )
+            self.assertEqual(
+                (Path(root) / "raw/hmp2/sample.gz").read_bytes(), content,
+            )
+            self.assertEqual(runner.downloaded, 1)
+            self.assertEqual(runner.failed, 0)
+
+    def test_range_ignored_restarts_instead_of_corrupting(self):
+        content = b"\x1f\x8b" + b"entire-content"
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root) / "raw" / "hmp2"
+            folder.mkdir(parents=True)
+            (folder / "sample.gz.part").write_bytes(content[:5])
+            runner = Downloader(Path(root), False, 0, 0)
+            with patch("scripts.download_real_omics.urlopen",
+                       return_value=FakeResponse(content)):
+                runner.https("hmp2", "sample.gz", "https://example.org/sample.gz")
+            self.assertEqual((folder / "sample.gz").read_bytes(), content)
+            self.assertEqual(runner.failed, 0)
+
+    def test_persistent_error_does_not_abort_subsequent_file(self):
+        with tempfile.TemporaryDirectory() as root:
+            runner = Downloader(Path(root), False, 0, 0)
+            with patch("scripts.download_real_omics.urlopen",
+                       side_effect=URLError("dropped")), \
+                 patch("scripts.download_real_omics.time.sleep"):
+                runner.https("hmp2", "first.tsv", "https://example.org/first.tsv")
+            self.assertEqual(runner.failed, 1)
+            self.assertEqual(len(runner.report["hmp2"]), 1)
+            with patch("scripts.download_real_omics.urlopen",
+                       return_value=FakeResponse(b"sample\tfeature\n1\t2\n")):
+                runner.https("hmp2", "second.tsv", "https://example.org/second.tsv")
+            self.assertEqual(runner.downloaded, 1)
+            self.assertTrue((Path(root) / "raw/hmp2/second.tsv").exists())
+
     def test_http_range_resumes_incomplete_file(self):
         with tempfile.TemporaryDirectory() as root:
             dataset = Path(root) / "raw" / "covaar"
@@ -143,7 +206,7 @@ class DownloaderTests(unittest.TestCase):
             runner = Downloader(Path(root), False, 1.0, 1.0)
             with patch(
                 "scripts.download_real_omics.urlopen",
-                return_value=FakeResponse(b"\x08rest-of-payload", status=206),
+                return_value=FakeResponse(b"\x08rest-of-payload", status=206, range_start=2),
             ) as request:
                 runner.https(
                     "covaar", "sample.txt.gz",
