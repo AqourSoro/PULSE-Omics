@@ -64,10 +64,10 @@ class DownloaderTests(unittest.TestCase):
         from scripts.download_real_omics import csiro_download_targets
         raw = (
             "https://data.csiro.au/dap/ws/v2/collections/77992/downloadfile?"
-            "fileName=Proteomics%2Fintensities.csv&amp;format=raw\\n"
-            "https://data.csiro.au/dap/files/metadata.xlsx\\n"
-            "https://evilcsiro.au/dap/files/not-trusted.csv\\n"
-            "https://data.csiro.au/dap/collection/landing-page\\n"
+            "fileName=Proteomics%2Fintensities.csv&amp;format=raw\n"
+            "https://data.csiro.au/dap/files/metadata.xlsx\n"
+            "https://evilcsiro.au/dap/files/not-trusted.csv\n"
+            "https://data.csiro.au/dap/collection/landing-page\n"
         )
         found = csiro_download_targets(raw)
         self.assertEqual(len(found), 2)
