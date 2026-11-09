@@ -43,13 +43,13 @@ class CohortJoinAuditTests(unittest.TestCase):
             pd.DataFrame({'Metabolite':['X'],'Sample_001':[1], 'Sample_002':[2]}).to_csv(
                 base/'figshare/Metabolomics_Data.csv',index=False)
             with gzip.open(base/'geo/GSE325178_SomaScan_RFUs_allSamples.txt.gz','wt') as stream:
-                stream.write('AptName\\tSeqId\\tTarget\\tEntrezGeneSymbol\\tUniProt\\tVA0001\\tVA0002\\n')
-                stream.write('X\\tY\\tZ\\tQ\\tR\\t2\\t3\\n')
+                stream.write('AptName\tSeqId\tTarget\tEntrezGeneSymbol\tUniProt\tVA0001\tVA0002\n')
+                stream.write('X\tY\tZ\tQ\tR\t2\t3\n')
             with gzip.open(base/'geo/GSE325178_series_matrix.txt.gz','wt') as stream:
-                stream.write('!Sample_title\\tGEO-title-1\\tGEO-title-2\\n')
-                stream.write('!Sample_characteristics_ch1\\t"sample id: VA0001"\\t"sample id: VA0002"\\n')
-                stream.write('!Sample_characteristics_ch1\\t"patient: P1"\\t"patient: P1"\\n')
-                stream.write('!Sample_characteristics_ch1\\t"time: T1"\\t"time: T2"\\n')
+                stream.write('!Sample_title\tGEO-title-1\tGEO-title-2\n')
+                stream.write('!Sample_characteristics_ch1\t"sample id: VA0001"\t"sample id: VA0002"\n')
+                stream.write('!Sample_characteristics_ch1\t"patient: P1"\t"patient: P1"\n')
+                stream.write('!Sample_characteristics_ch1\t"time: T1"\t"time: T2"\n')
             result=audit_covaar(root)
             self.assertEqual(result['protein_to_geo_title']['matching_distinct'],0)
             self.assertEqual(result['protein_ids_found_in_any_geo_sample_field'],2)
