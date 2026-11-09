@@ -51,7 +51,7 @@ def audit_covaar(root: Path) -> dict:
         protein_cols = pd.read_csv(f, sep='\t', nrows=0).columns.tolist()
     meta_ids = meta['Sample_ID'].map(_canonical_text)
     met_ids = [s for s in metabolism_cols if s != 'Metabolite']
-    protein_ids = protein_cols[5:]  # first five are assay-feature annotation fields
+    protein_ids = [col for col in protein_cols if re.fullmatch(r'VA\d+', col)]
     # GEO sample metadata are column-wise '!Sample_*' entries, not the assay data.
     series = folder / 'geo/GSE325178_series_matrix.txt.gz'
     available = {'!Sample_title': [], '!Sample_geo_accession': []}

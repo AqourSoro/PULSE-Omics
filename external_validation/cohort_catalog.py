@@ -17,7 +17,7 @@ from external_validation import run as validation
 from external_validation.prepare_hmp2 import METAB, PROTEIN, METADATA
 
 UNITS = {'su2020':'T1/T2 order', 'csiro':'study stage order',
-         'ipop':'elapsed day', 'hmp2':'study week number'}
+         'ipop':'elapsed day', 'hmp2':'study week number', 'covaar':'trial-event order'}
 XLSX_LABELS = {'S1.3 Plasma Proteomic Data':2,'S1.4 Plasma Metabolomic Data':2,'COVID HPV CCM':8,'HPC QAQC':1}
 
 
@@ -30,19 +30,25 @@ def workbook(path, feature_file):
             nonempty = [i for i,row in enumerate(rows,1) if any(x is not None for x in row)]
             width = ws.max_column
             headers = [3] if path.name.startswith('000_') else [1]
-            if ws.title.startswith(('S1.5 ','S1.6 ')):
+            if ws.title.startswith('S1.5 '):
                 headers = [1,2]
+            if ws.title.startswith('S1.6 '):
+                headers = [1,2,3]
             shape = {'sheet':ws.title,'worksheet_rows':len(rows),'columns':width,
                      'nonempty_rows':len(nonempty), 'last_nonempty_row':max(nonempty,default=0)}
             if 'QToF' in ws.title and 'data' in ws.title:
-                labels = [(i+1,row[8]) for i,row in enumerate(rows) if isinstance(row[8],str)]
+                sample_header = next(i for i,row in enumerate(rows) if row[0] == 'Data file')
+                labels = [(i+1,row[8]) for i,row in enumerate(rows[:sample_header]) if isinstance(row[8],str)]
+                shape['sample_header_row'] = sample_header+1
+                shape['sample_metadata_fields'] = list(rows[sample_header][:9])
+                shape['sample_rows_by_label'] = dict(Counter(r[7] for r in rows[sample_header+1:]))
                 shape['feature_axis'] = 'columns from J, annotated by feature-property rows'
                 shape['native_feature_property_rows'] = labels
                 compound_cols = [j for j in range(9,width) if isinstance(rows[0][j],(int,float))]
                 shape['feature_count'] = len(compound_cols)
                 for j in compound_cols:
                     feature_file.write(json.dumps({'file':path.name,'sheet':ws.title,'column':j+1,
-                        'raw_feature_id':rows[0][j],'properties':{f'{i}:{label}':rows[i-1][j] for i,label in labels[:25]}},
+                        'raw_feature_id':rows[0][j],'properties':{f'{i}:{label}':rows[i-1][j] for i,label in labels}},
                         ensure_ascii=False,default=str)+'\n')
             else:
                 shape['header_rows'] = {str(h):rows[h-1] for h in headers}
@@ -60,7 +66,18 @@ def workbook(path, feature_file):
                     for j in range(start_col,width):
                         feature_file.write(json.dumps({'file':path.name,'sheet':ws.title,'column':j+1,
                             'raw_feature_id':rows[start-1][j]},ensure_ascii=False,default=str)+'\n')
-                if ws.title == 'Proteins' or 'RAW DATA' in ws.title.upper() or ws.title.endswith('library name'):
+                if ws.title.startswith('S1.6 '):
+                    for j in (0,11,22):
+                        for i,row in enumerate(rows[3:],4):
+                            if row[j] is not None:
+                                feature_file.write(json.dumps({'file':path.name,'sheet':ws.title,
+                                    'row':i,'column':j+1,'raw_feature_id':row[j],
+                                    'comparison':rows[1][j],'annotation':dict(zip(rows[2][j+8:j+11],row[j+8:j+11]))},
+                                    ensure_ascii=False,default=str)+'\n')
+                is_feature_table = (ws.title == 'Proteins' or 'RAW DATA' in ws.title.upper()
+                                    or ws.title.endswith('library name') or 'lipid id stats' in ws.title.lower()
+                                    or 'Surface Protein Panel' in ws.title)
+                if is_feature_table:
                     header = rows[0]
                     key = header.index('Accession') if ws.title=='Proteins' else 0
                     fields = [j for j,c in enumerate(header) if c is not None and not str(c).startswith('Abundance:')]
@@ -200,6 +217,8 @@ def run_catalog(root, out):
     out.mkdir(parents=True,exist_ok=True)
     report = {'canonical':{},'source_workbooks':{},'files':[]}
     for d in UNITS:
+        if d == 'covaar' and not (validation.dataset_dir(root,d)/'subjects.csv').is_file():
+            continue
         report['canonical'][d] = paired_catalog(root,d,out)
     for cohort in ('su2020','csiro'):
         with gzip.open(out/f'{cohort}_native_features.jsonl.gz','wt',encoding='utf-8') as feature_file:
@@ -208,7 +227,7 @@ def run_catalog(root, out):
     report['hmp2_native'] = hmp2_native(root/'raw/hmp2',out)
     if (root/'raw/covaar').is_dir():
         report['covaar_native'] = covaar_native(root/'raw/covaar',out)
-    for cohort in (*UNITS,'covaar'):
+    for cohort in UNITS:
         for file in sorted((root/'raw'/cohort).rglob('*')):
             if not file.is_file() or not file.name.lower().endswith(('.csv','.gz','.xlsx','.rdata','.txt')):
                 continue

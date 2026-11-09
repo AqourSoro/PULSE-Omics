@@ -47,6 +47,18 @@ def fetch_missing(root, dataset):
     elif dataset == 'csiro':
         if not all(any(raw.glob(f'{n:03d}_*.xlsx')) for n in range(2,7)):
             d.csiro()
+    elif dataset == 'covaar':
+        from external_validation.scripts.download_real_omics import COVAAR
+        for name, url in COVAAR.items():
+            if not (raw/'geo'/name).is_file():
+                if 'RFUs' in name:
+                    url = f'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE325178&format=file&file={name}'
+                d.https(dataset,f'geo/{name}',url)
+        figshare = {'Metabolite_Meta_Data.csv': 62724259, 'Metabolomics_Data.csv': 62724262,
+                    'Sample_Meta_Data.csv': 62724265}
+        for name, file_id in figshare.items():
+            if not (raw/'figshare'/name).is_file():
+                d.https(dataset,f'figshare/{name}',f'https://ndownloader.figshare.com/files/{file_id}')
     if dataset in d.report:
         d.flush(dataset)
     if d.failed:
@@ -71,6 +83,9 @@ def prepare(root, dataset, download=False):
     elif dataset == 'ipop':
         from external_validation.prepare_ipop import prepare as extract
         extract(root, permit_release_row_order=True)
+    elif dataset == 'covaar':
+        from external_validation.prepare_covaar import prepare as extract
+        extract(root)
     elif dataset == 'hmp2':
         from external_validation.prepare_hmp2 import prepare as extract
         extract(root)
@@ -334,7 +349,7 @@ def study_dataset(root,dataset,args,output):
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--data-root',type=Path,default=Path(os.environ.get('PULSE_OMICS_DATA_ROOT',DEFAULT_ROOT)))
-    p.add_argument('--datasets',nargs='+',choices=COHORTS,default=list(COHORTS))
+    p.add_argument('--datasets',nargs='+',choices=(*COHORTS, 'covaar'),default=list(COHORTS))
     p.add_argument('--seeds',nargs='+',type=int,default=[42,137,509])
     p.add_argument('--device',default='cuda' if torch.cuda.is_available() else 'cpu')
     p.add_argument('--epochs',type=int,default=50)

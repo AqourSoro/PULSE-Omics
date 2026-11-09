@@ -388,3 +388,20 @@ longitudinal counts from the prepared cohorts and available publisher sources.
 `external_validation.interpret_study --data-root ROOT --runs RUN_DIR --output DIR`
 computes patient-paired contrasts and cohort association statistics from the
 actual held-out results. Keep participant-level results outside Git.
+
+COVAAR is an optional exploratory cohort (`--datasets covaar --fetch-missing`).
+The source preparer matches the GEO and supplemental RFU matrices by exact
+probe vectors, then matches Figshare by participant, intervention and trial
+time. Duplicate crossover boundary labels collapse only when their Figshare
+vectors agree. Specimen-level equivalence is unavailable. The 16 participants
+and ordinal separation between trial phases warrant separate interpretation.
+
+The patient-matched linear references reuse the stored splits and feature panels:
+
+```bash
+python -m external_validation.reference_baselines --data-root ROOT --runs RUN_DIR --output reference_baselines.csv
+```
+
+Each direction compares current source ridge, current source plus averaged
+history ridge, history-only ridge, and the recent target mean against the
+corresponding trained PULSE arm.
