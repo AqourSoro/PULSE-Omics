@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 import pandas as pd
-from external_validation.prepare_csiro import prepare
+from external_validation.prepare_csiro import prepare, _visits
 
 
 def fixture(root: Path):
@@ -43,6 +43,35 @@ class CsiroPreparerTests(unittest.TestCase):
             self.assertIn('Lactate',metab)
             self.assertEqual(subs.groupby('patient_id').size().max(),2)
             self.assertEqual(prot.loc[0,'sample_id'],metab.loc[0,'sample_id'])
+
+    def test_006_unmatched_blank_source_id_does_not_block_matched_visits(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);fixture(root)
+            path=root/'raw/csiro/006_Task metabolomics.xlsx'
+            tab=pd.read_excel(path,sheet_name='COVID HPV CCM')
+            extras=pd.DataFrame([{'Data File':'QC','Sample IDS (Barcode)':None,
+                                  'Subject ID':None,'Times':None}])
+            pd.concat([tab,extras],ignore_index=True).to_excel(
+                path,sheet_name='COVID HPV CCM',index=False)
+            report=prepare(root,inspect_only=True)
+            self.assertEqual(report['verified_paired_samples'],16)
+            self.assertEqual(report['empty_native_006_ids'],1)
+            self.assertEqual(report['ambiguous_matched_006_rows'],0)
+
+    def test_006_duplicate_matching_native_id_excluded_not_selected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);fixture(root)
+            path=root/'raw/csiro/006_Task metabolomics.xlsx'
+            tab=pd.read_excel(path,sheet_name='COVID HPV CCM')
+            pd.concat([tab,tab.iloc[[0]]],ignore_index=True).to_excel(
+                path,sheet_name='COVID HPV CCM',index=False)
+            report=prepare(root,inspect_only=True)
+            self.assertEqual(report['verified_paired_samples'],15)
+            self.assertEqual(report['ambiguous_matched_006_rows'],2)
+
+    def test_published_named_visit_stages_in_chronological_order(self):
+        stages=pd.Series(['Baseline','2wk 2nd Dose','6mo 2nd Dose','2wk 3rd Dose'])
+        self.assertEqual(_visits(stages).tolist(),[0.,1.,2.,3.])
 
     def test_no_implicit_mapping_by_row_number(self):
         with tempfile.TemporaryDirectory() as tmp:
