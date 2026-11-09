@@ -6,7 +6,7 @@ from zipfile import ZipFile
 
 from openpyxl import Workbook
 
-from scripts.su2020_data import install_workbook, obtain_workbook, validate_workbook
+from external_validation.scripts.su2020_data import install_workbook, obtain_workbook, validate_workbook
 
 
 class Su2020DataTests(unittest.TestCase):

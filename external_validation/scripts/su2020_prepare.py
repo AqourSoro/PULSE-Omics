@@ -6,7 +6,7 @@ import argparse
 import os
 from pathlib import Path
 
-from omics.su2020 import prepare
+from external_validation.omics.su2020 import prepare
 
 DATA_ROOT = "/mnt/f/datasets/pulse-omics"
 

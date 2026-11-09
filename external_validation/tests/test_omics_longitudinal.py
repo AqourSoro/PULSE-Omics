@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from omics.longitudinal import load_sequences
+from external_validation.omics.longitudinal import load_sequences
 
 
 class LongitudinalOmicsTests(unittest.TestCase):

@@ -149,7 +149,7 @@ def fetch(destination: Path, source: str, overwrite: bool) -> None:
         "No automated source supplied a valid Table S1 workbook:\n"
         + "\n".join(errors)
         + "\nIf publisher download succeeds in your browser, run:\n"
-        + "  python scripts/su2020_data.py import --file /path/to/Table_S1.xlsx\n"
+        + "  python -m external_validation.scripts.su2020_data import --file /path/to/Table_S1.xlsx\n"
         + f"Dataset page: {DATASET_PAGE}"
     )
 
@@ -165,7 +165,7 @@ def inspect(workbook: Path, output: Path, preview_rows: int, preview_cols: int) 
     try:
         from openpyxl import load_workbook
     except ImportError as exc:
-        raise SystemExit("Install: python -m pip install -r requirements-omics.txt") from exc
+        raise SystemExit("Install: python -m pip install -r external_validation/requirements-omics.txt") from exc
     validate_workbook(workbook)
     with workbook.open("rb") as handle:
         sha = hashlib.file_digest(handle, "sha256").hexdigest()

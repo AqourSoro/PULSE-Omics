@@ -3,27 +3,6 @@
 Patient Unified Longitudinal Signal Engine for
 longitudinal multimodal clinical data with missing visits and modalities.
 
-## Public longitudinal multi-omics data (F: drive)
-
-The original Su2020 workbook and all subsequent real data are stored under
-`/mnt/f/datasets/pulse-omics/`, outside the Git repository.
-
-```bash
-conda activate pulse-omics
-python -m pip install -r requirements-data.txt
-python scripts/download_real_omics.py
-python scripts/profile_real_omics.py
-```
-
-The downloader enumerates the published public source indexes for Su2020,
-HMP2, COVAAR, and CSIRO, plus iPOP and P100 public release resources.
-It skips already valid files, resumes interrupted transfers, and writes SHA-256
-records and **incomplete-source errors** only to the F: data drive. Optional
-size caps are disabled by default. HMP2 publicly indexed raw FASTQ/instrument
-files can additionally be fetched with `--include-raw`; this may be a very
-large transfer. No repository commit establishes that local downloads succeeded.
-Complete-access restrictions remain visible in the F: drive manifests.
-
 ## Installation
 
 ```bash

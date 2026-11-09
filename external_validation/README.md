@@ -1,5 +1,26 @@
 # PULSE independent omics validation
 
+## Strict project isolation
+
+Only `external_validation/` differs from the original `main` branch.
+Our source adapters, download tools, additional Python requirements,
+tests, instructions and experimental code are all under this directory.
+The original `pulse/` implementation, `scripts/`, `tests/`, `docs/`,
+root `README.md`, `requirements.txt` and `setup.py` are unchanged.
+
+Run our utilities as Python modules from the repository root:
+`python -m external_validation.scripts.download_real_omics`,
+`python -m external_validation.scripts.su2020_data`,
+`python -m external_validation.run`, etc. The older
+`python scripts/download_real_omics.py` entry point has been moved.
+
+Activate `conda activate pulse-omics` first. Install independent
+requirements with `python -m pip install -r external_validation/requirements-structure.txt`;
+HMP2 additionally requires `ijson>=3.2,<4`. Plotting uses Seaborn and
+Matplotlib. Original data, prepared matrices and trained checkpoints remain
+on F: under `/mnt/f/datasets/pulse-omics/`.
+
+
 This directory is a **separate external-validation experiment**. It imports the unmodified `pulse.model.PulseModel` and the source-specific preparation code for Su2020 and HMP2. It does not edit the paper's implementation, the existing `scripts/` runners, the downloader, or original raw data.
 
 ## What is implemented
@@ -22,6 +43,7 @@ Activate the existing `pulse-omics` conda environment from the repository root:
 
 ```bash
 cd ~/projects/PULSE-Omics
+conda activate pulse-omics
 git pull --ff-only
 python -m py_compile external_validation/run.py
 python -m unittest discover -s external_validation/tests -q
@@ -32,7 +54,7 @@ The original Su2020 Table S1 must exist at either `raw/su2020/table_s1.xlsx` or 
 `--inspect-only` examines existing canonical files and **does not run the Su2020 preparer**. For first-time preparation without training, run the existing source adapter explicitly:
 
 ```bash
-python -c 'from pathlib import Path; from omics.su2020 import prepare; p=Path("/mnt/f/datasets/pulse-omics"); print(prepare(p/"raw/su2020/table_s1.xlsx", p/"processed/external_validation/su2020"))'
+python -c 'from pathlib import Path; from external_validation.omics.su2020 import prepare; p=Path("/mnt/f/datasets/pulse-omics"); print(prepare(p/"raw/su2020/table_s1.xlsx", p/"processed/external_validation/su2020"))'
 python -m external_validation.run --datasets su2020 --inspect-only
 ```
 
@@ -101,6 +123,7 @@ and `feature_metrics.csv` files; it does not rerun or modify the experiment.
 ```bash
 conda activate pulse-omics
 cd ~/projects/PULSE-Omics
+conda activate pulse-omics
 git pull --ff-only
 python -m pip install "seaborn>=0.13,<0.14" "matplotlib>=3.7"
 
@@ -153,7 +176,7 @@ To resume HMP2 only, using the existing resumable downloader:
 ```bash
 conda activate pulse-omics
 cd ~/projects/PULSE-Omics
-python scripts/download_real_omics.py --datasets hmp2 --workers 4
+python -m external_validation.scripts.download_real_omics --datasets hmp2 --workers 4
 ```
 
 The initial HMP2 clinical metadata, proteomics and metabolomics matrices

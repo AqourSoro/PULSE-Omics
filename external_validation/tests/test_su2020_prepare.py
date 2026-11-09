@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 from openpyxl import Workbook
 
-from omics.su2020 import prepare
+from external_validation.omics.su2020 import prepare
 
 
 def fixture(path: Path, bridge: bool, direct_labels: bool = False) -> None:
@@ -110,7 +110,7 @@ class Su2020PreparationTests(unittest.TestCase):
 
     def test_numeric_donor_ids_are_not_converted_into_patient_ids(self):
         self.assertIsNone(
-            __import__("omics.su2020", fromlist=["normalized_patient_sample"]).normalized_patient_sample(1065558)
+            __import__("external_validation.omics.su2020", fromlist=["normalized_patient_sample"]).normalized_patient_sample(1065558)
         )
 
     def test_no_bridge_never_invents_patient_links(self):

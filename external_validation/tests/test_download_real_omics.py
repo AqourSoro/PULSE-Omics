@@ -9,7 +9,7 @@ from pathlib import Path
 from urllib.error import URLError
 from unittest.mock import patch
 
-from scripts.download_real_omics import Downloader, check_format, safe_path
+from external_validation.scripts.download_real_omics import Downloader, check_format, safe_path
 
 
 class FakeResponse:
@@ -49,7 +49,7 @@ class DownloaderTests(unittest.TestCase):
             runner = Downloader(Path(root), False, 1.0, 1.0)
             payload = b"PK\x03\x04" + b"test-supplement-payload"
             with patch(
-                "scripts.download_real_omics.urlopen",
+                "external_validation.scripts.download_real_omics.urlopen",
                 return_value=FakeResponse(payload),
             ) as request:
                 runner.https("p100", "test.zip", "https://example.org/test.zip")
@@ -61,7 +61,7 @@ class DownloaderTests(unittest.TestCase):
             self.assertTrue((Path(root) / "raw/p100/download_manifest.json").exists())
 
     def test_csiro_link_list_accepts_direct_and_downloadfile_urls(self):
-        from scripts.download_real_omics import csiro_download_targets
+        from external_validation.scripts.download_real_omics import csiro_download_targets
         raw = (
             "https://data.csiro.au/dap/ws/v2/collections/77992/downloadfile?"
             "fileName=Proteomics%2Fintensities.csv&amp;format=raw\n"
@@ -100,7 +100,7 @@ class DownloaderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), False, 0, 0)
             with patch(
-                "scripts.download_real_omics.urlopen",
+                "external_validation.scripts.download_real_omics.urlopen",
                 return_value=FakeResponse(json.dumps(metadata).encode()),
             ), patch.object(runner, "https") as download:
                 runner.figshare_article("covaar", 31685023, "figshare")
@@ -121,7 +121,7 @@ class DownloaderTests(unittest.TestCase):
             (folder / "sample.xlsx").write_bytes(b"PK\x03\x04" + b"old-wrong-value")
             runner = Downloader(Path(root), False, 0, 0)
             with patch(
-                "scripts.download_real_omics.urlopen",
+                "external_validation.scripts.download_real_omics.urlopen",
                 return_value=FakeResponse(payload),
             ) as request:
                 runner.https(
@@ -140,7 +140,7 @@ class DownloaderTests(unittest.TestCase):
             folder.mkdir(parents=True)
             (folder / "sample.xlsx.part").write_bytes(payload)
             runner = Downloader(Path(root), False, 0, 0)
-            with patch("scripts.download_real_omics.urlopen") as request:
+            with patch("external_validation.scripts.download_real_omics.urlopen") as request:
                 runner.https(
                     "covaar", "sample.xlsx", "https://example.org/sample.xlsx",
                     expected_size=len(payload), expected_md5=hashlib.md5(payload).hexdigest(),
@@ -153,8 +153,8 @@ class DownloaderTests(unittest.TestCase):
         """The downloader must enumerate source links, not just hard-coded matrices."""
         html = b'<html><a href="https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/products/HMP2/MPX/first.biom.gz">first</a><a href="https://g-227ca.190ebd.75bc.data.globus.org/ibdmdb/products/HMP2/MPX/second.tsv.gz">second</a></html>'
         with tempfile.TemporaryDirectory() as root:
-            with patch("scripts.download_real_omics.urlopen", return_value=FakeResponse(html)):
-                from scripts.download_real_omics import list_http_files
+            with patch("external_validation.scripts.download_real_omics.urlopen", return_value=FakeResponse(html)):
+                from external_validation.scripts.download_real_omics import list_http_files
                 found = list_http_files(
                     "https://www.ibdmdb.org/downloads/html/products_HMP2_Proteomics.html",
                     {"g-227ca.190ebd.75bc.data.globus.org"},
@@ -172,10 +172,10 @@ class DownloaderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), True, 0, 0)
             with patch(
-                "scripts.download_real_omics.HMP2_PRODUCT_PAGES",
+                "external_validation.scripts.download_real_omics.HMP2_PRODUCT_PAGES",
                 ("products_MGX_2017-08-12.html",),
             ), patch(
-                "scripts.download_real_omics.list_http_files", return_value=[href],
+                "external_validation.scripts.download_real_omics.list_http_files", return_value=[href],
             ), patch.object(runner, "https") as downloader:
                 runner.hmp2_all_products()
             downloader.assert_any_call(
@@ -193,9 +193,9 @@ class DownloaderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), True, 0, 0)
             with patch(
-                "scripts.download_real_omics.HMP2_PRODUCT_PAGES", ("one.html",),
+                "external_validation.scripts.download_real_omics.HMP2_PRODUCT_PAGES", ("one.html",),
             ), patch(
-                "scripts.download_real_omics.list_http_files", return_value=[href],
+                "external_validation.scripts.download_real_omics.list_http_files", return_value=[href],
             ), patch.object(runner, "https") as downloader:
                 runner.hmp2_all_products()
             # The independent metadata CSV is still considered, but the
@@ -233,10 +233,10 @@ class DownloaderTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), False, 0, 0)
-            with patch("scripts.download_real_omics.urlopen", side_effect=[
+            with patch("external_validation.scripts.download_real_omics.urlopen", side_effect=[
                 BrokenStream(),
                 FakeResponse(content[7:], status=206, range_start=7),
-            ]) as urlopen, patch("scripts.download_real_omics.time.sleep"):
+            ]) as urlopen, patch("external_validation.scripts.download_real_omics.time.sleep"):
                 runner.https("hmp2", "sample.gz", "https://example.org/sample.gz")
             self.assertEqual(urlopen.call_count, 2)
             self.assertEqual(
@@ -255,7 +255,7 @@ class DownloaderTests(unittest.TestCase):
             folder.mkdir(parents=True)
             (folder / "sample.gz.part").write_bytes(content[:5])
             runner = Downloader(Path(root), False, 0, 0)
-            with patch("scripts.download_real_omics.urlopen",
+            with patch("external_validation.scripts.download_real_omics.urlopen",
                        return_value=FakeResponse(content)):
                 runner.https("hmp2", "sample.gz", "https://example.org/sample.gz")
             self.assertEqual((folder / "sample.gz").read_bytes(), content)
@@ -264,13 +264,13 @@ class DownloaderTests(unittest.TestCase):
     def test_persistent_error_does_not_abort_subsequent_file(self):
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), False, 0, 0)
-            with patch("scripts.download_real_omics.urlopen",
+            with patch("external_validation.scripts.download_real_omics.urlopen",
                        side_effect=URLError("dropped")), \
-                 patch("scripts.download_real_omics.time.sleep"):
+                 patch("external_validation.scripts.download_real_omics.time.sleep"):
                 runner.https("hmp2", "first.tsv", "https://example.org/first.tsv")
             self.assertEqual(runner.failed, 1)
             self.assertEqual(len(runner.report["hmp2"]), 1)
-            with patch("scripts.download_real_omics.urlopen",
+            with patch("external_validation.scripts.download_real_omics.urlopen",
                        return_value=FakeResponse(b"sample\tfeature\n1\t2\n")):
                 runner.https("hmp2", "second.tsv", "https://example.org/second.tsv")
             self.assertEqual(runner.downloaded, 1)
@@ -320,7 +320,7 @@ class DownloaderTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), True, 0, 0)
             runner.planned["hmp2"] = 20
-            with patch("scripts.download_real_omics.time.monotonic",
+            with patch("external_validation.scripts.download_real_omics.time.monotonic",
                        side_effect=[1.0, 11.0]), redirect_stdout(output):
                 runner.record("hmp2", {"status": "candidate", "file": "a.tsv"})
                 runner.record("hmp2", {"status": "candidate", "file": "b.tsv"})
@@ -354,9 +354,9 @@ class DownloaderTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), True, 0, 0, workers=4)
-            with patch("scripts.download_real_omics.HMP2_PRODUCT_PAGES",
+            with patch("external_validation.scripts.download_real_omics.HMP2_PRODUCT_PAGES",
                        ("one.html",)), patch(
-                "scripts.download_real_omics.list_http_files", return_value=urls
+                "external_validation.scripts.download_real_omics.list_http_files", return_value=urls
             ), patch.object(runner, "https", side_effect=fake_download):
                 runner.hmp2_all_products()
         self.assertEqual(len(calls), 9)  # eight products and metadata
@@ -370,7 +370,7 @@ class DownloaderTests(unittest.TestCase):
             (dataset / "sample.txt.gz.part").write_bytes(b"\x1f\x8b")
             runner = Downloader(Path(root), False, 1.0, 1.0)
             with patch(
-                "scripts.download_real_omics.urlopen",
+                "external_validation.scripts.download_real_omics.urlopen",
                 return_value=FakeResponse(b"\x08rest-of-payload", status=206, range_start=2),
             ) as request:
                 runner.https(

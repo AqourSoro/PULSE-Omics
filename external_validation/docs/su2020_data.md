@@ -26,9 +26,9 @@ The downloader honors `PULSE_OMICS_DATA_ROOT` or `--data-root`. It never silentl
 cd ~/projects/PULSE-Omics
 conda activate pulse-omics
 git pull --ff-only
-python -m pip install -r requirements-omics.txt
-python scripts/su2020_data.py fetch
-python scripts/su2020_data.py inspect
+python -m pip install -r external_validation/requirements-omics.txt
+python -m external_validation.scripts.su2020_data fetch
+python -m external_validation.scripts.su2020_data inspect
 ```
 
 The downloader tries [Europe PMC's supplementary ZIP endpoint](https://www.ebi.ac.uk/europepmc/webservices/rest/PMC7598382/supplementaryFiles) first and then PMC's [post-August-2026 AWS article object storage](https://pmc.ncbi.nlm.nih.gov/tools/pmcaws/). These sources may not distribute the supplement depending on licensing or connectivity; they are attempted, not guaranteed. It selects only the Table S1 workbook from an archive, validates that the file is a real XLSX, and records SHA-256. In November 2026 the old PMC attachment path returned a browser interstitial and the anonymous Mendeley API returned HTTP 401; neither is used as an automated fallback.
@@ -36,8 +36,8 @@ The downloader tries [Europe PMC's supplementary ZIP endpoint](https://www.ebi.a
 If automated retrieval fails, visit the [original Mendeley Data v5 page](https://data.mendeley.com/datasets/tzydswhhb5/5), download the version 5 Table S1 workbook using your browser, then import the file from its WSL-visible Windows Downloads path:
 
 ```bash
-python scripts/su2020_data.py import --file '/mnt/c/Users/YOUR_WINDOWS_USER/Downloads/Table S1.xlsx'
-python scripts/su2020_data.py inspect
+python -m external_validation.scripts.su2020_data import --file '/mnt/c/Users/YOUR_WINDOWS_USER/Downloads/Table S1.xlsx'
+python -m external_validation.scripts.su2020_data inspect
 ```
 
 You can instead use a ZIP downloaded through the site's `Download All` button; the importer extracts only Table S1. Keep the downloaded file's actual name in the `--file` argument. No account token is embedded or logged. The importer checks the XLSX structure before placing it on F:. Downloads and imports never overwrite existing data unless `--overwrite` is passed.
@@ -52,14 +52,14 @@ Dataset download and analysis on the user's WSL workstation are separate from mo
 
 ## PULSE longitudinal data adapter
 
-`omics/longitudinal.py` now accepts three **validated canonical CSV files**, once the workbook's actual identifiers have been resolved:
+`external_validation/omics/longitudinal.py` now accepts three **validated canonical CSV files**, once the workbook's actual identifiers have been resolved:
 
 - `subjects.csv`: columns `sample_id,patient_id,visit_order` (one row per blood draw).
 - `proteomics.csv`: one row per `sample_id` with protein abundance columns.
 - `metabolomics.csv`: one row per `sample_id` with metabolite abundance columns.
 
 ```python
-from omics.longitudinal import to_pulse_dataset
+from external_validation.omics.longitudinal import to_pulse_dataset
 dataset, features = to_pulse_dataset(
     subjects_path="/mnt/f/datasets/pulse-omics/processed/su2020/subjects.csv",
     proteomics_path="/mnt/f/datasets/pulse-omics/processed/su2020/proteomics.csv",
@@ -76,7 +76,7 @@ The adapter rejects duplicate sample IDs, contradictory visit assignments, unmat
 After the Table S1 download and workbook inspection succeed, run:
 
 ```bash
-python scripts/su2020_schema.py
+python -m external_validation.scripts.su2020_schema
 ```
 
 This uses the three actual sheets `S1.1 Patient Clinical Data`, `S1.3 Plasma Proteomic Data`, and `S1.4 Plasma Metabolomic Data`. It reports unique-ID overlaps between tables and potential repeating patient IDs, then saves a **local-only** diagnostic:
@@ -94,7 +94,7 @@ Use the dedicated extractor:
 ```bash
 cd ~/projects/PULSE-Omics
 git pull --ff-only
-python scripts/su2020_prepare.py
+python -m external_validation.scripts.su2020_prepare
 ```
 
 It reads the actual headers in three worksheets, exports **all raw assay measurements** (including observed NaNs) into:
@@ -142,7 +142,7 @@ To inspect the **actual** number of matches in the original Su2020 workbook:
 ```bash
 git pull --ff-only
 python -m unittest discover -s tests -p 'test_su2020_prepare.py' -v
-python scripts/su2020_prepare.py
+python -m external_validation.scripts.su2020_prepare
 ```
 
 The report distinguishes `clinical_sample_matches`, `match_sources`,

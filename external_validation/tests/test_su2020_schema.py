@@ -5,7 +5,7 @@ from pathlib import Path
 
 from openpyxl import Workbook
 
-from scripts.su2020_schema import build_report
+from external_validation.scripts.su2020_schema import build_report
 
 
 class SchemaProfilerTests(unittest.TestCase):

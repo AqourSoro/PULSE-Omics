@@ -348,7 +348,7 @@ def run_dataset(dataset, args, root, output):
     if dataset == 'su2020' and args.prepare_su2020 and not all(
         (folder / filename).is_file() for filename in canonical
     ):
-        from omics.su2020 import prepare
+        from external_validation.omics.su2020 import prepare
         candidates = [root/'raw'/'su2020'/'table_s1.xlsx',
                       root/'raw'/'su2020'/'pmc'/'mmc1.xlsx']
         workbook = next((candidate for candidate in candidates if candidate.is_file()), None)
