@@ -26,11 +26,21 @@ def preflight(root: Path, dataset: str, seed=42, min_feature_observations=5):
     for modality, matrix in raw.items():
         a=matrix.to_numpy(dtype=float)
         observed=np.isfinite(a)
+        finite_values = a[observed]
+        nonzero = observed & (a != 0)
         report['modalities'][modality]={
             'features':int(a.shape[1]),
             'samples_with_measurements':int(observed.any(axis=1).sum()),
             'measured_cell_fraction':round(float(observed.mean()),5),
             'all_missing_features':int((~observed.any(axis=0)).sum()),
+            'zero_fraction_among_finite':round(float((finite_values == 0).mean()),5)
+                if finite_values.size else None,
+            'all_zero_features':int((observed.any(axis=0) & ~nonzero.any(axis=0)).sum()),
+            'features_with_fewer_than_five_nonzero_samples':
+                int((nonzero.sum(axis=0) < 5).sum()),
+            'sparse_zero_semantics':('HMP2 BIOM sparse implicit zeros are zeros after export;'
+                 ' zero is not evidence of a measured, quantified abundance')
+                 if dataset=='hmp2' and modality=='metab' else None,
         }
     for source,target in [('protein','metab'),('metab','protein')]:
         key=source+'_to_'+target
@@ -70,7 +80,10 @@ def main(argv=None):
         print(f'{ds}: {report["patients"]} patients, {report["visits"]} visits')
         for m,meta in report['modalities'].items():
             print(f'  {m}: {meta["features"]} features; {meta["samples_with_measurements"]} measured samples; '
-                  f'{meta["measured_cell_fraction"]:.1%} observed cells')
+                  f'{meta["measured_cell_fraction"]:.1%} finite cells; '
+                  f'{meta["zero_fraction_among_finite"]:.1%} zeros; '
+                  f'{meta["all_zero_features"]} all-zero features; '
+                  f'{meta["features_with_fewer_than_five_nonzero_samples"]} features with <5 nonzero samples')
         for direction,tasks in report['directions'].items():
             for name,info in tasks.items():
                 print(f'  {direction}/{name}: {info["eligible_visits"]} visits, '
