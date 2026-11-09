@@ -385,6 +385,71 @@ def run_dataset(dataset, args, root, output):
     return results
 
 
+
+def write_report(output, table):
+    """Summarize only real completed runs; no paper values are inferred."""
+    lines = [
+        '# PULSE external validation', '',
+        'This report contains independent-cohort results, not original UK Biobank replication.',
+        'Raw MAE/MSE across cohorts use different assays and are not directly ranked.', '',
+        '| Cohort | Direction | Task | Arm | Test patients | Median feature r | MAE | MSE |',
+        '|---|---|---|---|---:|---:|---:|---:|',
+    ]
+    completed = table.loc[table.status == 'completed'] if len(table) else pd.DataFrame()
+    def fmt(x):
+        try:
+            number = float(x)
+        except (TypeError, ValueError):
+            return 'NA'
+        return f'{number:.4g}' if np.isfinite(number) else 'NA'
+    for _, row in completed.iterrows():
+        lines.append('| ' + ' | '.join([
+            str(row.get('dataset','')), f"{row.get('source','')} → {row.get('target','')}",
+            str(row.get('task','')), str(row.get('arm','')),
+            fmt(row.get('test_patients')), fmt(row.get('pearson_median')),
+            fmt(row.get('mae_micro')), fmt(row.get('mse_micro')),
+        ]) + ' |')
+    lines.extend(['', '## Matched-cohort ablation differences', '',
+                  'Each contrast uses the same source, target, eligible test patients and feature set.', '',
+                  '| Cohort | Target | Comparison | Δ median r (PULSE − ablation) | Δ MAE (ablation − PULSE) |',
+                  '|---|---|---|---:|---:|'])
+    contrasts = []
+    if len(completed):
+        for (cohort, source, target), subset in completed.loc[
+            completed.task == 'historical_completion'
+        ].groupby(['dataset','source','target']):
+            vals = {str(r['arm']):r for _,r in subset.iterrows()}
+            if 'pulse_full' not in vals:
+                continue
+            for arm in ('no_history_input','no_alignment','last_observation'):
+                if arm not in vals:
+                    continue
+                full, ablation = vals['pulse_full'], vals[arm]
+                a,b = pd.to_numeric(full.get('pearson_median'),errors='coerce'),pd.to_numeric(
+                    ablation.get('pearson_median'),errors='coerce')
+                c,d = pd.to_numeric(full.get('mae_micro'),errors='coerce'),pd.to_numeric(
+                    ablation.get('mae_micro'),errors='coerce')
+                delta_r = float(a-b) if np.isfinite(a) and np.isfinite(b) else None
+                delta_mae = float(d-c) if np.isfinite(c) and np.isfinite(d) else None
+                contrasts.append({'dataset':cohort,'source':source,'target':target,
+                                  'baseline_arm':arm,'delta_median_r':delta_r,'mae_reduction':delta_mae})
+                lines.append(f'| {cohort} | {source} → {target} | full vs {arm} | '
+                             f'{fmt(delta_r)} | {fmt(delta_mae)} |')
+    pd.DataFrame(contrasts, columns=[
+        'dataset','source','target','baseline_arm','delta_median_r','mae_reduction'
+    ]).to_csv(output/'ablation_comparison.csv',index=False)
+    skipped=table.loc[table.status != 'completed'] if len(table) else pd.DataFrame()
+    if len(skipped):
+        lines.extend(['', '## Tasks skipped', ''])
+        for _,row in skipped.iterrows():
+            lines.append(f"- {row.get('dataset')} / {row.get('task')}: "
+                         f"{row.get('reason',row.get('status'))}")
+    lines.extend(['', 'All reported correlations are calculated across samples per feature.',
+                  'A feature with fewer than three paired observations or zero variance has undefined r.',
+                  'Distributions, source modality and visit spacing must be considered before comparing with original paper figures.', ''])
+    (output/'report.md').write_text('\n'.join(lines),encoding='utf-8')
+
+
 def main(argv=None):
     parser=argparse.ArgumentParser(description='Isolated external validation of the original PULSE model')
     parser.add_argument('--data-root',type=Path,default=Path(os.environ.get('PULSE_OMICS_DATA_ROOT',DEFAULT_ROOT)))
@@ -441,6 +506,7 @@ def main(argv=None):
         return 0
     table=pd.DataFrame(rows)
     table.to_csv(output/'summary.csv',index=False)
+    write_report(output, table)
     finished=bool(len(table) and (table.status=='completed').any())
     _write_json(output/'status.json',{'completed_arms':int((table.status=='completed').sum()) if len(table) else 0,
                                      'run_utc':runid,'note':'independent external validation, not same-cohort paper reproduction'})
