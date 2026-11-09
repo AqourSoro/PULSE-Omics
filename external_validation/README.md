@@ -92,3 +92,71 @@ The previous paper's aggregate values cannot be directly ranked against a new co
 If no valid longitudinal patient pairs exist, `historical_completion` is skipped while cross-sectional completion may still run. Fewer than eight eligible patients causes a task to be marked `skipped_insufficient_paired_patients`. An inaccessible or unverified cohort is logged `SKIPPED`; this does not mean its scientific validity has been established. A run with no completed arms returns status 2.
 
 The unit suite uses **small synthetic test fixtures only** to check plumbing, leakage prevention, output structure, and statistics. No synthetic benchmark output is included in the scientific report. After pulling on WSL, run the local tests before the expensive GPU experiments.
+
+## Plot existing results and compare with the published paper
+
+Plotting is **separate from model training**. It reads already completed `summary.csv`
+and `feature_metrics.csv` files; it does not rerun or modify the experiment.
+
+```bash
+conda activate pulse-omics
+cd ~/projects/PULSE-Omics
+git pull --ff-only
+python -m pip install "seaborn>=0.13,<0.14" "matplotlib>=3.7"
+
+python -m external_validation.dataset_status
+
+python -m external_validation.visualize \
+  --run-dir /mnt/f/datasets/pulse-omics/results/pulse_validation/20261109T150325Z
+```
+
+To plot the latest completed result automatically, omit `--run-dir`:
+`python -m external_validation.visualize`.
+
+Figures and comparison tables go into the **selected experiment's** `figures/` directory:
+
+- `01_model_overview.{png,svg}`: per-direction model performance (median per-feature Pearson r and micro-averaged MAE).
+- `02_feature_correlations.{png,svg}`: Pearson-r distributions across measured assay features.
+- `03_paired_feature_effects.{png,svg}`: feature-matched full PULSE versus no-history and no-alignment ablations.
+- `04_paper_context.{png,svg}`: explicit two-panel comparison with the **six exact Pearson-r values printed in the original paper's Fig. 2c**.
+- `paper_comparison.csv`, `paired_feature_effects.csv`, `comparison_report.md`: machine-readable and narrative comparison.
+
+Reference values are in `external_validation/paper_reference.csv`, transcribed
+from Wu et al., *Nature Computational Science* 6, 954–970 (2026),
+Fig. 2c, p. 957, DOI `10.1038/s43588-026-01026-5`.
+That figure evaluates **longitudinal change in one large-LDL lipid-ratio marker**.
+Our independent evaluation uses median per-feature change correlation across
+an assay with different inputs and biomarkers. The two panels are shown for
+context, **not** as an identical-target numerical reproduction. The precise
+Fig. 2a summary medians have **not** been extracted from Supplementary Table 2,
+so they are not populated or invented.
+
+**Important for the previously completed Su2020 run:** the current-only
+and historical task arms used separately selected sample populations/splits.
+Do not subtract their medians and call this the historical-information effect.
+Within the historical task, the full/no-history/no-alignment arms share the
+same held-out cases. Those are the intended within-cohort contrasts.
+
+## Raw downloads versus experimental readiness
+
+`python -m external_validation.dataset_status` summarizes, for each dataset:
+local raw file count, incomplete `.part` downloads, last downloader
+`download_manifest.json` state, issues from the latest pass, and whether
+the three required canonical matrices exist. It makes **no network requests**.
+The manifest status `enumerated_in_this_run` is a description of the last
+source enumeration attempt, **not proof of complete public-source coverage**.
+A dataset with downloaded raw files may still lack a verified patient/visit
+mapping and therefore remain ineligible for experiments.
+
+To resume HMP2 only, using the existing resumable downloader:
+
+```bash
+conda activate pulse-omics
+cd ~/projects/PULSE-Omics
+python scripts/download_real_omics.py --datasets hmp2 --workers 4
+```
+
+The initial HMP2 clinical metadata, proteomics and metabolomics matrices
+can be investigated before downloading every unrelated processed product.
+The external validation script will not run HMP2 until its identifiers
+and visit relationships are genuinely verified.
