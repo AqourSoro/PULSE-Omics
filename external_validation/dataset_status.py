@@ -64,7 +64,7 @@ def main(argv=None):
     p.add_argument('--output',type=Path,help='Optional CSV output; no output file by default')
     a=p.parse_args(argv)
     table=status(a.data_root.expanduser())
-    print('\\nPULSE-Omics 数据状态')
+    print('\nPULSE-Omics 数据状态')
     print('─' * 35)
     ready_count = 0
     for _, row in table.iterrows():
