@@ -105,27 +105,62 @@ def split_cases(cases, seed):
     return ids, groups
 
 
-class Normalizer:
-    """Fit feature selection and z-scaling strictly on training patients."""
+def feature_policy(dataset, *, hmp2_min_nonzero_fraction=0.10,
+                   hmp2_max_features=4096):
+    if dataset == 'hmp2':
+        return {'min_nonzero_fraction':float(hmp2_min_nonzero_fraction),
+                'max_features':int(hmp2_max_features)}
+    return {'min_nonzero_fraction':0.0, 'max_features':0}
 
-    def __init__(self, raw, train_samples, minimum=5):
-        self.names, self.mean, self.std, self.values = {}, {}, {}, {}
+
+class Normalizer:
+    """Select and standardize assay features using training patients only."""
+
+    def __init__(self, raw, train_samples, minimum=5,
+                 min_nonzero_fraction=0.0, max_features=0):
+        if not 0 <= min_nonzero_fraction <= 1 or max_features < 0:
+            raise ValueError('invalid feature selection parameters')
+        self.names, self.mean, self.std, self.values, self.selection = {}, {}, {}, {}, {}
         for mod in MODALITIES:
             frame = raw[mod]
             train = frame.loc[train_samples].to_numpy(dtype=float)
-            n = np.isfinite(train).sum(axis=0)
+            finite = np.isfinite(train)
+            n = finite.sum(axis=0)
             enough = n >= minimum
             var = np.full(train.shape[1], np.nan)
             if enough.any():
                 var[enough] = np.nanvar(train[:, enough], axis=0)
-            use = enough & np.isfinite(var) & (var > 1e-12)
-            if use.sum() == 0:
-                raise ValueError(f'{mod}: no nonconstant features with >= {minimum} training observations')
+            nonzero = (finite & (train != 0)).sum(axis=0)
+            required_nonzero = int(np.ceil(min_nonzero_fraction * len(train)))
+            use = (enough & np.isfinite(var) & (var > 1e-12)
+                   & (nonzero >= required_nonzero))
+            eligible_count = int(use.sum())
+            if eligible_count == 0:
+                raise ValueError(f'{mod}: no eligible features after train-only availability and prevalence filters')
+            if max_features and eligible_count > max_features:
+                eligible = np.flatnonzero(use)
+                # Primary criterion is frequency of observed nonzero abundance;
+                # variance on training patients resolves ties, then source order.
+                order = np.lexsort((eligible, -var[eligible], -nonzero[eligible]))
+                chosen = eligible[order[:max_features]]
+                use[:] = False
+                use[chosen] = True
             self.names[mod] = np.array(frame.columns)[use].tolist()
             avg = np.nanmean(train[:, use], axis=0)
             std = np.nanstd(train[:, use], axis=0)
             self.mean[mod], self.std[mod] = avg, std
             self.values[mod] = frame.loc[:, self.names[mod]]
+            self.selection[mod] = {
+                'input_features':int(train.shape[1]),
+                'eligible_after_train_only_filter':eligible_count,
+                'selected_features':len(self.names[mod]),
+                'training_samples':int(train.shape[0]),
+                'minimum_finite_train_samples':int(minimum),
+                'minimum_nonzero_training_fraction':float(min_nonzero_fraction),
+                'minimum_nonzero_training_samples':required_nonzero,
+                'maximum_features':int(max_features),
+                'ranking':'nonzero sample count descending, then training variance descending, then source order',
+            }
 
     def raw(self, mod, sample):
         return self.values[mod].loc[sample].to_numpy(dtype=np.float32)
@@ -442,10 +477,14 @@ def run_dataset(dataset, args, root, output):
                 continue
             ids, groups=split_cases(cases,args.seed)
             train_samples=subjects.loc[subjects.patient_id.isin(ids['train']),'sample_id'].tolist()
-            norm=Normalizer(raw,train_samples,minimum=args.min_feature_observations)
+            policy = feature_policy(dataset,
+                hmp2_min_nonzero_fraction=args.hmp2_min_nonzero_fraction,
+                hmp2_max_features=args.hmp2_max_features)
+            norm=Normalizer(raw,train_samples,minimum=args.min_feature_observations, **policy)
             taskfolder=output/dataset/f'{source}_to_{target}'/task
             _write_json(taskfolder/'split.json',ids)
             _write_json(taskfolder/'features.json',norm.names)
+            _write_json(taskfolder/'feature_selection.json',norm.selection)
             arms=(('pulse_full',True,False),('no_history_input',False,False),('no_alignment',True,True)) if history else (('pulse_current',False,False),)
             for arm,use_history,no_align in arms:
                 armfolder=taskfolder/arm
@@ -556,6 +595,8 @@ def main(argv=None):
     parser.add_argument('--temporal-model',choices=('recurrent','transformer'),default='recurrent')
     parser.add_argument('--max-history',type=int,default=4)
     parser.add_argument('--min-feature-observations',type=int,default=5)
+    parser.add_argument('--hmp2-min-nonzero-fraction',type=float,default=.10,help='HMP2 training-only minimum nonzero sample fraction')
+    parser.add_argument('--hmp2-max-features',type=int,default=4096,help='HMP2 maximum selected features per modality; 0 disables cap')
     parser.add_argument('--context-weight',type=float,default=.25)
     parser.add_argument('--kl-weight',type=float,default=.001)
     parser.add_argument('--align-weight',type=float,default=.01)
@@ -563,6 +604,8 @@ def main(argv=None):
     args=parser.parse_args(argv)
     if args.epochs<1 or args.patience<1 or args.max_history<1 or args.min_feature_observations<2:
         parser.error('positive epochs/patience/history and min feature observations >= 2 required')
+    if not 0 <= args.hmp2_min_nonzero_fraction <= 1 or args.hmp2_max_features < 0:
+        parser.error('HMP2 feature prevalence must be in [0,1] and feature cap nonnegative')
     if args.lr <= 0 or args.context_weight < 0 or args.kl_weight < 0 or args.align_weight < 0 or args.ridge_alpha <= 0:
         parser.error('learning rate and ridge alpha must be positive; loss weights nonnegative')
     if args.device.startswith('cuda') and not torch.cuda.is_available():
