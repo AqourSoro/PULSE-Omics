@@ -341,9 +341,17 @@ def dataset_dir(root, dataset):
 
 def run_dataset(dataset, args, root, output):
     folder = dataset_dir(root,dataset)
-    if dataset == 'su2020' and args.prepare_su2020 and not (folder/'subjects.csv').is_file():
+    canonical = ('subjects.csv', 'proteomics.csv', 'metabolomics.csv')
+    if dataset == 'su2020' and args.prepare_su2020 and not all(
+        (folder / filename).is_file() for filename in canonical
+    ):
         from omics.su2020 import prepare
-        prep_report=prepare(root/'raw'/'su2020'/'table_s1.xlsx', folder)
+        candidates = [root/'raw'/'su2020'/'table_s1.xlsx',
+                      root/'raw'/'su2020'/'pmc'/'mmc1.xlsx']
+        workbook = next((candidate for candidate in candidates if candidate.is_file()), None)
+        if workbook is None:
+            raise FileNotFoundError(f'Su2020 Table S1 not found in {candidates}')
+        prep_report = prepare(workbook, folder)
         if prep_report['status'] != 'canonical_raw_omics_exported':
             raise ValueError('Su2020: no verified patient-assay links; see preparation_report.json')
     subjects, raw = load_canonical(folder)
