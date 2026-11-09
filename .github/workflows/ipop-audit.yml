@@ -29,7 +29,7 @@ jobs:
           PY
       - name: Inspect real iPOP paired assays
         run: |
-          python -m external_validation.prepare_ipop --data-root "$RUNNER_TEMP/data" --inspect-only --permit-release-row-order\n
+          python -m external_validation.prepare_ipop --data-root "$RUNNER_TEMP/data" --inspect-only --permit-release-row-order
       - name: Export iPOP candidate pairs and calculate empirical longitudinal structure
         run: |
           python -m external_validation.prepare_ipop --data-root "$RUNNER_TEMP/data" --permit-release-row-order
