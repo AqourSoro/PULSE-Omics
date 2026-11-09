@@ -94,6 +94,22 @@ PULSE ablation and `last_observation` baseline are retained.
 The complete scientific protocol, dataset conditions and explicit merge
 criteria are in `external_validation/docs/validation_protocol.md`.
 
+To check the real prepared Su2020/HMP2 numerical assay data, selected
+training-only features and patient-level splits **without fitting models**:
+
+```bash
+cd ~/projects/PULSE-Omics
+conda activate pulse-omics
+python -m external_validation.preflight --datasets su2020 hmp2 --save
+python -m external_validation.run --datasets su2020 hmp2 --inspect-only
+```
+
+The preflight calculates measured-cell fractions, counts of all-missing
+features and effective train/val/test sample sizes. Its JSON output stays
+under each dataset's `processed/external_validation/<dataset>/preflight.json`.
+It does not modify trained checkpoints or previous run directories.
+
+
 ## Prepare and inspect
 
 Activate the existing `pulse-omics` conda environment from the repository root:
