@@ -69,6 +69,8 @@ No data or numerical results are committed to Git. They remain under:
     config.json
     status.json
     summary.csv
+    ablation_comparison.csv
+    report.md
     <dataset>/<source>_to_<target>/<task>/
       split.json
       features.json
