@@ -289,7 +289,8 @@ class Downloader:
                     "bytes": dest.stat().st_size, "status": "existing",
                 })
                 return
-            except (OSError, ValueError) as exc:
+            except (OSError, ValueError):
+                pass
         if self.dry_run:
             self.record(dataset, {"status": "candidate", "file": relative, "source": url})
             return
