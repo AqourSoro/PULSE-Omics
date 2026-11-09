@@ -60,6 +60,22 @@ class DownloaderTests(unittest.TestCase):
             self.assertEqual(runner.existing, 1)
             self.assertTrue((Path(root) / "raw/p100/download_manifest.json").exists())
 
+    def test_csiro_link_list_accepts_direct_and_downloadfile_urls(self):
+        from scripts.download_real_omics import csiro_download_targets
+        raw = (
+            "https://data.csiro.au/dap/ws/v2/collections/77992/downloadfile?"
+            "fileName=Proteomics%2Fintensities.csv&amp;format=raw\\n"
+            "https://data.csiro.au/dap/files/metadata.xlsx\\n"
+            "https://evilcsiro.au/dap/files/not-trusted.csv\\n"
+            "https://data.csiro.au/dap/collection/landing-page\\n"
+        )
+        found = csiro_download_targets(raw)
+        self.assertEqual(len(found), 2)
+        self.assertEqual(set(name for _, name in found),
+                         {"intensities.csv", "metadata.xlsx"})
+        self.assertTrue(any("fileName=Proteomics%2F" in url
+                            for url, _ in found))
+
     def test_ipop_downloads_only_the_published_seasonal_release(self):
         with tempfile.TemporaryDirectory() as root:
             runner = Downloader(Path(root), False, 1.0, 1.0)
