@@ -15,8 +15,9 @@ ROOT=Path('/mnt/f/datasets/pulse-omics')
 COHORTS=('su2020','hmp2','ipop','covaar','csiro')
 
 
-def preflight(root: Path, dataset: str, seed=42, min_feature_observations=5):
-    from external_validation.run import load_canonical, eligible_cases, split_cases, Normalizer
+def preflight(root: Path, dataset: str, seed=42, min_feature_observations=5,
+              hmp2_min_nonzero_fraction=.10, hmp2_max_features=4096):
+    from external_validation.run import load_canonical, eligible_cases, split_cases, Normalizer, feature_policy
     folder=root/'processed'/'external_validation'/dataset
     subjects, raw=load_canonical(folder)
     report={'dataset':dataset,
@@ -52,7 +53,10 @@ def preflight(root: Path, dataset: str, seed=42, min_feature_observations=5):
             if patient_count>=8:
                 ids,groups=split_cases(cases,seed)
                 train_samples=subjects.loc[subjects.patient_id.isin(ids['train']),'sample_id'].tolist()
-                norm=Normalizer(raw,train_samples,minimum=min_feature_observations)
+                policy=feature_policy(dataset,hmp2_min_nonzero_fraction=hmp2_min_nonzero_fraction,
+                                      hmp2_max_features=hmp2_max_features)
+                norm=Normalizer(raw,train_samples,minimum=min_feature_observations,**policy)
+                rec['feature_selection']=norm.selection
                 rec['split_patients']={k:len(v) for k,v in ids.items()}
                 rec['split_visits']={k:len(v) for k,v in groups.items()}
                 rec['selected_training_features']={m:len(features) for m,features in norm.names.items()}
@@ -69,11 +73,14 @@ def main(argv=None):
     parser.add_argument('--datasets',nargs='+',choices=COHORTS,default=['su2020','hmp2'])
     parser.add_argument('--seed',type=int,default=42)
     parser.add_argument('--min-feature-observations',type=int,default=5)
+    parser.add_argument('--hmp2-min-nonzero-fraction',type=float,default=.10)
+    parser.add_argument('--hmp2-max-features',type=int,default=4096)
     parser.add_argument('--save',action='store_true',help='Write preparation QC JSON to F drive')
     args=parser.parse_args(argv)
     for ds in dict.fromkeys(args.datasets):
         try:
-            report=preflight(args.data_root,ds,args.seed,args.min_feature_observations)
+            report=preflight(args.data_root,ds,args.seed,args.min_feature_observations,
+                             args.hmp2_min_nonzero_fraction,args.hmp2_max_features)
         except (ValueError,FileNotFoundError) as e:
             print(f'{ds}: not ready: {e}')
             continue
@@ -90,6 +97,8 @@ def main(argv=None):
             for name,info in tasks.items():
                 print(f'  {direction}/{name}: {info["eligible_visits"]} visits, '
                       f'{info["eligible_patients"]} patients, {info["status"]}')
+                if 'selected_training_features' in info:
+                    print(f'    train-only selected features: {info["selected_training_features"]}')
         if args.save:
             dest=args.data_root/'processed/external_validation'/ds/'preflight.json'
             dest.write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
