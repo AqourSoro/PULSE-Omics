@@ -80,6 +80,16 @@ class PrepareTabularTests(unittest.TestCase):
             self.assertEqual(prepare(root,config)['status'],'insufficient_paired_subjects')
             self.assertFalse((root/'processed').exists())
 
+    def test_unmeasured_assay_row_not_counted_as_a_pair(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d); folder,config=self.setup_data(root)
+            t=pd.read_csv(folder/'metab.csv')
+            t.loc[0,['metabA','metabB']]=float('nan')
+            t.to_csv(folder/'metab.csv',index=False)
+            report=prepare(root,config,inspect_only=True)
+            self.assertEqual(report['verified_paired_samples'],23)
+            self.assertEqual(report['listed_pairs_without_both_measurements'],1)
+
     def test_nonnumeric_measurements_not_silently_imputed(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);folder,config=self.setup_data(root)
