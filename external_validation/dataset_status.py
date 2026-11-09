@@ -37,12 +37,28 @@ def status(root: Path) -> pd.DataFrame:
                'files_downloaded_last_pass':None, 'files_existing_last_pass':None,
                'canonical_files_present':sum((prepared/f).is_file() for f in CANONICAL),
                'canonical_ready':all((prepared/f).is_file() for f in CANONICAL)}
+        entry['listed_files_last_pass'] = None
+        entry['covered_files_last_pass'] = None
+        entry['unresolved_files_last_pass'] = None
         if manifest.is_file():
             try:
                 body=json.loads(manifest.read_text(encoding='utf-8'))
                 if body.get('dataset') not in (name,None):
                     raise ValueError('manifest dataset mismatch')
                 records=body.get('files',[])
+                listed = {
+                    str(item['file']) for item in records
+                    if item.get('file') and item.get('status') in
+                    {'downloaded', 'existing', 'failed', 'candidate'}
+                }
+                covered = {
+                    str(item['file']) for item in records
+                    if item.get('file') and item.get('status') in
+                    {'downloaded', 'existing'}
+                }
+                entry['listed_files_last_pass'] = len(listed)
+                entry['covered_files_last_pass'] = len(covered & listed)
+                entry['unresolved_files_last_pass'] = len(listed - covered)
                 entry.update(download_state=body.get('status','unreported'),
                              files_checked_last_pass=body.get('files_checked_this_run',len(records)),
                              last_pass_issues=body.get('issues'),
@@ -93,6 +109,12 @@ def main(argv=None):
             note = f'下载记录状态：{state}'
         print(f"  下载：本地 {int(row['raw_files_present']):,} 个文件；"
               f"未完成片段 {int(row['partial_files'])} 个；{note}")
+        if row['download_state'] in ('incomplete', 'enumerated_in_this_run') and pd.notna(
+            row['listed_files_last_pass']
+        ):
+            print(f"  本轮已发现并核对：{int(row['covered_files_last_pass']):,}/"
+                  f"{int(row['listed_files_last_pass']):,} 个文件；"
+                  f"未取得 {int(row['unresolved_files_last_pass'])} 个")
         print()
     print(f'实验输入齐全：{ready_count}/{len(table)} 个数据集')
     print('说明：本地文件数不代表下载完整；实验输入齐全仅表示所需文件存在。')
