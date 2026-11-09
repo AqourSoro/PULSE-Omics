@@ -359,3 +359,32 @@ If no exactly identified dual-omics samples exist, the preparer reports
 `insufficient_exact_matched_visits` and writes **no** canonical assay CSVs.
 Do not force pairing by patient-week alone: that identifies a visit but does
 not establish that two sample IDs represent the same biological specimen.
+
+## Matched-patient mechanism study
+
+```bash
+python -m pip install -r external_validation/requirements.txt -r external_validation/requirements-structure.txt
+python -m external_validation.real_study --fetch-missing
+```
+
+This command uses the original `PulseModel` on Su2020, CSIRO, iPOP Seasonal and
+HMP2. It reuses available prepared tables, or invokes the existing source-specific
+preparers. The default data root is `/mnt/f/datasets/pulse-omics` and the default
+device is CUDA when available. `--data-root` and `--device` select a different
+execution environment. Each run stores its exact configuration, input hashes,
+patient splits, training feature sets, validation-selected checkpoints, held-out
+predictions and metrics under `results/real_study/`. To recover an interrupted
+run, use its output directory with `--output` and `--resume` and the original
+training arguments.
+
+Current-only, chronological history, alignment removal, shuffled-history
+training and next-visit forecasting are scored on matched patient splits.
+Forecasts withhold both current assays. Training losses exclude unobserved
+feature cells. Time-gap analysis uses days for iPOP and study weeks for HMP2.
+Su2020 and CSIRO contribute visit-order evidence.
+
+`external_validation.cohort_catalog` writes native feature inventories and
+longitudinal counts from the prepared cohorts and available publisher sources.
+`external_validation.interpret_study --data-root ROOT --runs RUN_DIR --output DIR`
+computes patient-paired contrasts and cohort association statistics from the
+actual held-out results. Keep participant-level results outside Git.
