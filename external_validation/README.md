@@ -1,6 +1,6 @@
 # PULSE independent omics validation
 
-This directory is a **separate external-validation experiment**. It imports the unmodified `pulse.model.PulseModel` and (only for Su2020 preparation) `omics.su2020.prepare`. It does not edit the paper's implementation, the existing `scripts/` runners, the downloader, or original raw data.
+This directory is a **separate external-validation experiment**. It imports the unmodified `pulse.model.PulseModel` and the source-specific preparation code for Su2020 and HMP2. It does not edit the paper's implementation, the existing `scripts/` runners, the downloader, or original raw data.
 
 ## What is implemented
 
@@ -160,3 +160,48 @@ The initial HMP2 clinical metadata, proteomics and metabolomics matrices
 can be investigated before downloading every unrelated processed product.
 The external validation script will not run HMP2 until its identifiers
 and visit relationships are genuinely verified.
+
+
+## HMP2 official matrices: read, verify, prepare
+
+The downloader has already obtained the HMP2 processed product inventory. The
+independent preparer reads **only three primary published source files**:
+
+- `raw/hmp2/hmp2_metadata_2018-08-20.csv`: clinical patient and visit mapping
+- `raw/hmp2/HMP2_proteomics_1pep-pro_1p_FDR_5ppm.tsv.gz`: protein matrix
+- `raw/hmp2/HMP2_metabolomics_w_metadata.biom.gz`: metabolomics matrix
+
+It requires an **identical sample ID** in both matrices, an unambiguous
+`External ID -> (Participant ID, week_num)` in the metadata and a unique
+patient/week assignment. Conflicting or repeated patient-week mappings are
+excluded; row-position joins and fabricated visit identities are forbidden.
+
+```bash
+cd ~/projects/PULSE-Omics
+conda activate pulse-omics
+git pull --ff-only
+python -m pip install "ijson>=3.2,<4"
+python -m unittest discover -s external_validation/tests -p "test_prepare_hmp2.py" -q
+
+# First: number of truly pairable specimens, with no output files written.
+python -m external_validation.prepare_hmp2 --inspect-only
+
+# If inspection yields sufficient paired longitudinal specimens:
+python -m external_validation.prepare_hmp2
+python -m external_validation.run --datasets hmp2 --inspect-only
+```
+
+Exports are written exclusively to `processed/external_validation/hmp2/`:
+three canonical CSVs and `preparation_report.json`. No raw files, original
+PULSE implementation, or earlier Su2020 experiment outputs are changed.
+
+The BIOM file is parsed by `ijson` and a temporary disk-backed matrix to
+avoid loading the entire metabolomics JSON into memory. **BIOM sparse implicit
+entries are kept as zeros, with this convention recorded in the report.**
+These values should be examined in the downstream assay missingness analysis
+before interpreting quantitative accuracy or training on all features.
+
+If no exactly identified dual-omics samples exist, the preparer reports
+`insufficient_exact_matched_visits` and writes **no** canonical assay CSVs.
+Do not force pairing by patient-week alone: that identifies a visit but does
+not establish that two sample IDs represent the same biological specimen.
