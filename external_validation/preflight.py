@@ -79,9 +79,11 @@ def main(argv=None):
             continue
         print(f'{ds}: {report["patients"]} patients, {report["visits"]} visits')
         for m,meta in report['modalities'].items():
+            zero_rate = meta['zero_fraction_among_finite']
+            zero_label = f'{zero_rate:.1%}' if zero_rate is not None else 'NA'
             print(f'  {m}: {meta["features"]} features; {meta["samples_with_measurements"]} measured samples; '
                   f'{meta["measured_cell_fraction"]:.1%} finite cells; '
-                  f'{meta["zero_fraction_among_finite"]:.1%} zeros; '
+                  f'{zero_label} zeros; '
                   f'{meta["all_zero_features"]} all-zero features; '
                   f'{meta["features_with_fewer_than_five_nonzero_samples"]} features with <5 nonzero samples')
         for direction,tasks in report['directions'].items():
