@@ -22,17 +22,36 @@ from external_validation.cohort_join_audit import (_find_excel, _excel_sheet,
 ROOT=Path('/mnt/f/datasets/pulse-omics')
 
 
+# Ordinal study stages. These are NOT elapsed weeks or patient-specific dates.
+# The published 006 "Times" field contains these four named stages.
+CSIRO_VISIT_ORDER = {
+    'baseline': 0.,
+    '2wk 2nd dose': 1.,
+    '6mo 2nd dose': 2.,
+    '2wk 3rd dose': 3.,
+}
+
+
 def _visits(values: pd.Series) -> pd.Series:
-    def decode(x):
-        x=_canonical_text(x)
-        if x is None: return np.nan
-        m=re.fullmatch(r'T(?:ime)?\s*([0-9]+)',x,re.I)
-        if m: return float(m.group(1))
-        try: return float(x)
-        except ValueError: return np.nan
-    order=values.map(decode)
+    def decode(value):
+        label = _canonical_text(value)
+        if label is None:
+            return np.nan
+        label = ' '.join(label.lower().split())
+        if label in CSIRO_VISIT_ORDER:
+            return CSIRO_VISIT_ORDER[label]
+        m = re.fullmatch(r'T(?:ime)?\s*([0-9]+)', label, re.I)
+        if m:
+            return float(m.group(1))
+        try:
+            return float(label)
+        except ValueError:
+            return np.nan
+
+    order = values.map(decode)
     if order.isna().any() or not np.isfinite(order).all():
-        raise ValueError('Cannot derive numerical visit order from actual CCM Times field')
+        labels = sorted(set(str(v) for v in values[order.isna()].dropna()))
+        raise ValueError(f'Unknown native CCM visit stage(s): {labels[:12]}')
     return order.astype(float)
 
 
@@ -90,30 +109,51 @@ def prepare(root: Path, *, inspect_only: bool=False) -> dict:
     for key in ['Sample IDs','protein_id']:
         if link[key].duplicated().any():
             raise ValueError(f'005 native crosswalk has duplicate {key}')
-    met_ids=metab[identity].map(_canonical_text)
-    if met_ids.isna().any() or met_ids.duplicated().any():
-        raise ValueError('006 metabolomics has duplicated or empty native sample IDs')
-    metab=metab.copy()
-    metab['_join_sample']=met_ids
-    link['_join_sample']=link['Sample IDs'].map(_canonical_text)
-    if link['_join_sample'].isna().any():raise ValueError('005 native sample ID is empty')
-    joined=link.merge(metab,on='_join_sample',how='inner',validate='one_to_one',suffixes=('_mapping',''))
+    link['_join_sample'] = link['Sample IDs'].map(_canonical_text)
+    if link['_join_sample'].isna().any():
+        raise ValueError('005 native sample ID is empty')
+    metab = metab.copy()
+    metab['_join_sample'] = metab[identity].map(_canonical_text)
+    # 006 may include QC or blank rows outside the mapped 005 specimens.
+    # Discard unmatched source records, never assume a row number is an ID.
+    blank_006 = int(metab['_join_sample'].isna().sum())
+    candidates = metab.loc[metab['_join_sample'].isin(link['_join_sample'])].copy()
+    duplicate_ids = set(candidates.loc[candidates['_join_sample'].duplicated(keep=False), '_join_sample'])
+    ambiguous_006 = int(candidates['_join_sample'].isin(duplicate_ids).sum())
+    candidates = candidates.loc[~candidates['_join_sample'].isin(duplicate_ids)]
+    joined = link.merge(candidates, on='_join_sample', how='inner',
+                        validate='one_to_one', suffixes=('_mapping',''))
     protein=_proteins(folder)
     joined=joined.loc[joined.protein_id.isin(protein.index)].copy()
     if joined.empty:
         return {'dataset':'csiro','status':'needs_verified_crosswalk',
                 'reason':'No exact 005 proteomic# names match 002-004 abundance headers'}
-    joined['patient_id']=joined['Subject ID'].map(_canonical_text)
-    if joined.patient_id.isna().any():raise ValueError('Missing actual subject in 006 CCM metadata')
-    joined['visit_order']=_visits(joined['Times'])
-    if joined.duplicated(['patient_id','visit_order']).any():
-        raise ValueError('Multiple distinct CCM samples mapped to the same patient and visit')
+    joined['patient_id'] = joined['Subject ID'].map(_canonical_text)
+    missing_patient = int(joined.patient_id.isna().sum())
+    joined = joined.loc[joined.patient_id.notna()].copy()
+    joined['visit_order'] = _visits(joined['Times'])
+    # Multiple specimens at one patient/stage are not unambiguously a single
+    # target observation. Retain neither unless the source provides a rule.
+    duplicated_visits = joined.duplicated(['patient_id', 'visit_order'], keep=False)
+    excluded_visits = int(duplicated_visits.sum())
+    joined = joined.loc[~duplicated_visits].copy()
+    if joined.empty:
+        return {'dataset':'csiro', 'status':'needs_verified_crosswalk',
+                'reason':'No unique patient-stage paired specimens after identity checks',
+                'empty_native_006_ids':blank_006,
+                'ambiguous_matched_006_rows':ambiguous_006,
+                'excluded_duplicate_patient_stage_rows':excluded_visits}
     sample_ids=['csiro_'+str(s) for s in joined['_join_sample']]
     if len(sample_ids)!=len(set(sample_ids)):raise ValueError('non-unique canonical IDs')
     join_counts=joined.patient_id.value_counts()
     report={'dataset':'csiro','status':'inspected',
             'source':'CSIRO 002-006 CHPV workbooks; identity by 005 Sample IDs and 006 '+identity,
             'crosswalk_entries':len(link),'verified_paired_samples':len(joined),
+            'empty_native_006_ids':blank_006,
+            'ambiguous_matched_006_rows':ambiguous_006,
+            'missing_matched_subject_ids':missing_patient,
+            'excluded_duplicate_patient_stage_rows':excluded_visits,
+            'visit_encoding':'published stages: baseline=0, 2wk 2nd dose=1, 6mo 2nd dose=2, 2wk 3rd dose=3 (ordinal)',
             'paired_subjects':int(joined.patient_id.nunique()),
             'subjects_with_two_or_more_pairs':int((join_counts>=2).sum()),
             'eligible_historical':int((join_counts-1).clip(lower=0).sum()),
