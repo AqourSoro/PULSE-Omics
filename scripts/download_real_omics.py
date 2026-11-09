@@ -509,7 +509,7 @@ class Downloader:
                             continue
                         if size > self.max_file:
                             self.incomplete.add("ipop")
-                                    continue
+                            continue
                         entries.append((size, label, relative, key))
             self.mark_discovery("ipop", "s3://hmpdcc/ihmp/t2d/host/", len(entries))
             print(f"iPOP public host objects enumerated: {len(entries)}")
