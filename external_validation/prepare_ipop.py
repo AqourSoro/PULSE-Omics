@@ -120,7 +120,7 @@ def prepare(root: Path, *, inspect_only=False, permit_release_row_order=False, r
                            for pid,date in zip(paired.patient_id,paired.date)]
     report = {
         'dataset':'ipop','source':str(source),
-        'status':'inspected' if inspect_only else 'canonical_raw_omics_exported',
+        'status':'inspected' if inspect_only else 'canonical_processed_omics_exported',
         'protein':preport,'metab':mreport,
         'paired_samples':len(paired), 'paired_subjects':len(counts),
         'subjects_with_two_or_more_pairs':int((counts>=2).sum()),
