@@ -97,12 +97,12 @@ class DownloaderTests(unittest.TestCase):
 
     def test_figshare_bad_existing_file_is_replaced_using_md5(self):
         import hashlib
-        payload = b"PK\\x03\\x04" + b"correct-data"
+        payload = b"PK\x03\x04" + b"correct-data"
         expected = hashlib.md5(payload).hexdigest()
         with tempfile.TemporaryDirectory() as root:
             folder = Path(root) / "raw" / "covaar"
             folder.mkdir(parents=True)
-            (folder / "sample.xlsx").write_bytes(b"PK\\x03\\x04" + b"old-wrong-value")
+            (folder / "sample.xlsx").write_bytes(b"PK\x03\x04" + b"old-wrong-value")
             runner = Downloader(Path(root), False, 0, 0)
             with patch(
                 "scripts.download_real_omics.urlopen",
@@ -118,7 +118,7 @@ class DownloaderTests(unittest.TestCase):
 
     def test_figshare_fully_downloaded_part_is_finalized_without_http(self):
         import hashlib
-        payload = b"PK\\x03\\x04" + b"complete-file"
+        payload = b"PK\x03\x04" + b"complete-file"
         with tempfile.TemporaryDirectory() as root:
             folder = Path(root) / "raw" / "covaar"
             folder.mkdir(parents=True)
