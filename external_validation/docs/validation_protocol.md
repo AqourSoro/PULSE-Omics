@@ -23,8 +23,8 @@
 | Su2020 | 现有 252 个同次双组学样本，既有真实实验已跑过 | 保留输出；正式统一协议运行时另外建新结果目录 |
 | HMP2 | 308 个双组学精确样本、82 名患者，74 名患者至少有两次配对访视 | 已生成 canonical CSV；直接使用这三份真实文件 |
 | iPOP seasonal | RData 内含组学矩阵与注释，但此前发现矩阵行索引与注释行索引不一致 | 先分析真实 RData 的索引语义，拿到可验证的 specimen crosswalk 才导出，不按行号配对 |
-| COVAAR | GEO GSE325178 的 SomaScan 子系列约 16 名参与者、187 个蛋白组样本；代谢组见 Figshare 31685023 | 查明两种组学各自样本 ID 与临床 visit 对照；样本量限制会影响独立测试统计力 |
-| CSIRO | `csiro:77992` 包含接种后多时间点的蛋白、脂质、代谢组处理后数据 | 将原始每份 CSV/XLSX 的列名、样本映射与采样时间逐一确认后导出 |
+| COVAAR | 已取得 Figshare 代谢组与 Sample_Meta_Data.csv、GEO SomaScan 与 series matrix；两种组学样本列分别采用 Sample_... 与 VA... 标识 | 运行 `cohort_join_audit` 检查跨来源原生 ID 和 GEO 样本注释；仅建立可证明的患者访视映射 |
+| CSIRO | 当前已获得 005 蛋白质组编号交叉表、006 CCM 样本与受试者时间信息及 002–004 蛋白质组矩阵 | 使用 `prepare_csiro --inspect-only` 按精确编号检验唯一配对，成功后生成 canonical CSV |
 | P100 | 公开补充附件不等于获批访问的个体级测量数据 | 保留受限状态，禁止从群体统计重建假的个体测量 |
 
 参考原始发布页：
@@ -49,3 +49,10 @@ JSON mapping 的结构参见 `external_validation/tests/test_prepare_tabular.py`
 - 正式训练和统计评价命令确定，数据和实验输出继续保存在 F 盘。
 
 在这些条件完成前不合并、不把模拟测试相关性当作科学结果、不启动完整训练。
+
+## 真实数据新发现后的专用准备程序
+
+- `python -m external_validation.cohort_join_audit --datasets covaar csiro`：读取实际 CSV、GEO series matrix 和 CSI​RO Excel 的样本对应字段，分别生成 `join_audit.json`。报告只包含匹配数和原始字段类别，不输出完整患者标识。
+- `python -m external_validation.prepare_csiro --inspect-only`：核对 005 的 `Sample IDs / proteomic#` 与 006 的 `Sample IDS (Barcode)`，将 `proteomic#` 与 002–004 的真实 `Vac_Plasma_N` 列号匹配，检查受试者和访视唯一性。严格匹配成功后，移除 `--inspect-only` 生成模型输入。
+- iPOP RData 解析保留非致命序列化警告，若仍失败将显示具体解码异常；其矩阵索引与样本注释关联没有证明前不能导出。
+- HMP2 BIOM 稀疏值导出为零后的矩阵需在 `preflight` 中检查全零、稀疏非零特征的数量，正式建模之前确定训练集特征筛选策略。
