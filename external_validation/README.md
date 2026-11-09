@@ -110,6 +110,56 @@ under each dataset's `processed/external_validation/<dataset>/preflight.json`.
 It does not modify trained checkpoints or previous run directories.
 
 
+## Real-world identity audits after the first source-probe run
+
+The initial local source probe identified a direct CSIRO ID crosswalk
+(`005_Task 9 - CHPV Proteomics sample id matching.xlsx`) and a separate
+metabolomics metadata table (`006_Task 9 - COVID CHPV (CCM Metabolomics data).xlsx`).
+We now have a source-specific `prepare_csiro` adapter, covering the three
+AZ/Moderna/Pfizer protein assay books and the CCM metabolomics sheet. It
+requires **exactly matching published sample identifiers** and checks
+`patient_id` and chronological visit order. It never aligns sample rows
+by position or invents cross-modal IDs.
+
+```bash
+cd ~/projects/PULSE-Omics
+conda activate pulse-omics
+git pull --ff-only
+python -m unittest discover -s external_validation/tests -q
+
+# Directly inspect the crosswalk quality (no assay export or model training).
+python -m external_validation.cohort_join_audit --datasets csiro covaar
+python -m external_validation.prepare_csiro --inspect-only
+
+# Only if CSIRO reports a nonzero, uniquely mapped patient/visit set:
+python -m external_validation.prepare_csiro
+python -m external_validation.run --datasets csiro --inspect-only
+```
+
+The COVAAR audit tests the published Figshare `Sample_...` IDs against
+`Sample_Meta_Data.csv`, and GEO `VA...` proteomics sample IDs against
+the `GSE325178_series_matrix.txt.gz` metadata. If those are disjoint,
+GEO patient-and-visit characteristics must provide the independently
+validated correspondence before exporting model inputs.
+
+iPOP decoding is also retried with warnings from unsupported R serialization
+attributes treated as diagnostics rather than fatal errors. To see exact
+remaining errors and object row-ID overlaps:
+
+```bash
+python -m external_validation.source_probe --datasets ipop
+```
+
+No original PULSE source, prior downloaded raw files, existing Su2020
+results or HMP2 canonical matrices are changed by any inspection command.
+
+The HMP2 preflight now reports **zero fractions and all-zero/rarely
+nonzero features**, because the source BIOM file is stored sparsely and
+implicit entries were exported as zeros. A reported 100% finite-cell fraction
+does not establish 100% independently quantified metabolite measurements.
+Use `python -m external_validation.preflight --datasets hmp2 --save`
+to determine how many of its 81,867 metabolite features are informative.
+
 ## Prepare and inspect
 
 Activate the existing `pulse-omics` conda environment from the repository root:
