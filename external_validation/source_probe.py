@@ -143,10 +143,28 @@ def main(argv=None):
         print(f'{ds}: source files {report["files"]}, scanned {report["inspected_files"]}, '
               f'schema={out}')
         for item in report['source_files']:
-            if item['kind'] in {'excel','delimited','zip','r_object','unreadable'}:
-                print(f'  {item["path"]}: {item["kind"]}')
+            kind = item['kind']
+            if kind not in {'excel','delimited','zip','r_object','unreadable'}:
+                continue
+            print(f'  {item["path"]}: {kind}')
+            if kind == 'delimited':
+                for info in item.get('headers', [])[:1]:
+                    print('    header:', ', '.join(info['columns'][:14]))
+            elif kind == 'excel':
+                for sheet in item.get('sheets', [])[:12]:
+                    print(f'    {sheet["name"]}: {sheet["rows"]} rows x {sheet["columns"]} cols')
+                    if sheet.get('first_rows'):
+                        print('      header:', ', '.join(sheet['first_rows'][0][:12]))
+            elif kind == 'zip':
+                print('    members:', ', '.join(v['name'] for v in item.get('members', [])[:8]))
         if 'rdata' in report:
-            print(f'  iPOP RData: {report["rdata"]["status"]}, {len(report["rdata"].get("objects",{}))} objects')
+            details = report['rdata']
+            print(f'  iPOP RData: {details["status"]}, {len(details.get("objects",{}))} objects')
+            for name, obj in details.get('objects', {}).items():
+                if 'rows' in obj:
+                    overlap = sorted(obj['index_matches'].items(), key=lambda x: -x[1])[:2]
+                    print(f'    {name}: {obj["rows"]} x {obj["columns"]}; '
+                          f'row-index overlaps={overlap}')
     return 0
 
 if __name__=='__main__':
