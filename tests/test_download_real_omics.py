@@ -28,7 +28,7 @@ class FakeResponse:
     def __exit__(self, exc_type, exc, tb):
         self.payload.close()
 
-    def read(self, size):
+    def read(self, size=-1):
         return self.payload.read(size)
 
 
