@@ -102,6 +102,8 @@ class ExternalValidationTests(unittest.TestCase):
             self.assertEqual(len(runs),1)
             results=pd.read_csv(runs[0]/'summary.csv')
             self.assertEqual((results.status=='completed').sum(),10)
+            self.assertTrue((runs[0]/'report.md').is_file())
+            self.assertTrue((runs[0]/'ablation_comparison.csv').is_file())
             arm=runs[0]/'su2020'/'protein_to_metab'/'historical_completion'/'pulse_full'
             self.assertTrue((arm/'metrics.json').is_file())
             self.assertTrue((arm/'predictions.csv.gz').is_file())
