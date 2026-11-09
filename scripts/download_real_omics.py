@@ -704,6 +704,10 @@ class Downloader:
                     "CSIRO collection file list did not expose direct public file URLs"
                 )
             self.mark_discovery("csiro", CSIRO_LIST_API, len(downloads))
+            self.inventory["csiro"][-1]["files"] = [
+                {"name": Path(urlparse(url).path).name, "url": url}
+                for url in downloads
+            ]
             for index, url in enumerate(downloads):
                 name = Path(urlparse(url).path).name
                 self.https("csiro", f"{index:03d}_{name}", url)
