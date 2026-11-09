@@ -189,6 +189,49 @@ class Downloader:
         self.report = {}
         self.inventory = {}
         self.incomplete = set()
+        self.planned = {}
+        self.stats = {}
+        self._last_status = 0.0
+        self._status_visible = False
+
+    def progress(self, dataset: str, *, force: bool = False, note: str = "") -> None:
+        """One in-place terminal status line; no per-file stdout messages."""
+        if not sys.stdout.isatty():
+            return
+        now = time.monotonic()
+        if not force and now - self._last_status < 0.5:
+            return
+        self._last_status = now
+        stats = self.stats.get(dataset, {})
+        done = sum(stats.get(k, 0) for k in ("downloaded", "existing", "failed", "candidate"))
+        total = self.planned.get(dataset)
+        count = f"{done}/{total}" if total is not None else str(done)
+        size = self.used / (1024 ** 2)
+        line = (
+            f"{dataset.upper()} {count} | new {stats.get('downloaded', 0)} "
+            f"| existing {stats.get('existing', 0)} | failed {stats.get('failed', 0)} "
+            f"| transferred {size:.1f} MiB"
+        )
+        if note:
+            line += f" | {note}"
+        cols = shutil.get_terminal_size(fallback=(100, 20)).columns
+        sys.stdout.write("\r\033[2K" + line[:max(1, cols - 1)])
+        sys.stdout.flush()
+        self._status_visible = True
+
+    def finish_dataset(self, dataset: str) -> None:
+        if self._status_visible:
+            sys.stdout.write("\r\033[2K")
+            sys.stdout.flush()
+            self._status_visible = False
+        stats = self.stats.get(dataset, {})
+        done = sum(stats.get(k, 0) for k in ("downloaded", "existing", "failed", "candidate"))
+        total = self.planned.get(dataset)
+        checked = f"{done}/{total}" if total is not None else str(done)
+        print(
+            f"{dataset.upper()}: checked {checked}, downloaded {stats.get('downloaded', 0)}, "
+            f"existing {stats.get('existing', 0)}, failed {stats.get('failed', 0)}"
+        )
 
     def mark_discovery(self, dataset: str, source: str, found: int | None,
                        error: str | None = None) -> None:
@@ -201,11 +244,16 @@ class Downloader:
 
     def record(self, dataset: str, entry: dict) -> None:
         self.report.setdefault(dataset, []).append(entry)
+        status = entry.get("status")
+        if status in ("downloaded", "existing", "failed", "candidate"):
+            counts = self.stats.setdefault(dataset, {})
+            counts[status] = counts.get(status, 0) + 1
         if not self.dry_run:
             folder = self.root / "raw" / dataset
             folder.mkdir(parents=True, exist_ok=True)
             with (folder / "download_events.jsonl").open("a", encoding="utf-8") as stream:
                 stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
+        self.progress(dataset)
 
     def flush(self, dataset: str) -> None:
         if self.dry_run:
@@ -236,16 +284,14 @@ class Downloader:
                 check_format(dest)
                 sha = checksum(dest)
                 self.existing += 1
-                print(f"EXISTS {dataset}/{relative} [{dest.stat().st_size} bytes]")
                 self.record(dataset, {
                     "file": relative, "source": url, "sha256": sha,
                     "bytes": dest.stat().st_size, "status": "existing",
                 })
                 return
             except (OSError, ValueError) as exc:
-                print(f"INVALID {dataset}/{relative}: {exc}; retrying")
         if self.dry_run:
-            print(f"CANDIDATE {dataset}/{relative} <= {url}")
+            self.record(dataset, {"status": "candidate", "file": relative, "source": url})
             return
 
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -291,6 +337,7 @@ class Downloader:
                             stream.write(block)
                             received += len(block)
                             self.used += len(block)
+                            self.progress(dataset)
                     if expected and received != expected:
                         raise OSError(
                             f"HTTP body ended early: received {received} of {expected} bytes"
@@ -300,7 +347,6 @@ class Downloader:
                 size, sha = temp.stat().st_size, checksum(temp)
                 temp.replace(dest)
                 self.downloaded += 1
-                print(f"OK {dataset}/{relative} [{size} bytes] sha256={sha}")
                 self.record(dataset, {
                     "file": relative, "source": url, "sha256": sha,
                     "bytes": size, "status": "downloaded",
@@ -324,18 +370,12 @@ class Downloader:
                 )
                 if transient and attempt < max_attempts:
                     partial_bytes = temp.stat().st_size if temp.exists() else 0
-                    print(
-                        f"RETRY {dataset}/{relative} "
-                        f"({attempt}/{max_attempts}; saved {partial_bytes} bytes): "
-                        f"{type(exc).__name__}: {exc}",
-                        file=sys.stderr,
-                    )
+                    self.progress(dataset, force=True, note=f"retry {attempt}/{max_attempts}")
                     time.sleep(min(2 ** (attempt - 1), 8))
                     continue
                 self.failed += 1
                 self.incomplete.add(dataset)
                 message = f"{type(exc).__name__}: {exc}"
-                print(f"FAILED {dataset}/{relative}: {message}", file=sys.stderr)
                 self.record(dataset, {
                     "file": relative, "source": url, "status": "failed",
                     "error": message, "attempts": attempt,
@@ -381,6 +421,7 @@ class Downloader:
                     "status": "discovery_failed", "source": catalog_url,
                     "error": f"{type(exc).__name__}: {exc}",
                 })
+        self.planned["hmp2"] = len(listed) + 1
         for name, url in sorted(listed.items()):
             self.https("hmp2", name, url)
         # Existing clinical metadata from the published HMP2 release.
@@ -467,8 +508,7 @@ class Downloader:
                             continue
                         if size > self.max_file:
                             self.incomplete.add("ipop")
-                            print(f"SKIP iPOP/{key}: optional file-size cap")
-                            continue
+                                    continue
                         entries.append((size, label, relative, key))
             self.mark_discovery("ipop", "s3://hmpdcc/ihmp/t2d/host/", len(entries))
             print(f"iPOP public host objects enumerated: {len(entries)}")
@@ -477,7 +517,6 @@ class Downloader:
             # Small processed tables first; do not copy arbitrary raw MS/sequencing data.
             for size, label, relative, key in sorted(entries):
                 if self.used + size > self.max_total:
-                    print(f"SKIP iPOP/{key}: optional total download budget")
                     self.incomplete.add("ipop")
                     continue
                 self.s3("ipop", f"{label}/{relative}", client, key, size)
@@ -512,7 +551,7 @@ class Downloader:
             except (ValueError, OSError):
                 pass
         if self.dry_run:
-            print(f"CANDIDATE {dataset}/{relative} [{size} bytes] <= {uri}")
+            self.record(dataset, {"status": "candidate", "file": relative, "source": uri, "bytes": size})
             return
         dest.parent.mkdir(parents=True, exist_ok=True)
         temp = dest.with_name(dest.name + ".part")
@@ -541,7 +580,6 @@ class Downloader:
             sha = checksum(temp)
             temp.replace(dest)
             self.downloaded += 1
-            print(f"OK {dataset}/{relative} [{size} bytes] sha256={sha}")
             self.record(dataset, {
                 "file": relative, "source": uri,
                 "bytes": size, "sha256": sha, "status": "downloaded",
@@ -549,7 +587,6 @@ class Downloader:
         except Exception as exc:
             self.failed += 1
             message = f"{type(exc).__name__}: {exc}"
-            print(f"FAILED {dataset}/{relative}: {message}", file=sys.stderr)
             self.record(dataset, {
                 "file": relative, "source": uri,
                 "status": "failed", "error": message,
@@ -676,6 +713,7 @@ def main() -> None:
         elif dataset == "csiro":
             runner.csiro()
         runner.flush(dataset)
+        runner.finish_dataset(dataset)
     print(
         f"\nDownloads: {runner.downloaded}, existing: {runner.existing}, "
         f"failures: {runner.failed}; data root: {runner.root / 'raw'}"
