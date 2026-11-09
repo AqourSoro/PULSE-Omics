@@ -29,4 +29,44 @@ jobs:
           PY
       - name: Inspect real iPOP paired assays
         run: |
-          python -m external_validation.prepare_ipop --data-root "$RUNNER_TEMP/data" --inspect-only --permit-release-row-order
+          python -m external_validation.prepare_ipop --data-root "$RUNNER_TEMP/data" --inspect-only --permit-release-row-order\n
+      - name: Export iPOP candidate pairs and calculate empirical longitudinal structure
+        run: |
+          python -m external_validation.prepare_ipop --data-root "$RUNNER_TEMP/data" --permit-release-row-order
+          python - <<'PY'
+          from pathlib import Path
+          import os, numpy as np, pandas as pd
+          d=Path(os.environ['RUNNER_TEMP'])/'data/processed/external_validation/ipop'
+          s=pd.read_csv(d/'subjects.csv')
+          p=pd.read_csv(d/'proteomics.csv')
+          m=pd.read_csv(d/'metabolomics.csv')
+          assert s.sample_id.equals(p.sample_id) and s.sample_id.equals(m.sample_id)
+          assert s.sample_id.is_unique and not s.duplicated(['patient_id','date']).any()
+          counts=s.groupby('patient_id').size()
+          gaps=s.sort_values(['patient_id','visit_order']).groupby('patient_id').visit_order.diff().dropna()
+          print('LONGITUDINAL patients',len(counts),'pairs',len(s),'with2+',int((counts>=2).sum()),'with3+',int((counts>=3).sum()),'with5+',int((counts>=5).sum()),'with10+',int((counts>=10).sum()))
+          print('VISITS per patient quantiles',np.quantile(counts,[0,.25,.5,.75,1]).tolist())
+          print('DATE bounds',str(s.date.min()),str(s.date.max()))
+          print('GAPS DAYS',len(gaps),'quantiles',np.quantile(gaps,[0,.05,.25,.5,.75,.95,1]).tolist())
+          print('GAP BINS count <30 / 30-90 / 90-180 / 180-365 / 365+',np.histogram(gaps,[0,30,90,180,365,float('inf')])[0].tolist())
+          previous=s.groupby('patient_id').cumcount()>0
+          parent_idx=np.array([j-1 for j in np.flatnonzero(previous)])
+          curr_idx=np.flatnonzero(previous)
+          for name,frame in [('protein',p),('metab',m)]:
+              a=frame.drop(columns='sample_id').to_numpy(dtype=float)
+              assert np.isfinite(a).all()
+              var=a.var(axis=0)
+              print(name,'shape',a.shape,'zero_fraction',round(float((a==0).mean()),6),'negative_fraction',round(float((a<0).mean()),6),'constant_features',int((var<=1e-12).sum()),'q001/q50/q999',np.quantile(a,[.001,.5,.999]).tolist())
+              x=a[parent_idx];y=a[curr_idx]
+              x0=x-x.mean(0);y0=y-y.mean(0)
+              denom=np.sqrt((x0*x0).sum(0)*(y0*y0).sum(0))
+              cor=np.divide((x0*y0).sum(0),denom,out=np.full(a.shape[1],np.nan),where=denom>1e-10)
+              print(name,'longitudinal same-feature Pearson median/q25/q75',np.nanquantile(cor,[.25,.5,.75]).tolist(),'count',int(np.isfinite(cor).sum()))
+          X=p.drop(columns='sample_id').to_numpy(float);Y=m.drop(columns='sample_id').to_numpy(float)
+          X=(X-X.mean(0))/np.maximum(X.std(0),1e-8)
+          Y=(Y-Y.mean(0))/np.maximum(Y.std(0),1e-8)
+          cross=(X.T@Y)/len(X)
+          print('CROSS-OMIC corr abs median/q90/q99',np.quantile(np.abs(cross),[.5,.9,.99]).tolist())
+          print('CROSS-OMIC pairs |r|>0.5',int((abs(cross)>.5).sum()),'out of',cross.size)
+          print('SOURCE_QC_COMPLETE')
+          PY
