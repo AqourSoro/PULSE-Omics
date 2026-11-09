@@ -237,7 +237,7 @@ def prepare(root: Path, inspect_only=False) -> dict:
         return report
     output.mkdir(parents=True,exist_ok=True)
     report_file = output/'preparation_report.json'
-    if len(subjects) < 8:
+    if subjects.patient_id.nunique() < 8:
         report['status'] = 'insufficient_exact_matched_visits'
         report_file.write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
         return report
