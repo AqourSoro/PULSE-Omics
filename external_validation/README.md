@@ -142,23 +142,30 @@ the `GSE325178_series_matrix.txt.gz` metadata. If those are disjoint,
 GEO patient-and-visit characteristics must provide the independently
 validated correspondence before exporting model inputs.
 
-iPOP decoding is also retried with warnings from unsupported R serialization
-attributes treated as diagnostics rather than fatal errors. To see exact
-remaining errors and object row-ID overlaps:
+iPOP source inspection requires the published RData decoder. The local check
+reported `No module named 'rdata'`; install the isolated data requirements and
+rerun inspection to obtain the object/index mapping:
 
 ```bash
+python -m pip install -r external_validation/requirements-structure.txt
 python -m external_validation.source_probe --datasets ipop
 ```
 
 No original PULSE source, prior downloaded raw files, existing Su2020
 results or HMP2 canonical matrices are changed by any inspection command.
 
-The HMP2 preflight now reports **zero fractions and all-zero/rarely
-nonzero features**, because the source BIOM file is stored sparsely and
-implicit entries were exported as zeros. A reported 100% finite-cell fraction
-does not establish 100% independently quantified metabolite measurements.
-Use `python -m external_validation.preflight --datasets hmp2 --save`
-to determine how many of its 81,867 metabolite features are informative.
+The real HMP2 preflight found **35,045 protein features (96.6% zero values;
+7,664 all-zero features)** and **81,867 metabolite features (38.3% zero
+values; 10 all-zero features)**. Its canonical files remain unchanged.
+The historical PULSE validation now selects features **from training patients
+only**: at least 10% nonzero observed abundances per modality, with a default
+maximum of **4,096 selected features per modality**. It first ranks by
+training-patient nonzero counts, then training variance; every run saves the
+selected identities and rule in `feature_selection.json`. Use
+`--hmp2-min-nonzero-fraction` and `--hmp2-max-features` to vary this
+experimental selection; Su2020 defaults are unchanged. The original BIOM
+implicit-zero encoding is still not a claim of independently quantified
+absent analytes.
 
 ## Prepare and inspect
 
@@ -195,7 +202,7 @@ Once the other datasets have **verified** sample/visit/assay joins, use the *sam
 - `proteomics.csv`: unique `sample_id`, then numerical protein columns; missing cells are blank/NaN.
 - `metabolomics.csv`: unique `sample_id`, then numerical metabolite columns; missing cells are blank/NaN.
 
-Missing complete assay rows are allowed. **Do not** join on row number, or use group-level labels in place of sample identifiers. In particular, currently downloaded iPOP, HMP2, COVAAR and CSIRO source matrices are **not assumed** to have verified patient/visit mapping. They are reported as skipped until canonical joins have been demonstrated. P100 individual-level assay values remain access-restricted.
+Missing complete assay rows are allowed. **Do not** join on row number, or use group-level labels in place of sample identifiers. In particular, the iPOP and COVAAR sources are **not yet validated** as paired canonical experiments; HMP2 has 308 exact paired visits, and the CSIRO source-specific adapter requires a real matching report. They are reported as skipped until canonical joins have been demonstrated. P100 individual-level assay values remain access-restricted.
 
 ```bash
 python -m external_validation.run --datasets su2020 ipop hmp2 covaar csiro --inspect-only
@@ -304,8 +311,9 @@ python -m external_validation.scripts.download_real_omics --datasets hmp2 --work
 
 The initial HMP2 clinical metadata, proteomics and metabolomics matrices
 can be investigated before downloading every unrelated processed product.
-The external validation script will not run HMP2 until its identifiers
-and visit relationships are genuinely verified.
+HMP2 source sample identities and visits have since been verified (308 pairs,
+82 patients); run `external_validation.preflight` with the training-only
+feature filter before any expensive experiment.
 
 
 ## HMP2 official matrices: read, verify, prepare
