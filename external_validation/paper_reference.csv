@@ -1,9 +1,7 @@
-<PARSED TEXT FOR SHEET: 1 / 1 TABS
-TAB NAME: paper_reference.csv>
-index,figure,task,metric,model,value,population,aggregation,source
-0,Fig. 2c,longitudinal metabolite change,pearson_r,PULSE full (baseline + follow-up labs),0.85,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
-1,Fig. 2c,longitudinal metabolite change,pearson_r,PULSE baseline only,0.443,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
-2,Fig. 2c,longitudinal metabolite change,pearson_r,PULSE follow-up labs only,0.734,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
-3,Fig. 2c,longitudinal metabolite change,pearson_r,MIDAS follow-up labs,0.633,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
-4,Fig. 2c,longitudinal metabolite change,pearson_r,scVAEIT follow-up labs,0.638,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
-5,Fig. 2c,longitudinal metabolite change,pearson_r,StabMap follow-up labs,0.602,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
+figure,task,metric,model,value,population,aggregation,source
+Fig. 2c,longitudinal metabolite change,pearson_r,PULSE full (baseline + follow-up labs),0.850,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
+Fig. 2c,longitudinal metabolite change,pearson_r,PULSE baseline only,0.443,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
+Fig. 2c,longitudinal metabolite change,pearson_r,PULSE follow-up labs only,0.734,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
+Fig. 2c,longitudinal metabolite change,pearson_r,MIDAS follow-up labs,0.633,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
+Fig. 2c,longitudinal metabolite change,pearson_r,scVAEIT follow-up labs,0.638,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
+Fig. 2c,longitudinal metabolite change,pearson_r,StabMap follow-up labs,0.602,UK Biobank,one large-LDL free-cholesterol-to-total-lipid ratio,DOI:10.1038/s43588-026-01026-5 Fig.2c p.957
