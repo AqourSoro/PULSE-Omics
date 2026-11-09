@@ -56,13 +56,19 @@ def _assay(objects, name, *, permit_release_row_order):
         raise ValueError(f'{name}: duplicate or empty feature names')
     if not pd.Index(matrix.index.astype(str)).is_unique or not pd.Index(metadata.index.astype(str)).is_unique:
         raise ValueError(f'{name}: row identifiers collide after string conversion')
-    if matrix.index.astype(str).equals(metadata.index.astype(str)):
+    same_labels = matrix.index.astype(str).equals(metadata.index.astype(str))
+    # R-decoded generic sequential frame indexes are not specimen IDs.
+    labels = matrix.index.astype(str).tolist()
+    generic = labels in ([str(i) for i in range(len(labels))],
+                         [str(i + 1) for i in range(len(labels))])
+    if same_labels and not generic:
         ordered = metadata.reset_index(drop=True)
-        join_mode = 'native_row_index'
+        join_mode = 'shared_nonsequential_row_labels'
     else:
         if not permit_release_row_order:
-            raise ValueError(f'{name}: native assay row labels differ from annotation labels; '
-                             'source-release parallel row order must be explicitly enabled')
+            raise ValueError(f'{name}: native assay row labels differ from annotation labels '
+                             'or are generic row positions; source-release parallel order '
+                             'must be explicitly enabled')
         ordered = metadata.reset_index(drop=True)
         join_mode = 'published_parallel_row_order'
     dates = [_date(x) for x in ordered['Date']]
