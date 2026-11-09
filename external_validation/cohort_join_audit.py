@@ -57,6 +57,11 @@ def audit_covaar(root: Path) -> dict:
     available = {'!Sample_title': [], '!Sample_geo_accession': []}
     characteristics = []
     geo_attributes = {}
+    protein_id_set = set(protein_ids)
+    # A GEO title/accession need not be the assay specimen ID. Search every
+    # published per-sample metadata field for exact VA identifiers, including
+    # the value following a named "sample id:" characteristic.
+    geo_id_locations = {}
     with gzip.open(series, 'rt', encoding='utf-8-sig', errors='replace') as f:
         for line in f:
             if not line.startswith('!Sample_'):
@@ -67,6 +72,11 @@ def audit_covaar(root: Path) -> dict:
             if not cells: continue
             name = cells[0]
             values = cells[1:]
+            for index, value in enumerate(values):
+                direct = value.strip().strip('"')
+                after_label = direct.rsplit(':', 1)[-1].strip()
+                for candidate in {direct, after_label} & protein_id_set:
+                    geo_id_locations.setdefault(candidate, set()).add(index)
             if name in available: available[name].extend(values)
             if name.startswith('!Sample_characteristics_ch1'):
                 for index,value in enumerate(values):
@@ -86,10 +96,14 @@ def audit_covaar(root: Path) -> dict:
                       else 'cross_assay_ids_differ_need_verified_crosswalk')
     # A joint patient/time lookup is informative only when those exact
     # identity fields occur in official GEO per-sample characteristics.
+    unique_geo_locations = {
+        sample: next(iter(indices)) for sample,indices in geo_id_locations.items()
+        if len(indices) == 1
+    }
+    ambiguous_geo_locations = sum(len(indices) != 1 for indices in geo_id_locations.values())
     geo_patient_time = set()
-    for index,attr in geo_attributes.items():
-        title = available['!Sample_title'][index] if index<len(available['!Sample_title']) else None
-        if title not in protein_ids: continue
+    for sample, index in unique_geo_locations.items():
+        attr = geo_attributes.get(index, {})
         patient = next((attr.get(k) for k in ('patient','subject','participant','subjectid','participantid') if attr.get(k)),None)
         visit = next((attr.get(k) for k in ('time','timepoint','visittime') if attr.get(k)),None)
         if patient and visit:geo_patient_time.add((patient.casefold(),visit.casefold()))
@@ -104,6 +118,8 @@ def audit_covaar(root: Path) -> dict:
             'protein_to_metabolite':_column_overlap(protein_ids,met_ids),
             'protein_to_geo_title':_column_overlap(protein_ids,available['!Sample_title']),
             'protein_to_geo_accession':_column_overlap(protein_ids,available['!Sample_geo_accession']),
+            'protein_ids_found_in_any_geo_sample_field':len(unique_geo_locations),
+            'ambiguous_geo_sample_id_locations':ambiguous_geo_locations,
             'metadata_patients':int(meta.Patient.nunique()),
             'patient_time_unique':bool((time_counts <= 1).all()),
             'patient_time_duplicate_groups':int((time_counts > 1).sum()),
@@ -196,6 +212,8 @@ def main(argv=None):
                 for k in ('metabolite_to_metadata','protein_to_metabolite','protein_to_geo_title','protein_to_geo_accession'):
                     print(f'  {k}: {report[k]["matching_distinct"]} exact IDs')
                 print(f'  patients={report["metadata_patients"]}, unique patient/time={report["patient_time_unique"]}')
+                print('  Exact protein IDs appearing in any GEO sample metadata field:',
+                      report['protein_ids_found_in_any_geo_sample_field'])
                 print('  GEO characteristics:', ', '.join(v['field'] for v in report['geo_characteristic_fields']))
                 print('  GEO patient/time pairs matching Figshare:',report['patient_time_tuples_matching_figshare'])
             else:
