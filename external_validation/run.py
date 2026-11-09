@@ -309,6 +309,78 @@ def evaluate_arm(model, cases, norm, source, target, use_history, args, folder):
 
 
 
+def evaluate_ridge_current(train_cases, test_cases, norm, source, target, folder, alpha=10.0):
+    """Current-source ridge baseline on exactly the PULSE held-out longitudinal cases.
+
+    Fit one multivariate ridge solution per *observed-target-mask pattern*;
+    never use test targets, previous visits, or future observations for fitting.
+    Fixed alpha is an a-priori baseline, not tuned on the test split.
+    """
+    if not train_cases or not test_cases:
+        raise ValueError('Ridge baseline needs nonempty train and test cases')
+    x = np.stack([norm.scaled(source, c.sample) for c in train_cases]).astype(float)
+    y = np.stack([norm.scaled(target, c.sample) for c in train_cases]).astype(float)
+    observed = np.stack([np.isfinite(norm.raw(target, c.sample)) for c in train_cases])
+    x_test = np.stack([norm.scaled(source, c.sample) for c in test_cases]).astype(float)
+    yhat = np.zeros((len(test_cases), y.shape[1]), dtype=float)
+    patterns = {}
+    for k in range(y.shape[1]):
+        key = observed[:, k].tobytes()
+        patterns.setdefault(key, []).append(k)
+    for key, features in patterns.items():
+        mask = observed[:, features[0]]
+        if not mask.any():
+            continue
+        xx = x[mask]
+        yy = y[np.ix_(mask, features)]
+        mean_y = yy.mean(axis=0)
+        if len(xx) < 3:
+            yhat[:, features] = mean_y
+            continue
+        mean_x = xx.mean(axis=0)
+        centered = xx - mean_x
+        gram = centered @ centered.T
+        gram.flat[:: len(xx) + 1] += alpha
+        dual = np.linalg.solve(gram, yy - mean_y)
+        yhat[:, features] = (x_test - mean_x) @ centered.T @ dual + mean_y
+
+    pred = yhat * norm.std[target][None, :] + norm.mean[target][None, :]
+    actual = np.stack([norm.raw(target, c.sample) for c in test_cases])
+    detail, summary = metric_tables(actual, pred, norm.names[target])
+    folder.mkdir(parents=True, exist_ok=True)
+    detail.to_csv(folder/'feature_metrics.csv', index=False)
+    changes_true, changes_pred = [], []
+    prediction_rows = []
+    for i, case in enumerate(test_cases):
+        prev = [s for s in case.history if np.isfinite(norm.raw(target, s)).any()]
+        if prev:
+            old = norm.raw(target, prev[-1])
+            dtrue, dpred = actual[i] - old, pred[i] - old
+        else:
+            dtrue = np.full(actual.shape[1], np.nan)
+            dpred = np.full(actual.shape[1], np.nan)
+        changes_true.append(dtrue)
+        changes_pred.append(dpred)
+        for j, feat in enumerate(norm.names[target]):
+            if np.isfinite(actual[i, j]):
+                prediction_rows.append((case.patient, case.sample, case.visit,
+                                        feat, actual[i,j], pred[i,j], dtrue[j], dpred[j]))
+    change_detail, change_summary = metric_tables(np.stack(changes_true), np.stack(changes_pred), norm.names[target])
+    change_detail.to_csv(folder/'change_feature_metrics.csv', index=False)
+    pd.DataFrame(prediction_rows, columns=[
+        'patient_id', 'sample_id', 'visit_order', 'feature', 'true', 'predicted',
+        'true_change', 'predicted_change']).to_csv(folder/'predictions.csv.gz',index=False,compression='gzip')
+    summary.update({f'change_{key}': value for key, value in change_summary.items()})
+    _write_json(folder/'metrics.json', summary)
+    _write_json(folder/'baseline_config.json', {
+        'method':'per-feature observed-cell kernel ridge', 'alpha':alpha,
+        'train_cases':len(train_cases), 'test_cases':len(test_cases),
+        'target_missingness':'trained only on observed target values',
+        'source_imputation':'train-mean (zero in standardized units)',
+    })
+    return summary
+
+
 def evaluate_persistence(cases, norm, target, folder):
     """Last actually measured target at a prior visit, with no future leakage."""
     truth, pred = [], []
@@ -386,6 +458,13 @@ def run_dataset(dataset, args, root, output):
                 print(f'{dataset} {source}->{target} {task} {arm}: '
                       f'r(median)={metrics["pearson_median"]} MAE={metrics["mae_micro"]:.4g}',flush=True)
             if history:
+                ridge_metrics = evaluate_ridge_current(
+                    groups['train'], groups['test'], norm, source, target,
+                    taskfolder/'ridge_current', alpha=args.ridge_alpha)
+                results.append({'dataset':dataset,'source':source,'target':target,
+                                'task':task,'arm':'ridge_current','status':'completed',
+                                'train_patients':len(ids['train']), 'test_patients':len(ids['test']),
+                                **ridge_metrics})
                 persistence = evaluate_persistence(groups['test'], norm, target,
                                                    taskfolder/'last_observation')
                 if persistence is not None:
@@ -432,7 +511,7 @@ def write_report(output, table):
             vals = {str(r['arm']):r for _,r in subset.iterrows()}
             if 'pulse_full' not in vals:
                 continue
-            for arm in ('no_history_input','no_alignment','last_observation'):
+            for arm in ('no_history_input','no_alignment','ridge_current','last_observation'):
                 if arm not in vals:
                     continue
                 full, ablation = vals['pulse_full'], vals[arm]
@@ -480,11 +559,12 @@ def main(argv=None):
     parser.add_argument('--context-weight',type=float,default=.25)
     parser.add_argument('--kl-weight',type=float,default=.001)
     parser.add_argument('--align-weight',type=float,default=.01)
+    parser.add_argument('--ridge-alpha',type=float,default=10.,help='Fixed ridge baseline penalty on standardized predictors')
     args=parser.parse_args(argv)
     if args.epochs<1 or args.patience<1 or args.max_history<1 or args.min_feature_observations<2:
         parser.error('positive epochs/patience/history and min feature observations >= 2 required')
-    if args.lr <= 0 or args.context_weight < 0 or args.kl_weight < 0 or args.align_weight < 0:
-        parser.error('learning rate must be positive; loss weights must be nonnegative')
+    if args.lr <= 0 or args.context_weight < 0 or args.kl_weight < 0 or args.align_weight < 0 or args.ridge_alpha <= 0:
+        parser.error('learning rate and ridge alpha must be positive; loss weights nonnegative')
     if args.device.startswith('cuda') and not torch.cuda.is_available():
         parser.error('CUDA requested but not available')
     root=args.data_root.expanduser()
