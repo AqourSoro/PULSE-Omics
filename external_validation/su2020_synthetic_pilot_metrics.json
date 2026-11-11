@@ -1,0 +1,83 @@
+{
+  "run_id": 43051118853,
+  "code_commit": "59928867a3bc779250940feae18834935ae57607",
+  "artifact_id": 13870280205,
+  "metrics": {
+    "model": "shared FactorAnalysis + T1/T2 latent transitions + conditional empirical residual Gaussian copula",
+    "model_provenance": "MEFISTO/scDesign3-inspired pilot, NOT the original packages",
+    "time_resolution": "T1/T2 categorical visits; no elapsed-day or GP calibration",
+    "seed": 42,
+    "n_features_each": 50,
+    "n_factors": 6,
+    "log1p_metabolite_features": 50,
+    "patients": {
+      "test": 21,
+      "val": 21,
+      "train": 95
+    },
+    "paired_rows": {
+      "train": 173,
+      "val": 39,
+      "test": 40
+    },
+    "paired_training_patients": 84,
+    "observed_target_fraction": {
+      "train": 0.9905202312138728,
+      "val": 0.9702564102564103,
+      "test": 0.968
+    },
+    "synthetic_patients": 200,
+    "synthetic_rows": 400,
+    "median_univariate_wasserstein": {
+      "synthetic_vs_test": 0.2537517367639216,
+      "training_vs_test": 0.19848612978255514,
+      "shuffled_control_vs_test": 0.2537517367639216
+    },
+    "correlation_error": {
+      "synthetic": {
+        "protein_pearson_mae": 0.11246087690884295,
+        "metab_pearson_mae": 0.17082624136214858,
+        "cross_pearson_mae": 0.165219524764292
+      },
+      "training": {
+        "protein_pearson_mae": 0.10865785125886343,
+        "metab_pearson_mae": 0.15621511197474028,
+        "cross_pearson_mae": 0.14809884464501624
+      },
+      "shuffled_control": {
+        "protein_pearson_mae": 0.3932496060479648,
+        "metab_pearson_mae": 0.20753185459757334,
+        "cross_pearson_mae": 0.2078213463580908
+      }
+    },
+    "conditional_prediction_on_real_test": {
+      "ridge_train_real": {
+        "zmae": 0.6162589230265839,
+        "zmse": 0.6727151154350185,
+        "n_observed_target_cells": 1936
+      },
+      "ridge_train_synthetic": {
+        "zmae": 0.6394047525115159,
+        "zmse": 0.7194255148504689,
+        "n_observed_target_cells": 1936
+      },
+      "ridge_train_shuffled_control": {
+        "zmae": 0.7698604964574021,
+        "zmse": 0.9721230157496266,
+        "n_observed_target_cells": 1936
+      },
+      "pulse_train_real": {
+        "zmae": 0.6452106916501701,
+        "zmse": 0.7282810942060162,
+        "n_observed_target_cells": 1936,
+        "epochs_max": 35
+      },
+      "pulse_train_synthetic": {
+        "zmae": 0.6616276815681463,
+        "zmse": 0.7695748413189434,
+        "n_observed_target_cells": 1936,
+        "epochs_max": 35
+      }
+    }
+  }
+}
