@@ -67,6 +67,21 @@ def assemble(subjects: pd.DataFrame, raw: dict[str, pd.DataFrame],
     return metadata.loc[valid].reset_index(drop=True), p[valid], m[valid]
 
 
+def apply_measurement_transform(assay: dict[str, np.ndarray], n_protein: int):
+    """Log1p nonnegative metabolite assays, leaving log-scale proteomics untouched."""
+    train = assay["train"]
+    flags = np.zeros(train.shape[1], dtype=bool)
+    for j in range(n_protein, train.shape[1]):
+        observed = train[:, j][np.isfinite(train[:, j])]
+        flags[j] = observed.size > 0 and bool(np.all(observed >= 0))
+    transformed = {}
+    for key, values in assay.items():
+        values = values.copy()
+        values[:, flags] = np.log1p(np.maximum(values[:, flags], 0))
+        transformed[key] = values
+    return transformed, flags
+
+
 def estimate_scaling(x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     mean = np.nanmean(x, axis=0)
     sd = np.nanstd(x, axis=0)
@@ -179,16 +194,27 @@ def correlation_gap(real: np.ndarray, fake: np.ndarray, n_protein: int) -> dict[
     }
 
 
-def evaluate_ridge(train: np.ndarray, test: np.ndarray, np_: int) -> dict[str, float]:
+def score_observed(pred: np.ndarray, truth: np.ndarray, observed: np.ndarray) -> dict[str, float]:
+    errors = (pred - truth)[observed]
+    return {"zmae": float(np.abs(errors).mean()), "zmse": float(np.square(errors).mean()),
+            "n_observed_target_cells": int(observed.sum())}
+
+
+def evaluate_ridge(train: np.ndarray, test: np.ndarray, np_: int,
+                   train_valid: np.ndarray, test_valid: np.ndarray) -> dict[str, float]:
     source, target = train[:, :np_], train[:, np_:]
-    predictor = Ridge(alpha=100.).fit(source, target)
-    truth = test[:, np_:]
-    pred = predictor.predict(test[:, :np_])
-    return {"zmae": float(np.mean(np.abs(pred-truth))), "zmse": float(np.mean((pred-truth)**2))}
+    pred = np.zeros((len(test), target.shape[1]))
+    for j in range(target.shape[1]):
+        observed = train_valid[:, np_ + j]
+        if observed.sum() >= 5:
+            pred[:, j] = Ridge(alpha=100.).fit(source[observed], target[observed, j]).predict(test[:, :np_])
+    return score_observed(pred, test[:, np_:], test_valid[:, np_:])
 
 
 def evaluate_pulse(train: np.ndarray, validation: np.ndarray, test: np.ndarray,
-                   np_: int, seed: int, epochs: int) -> dict[str, float]:
+                   np_: int, seed: int, epochs: int,
+                   train_valid: np.ndarray, validation_valid: np.ndarray,
+                   test_valid: np.ndarray) -> dict[str, float]:
     import torch
     from pulse.model import PulseModel
     torch.manual_seed(seed)
@@ -206,23 +232,28 @@ def evaluate_pulse(train: np.ndarray, validation: np.ndarray, test: np.ndarray,
                         [{"protein": 0, "metab": 2}])
         return out["reconstructions"][0]["metab"].numpy()
     rng = np.random.default_rng(seed)
+    def masked_mse(pred, target, valid):
+        return (((pred - target)**2)*valid).sum() / valid.sum().clamp_min(1)
     for epoch in range(epochs):
         model.train()
         for subset in np.array_split(rng.permutation(len(train)), max(1, int(np.ceil(len(train) / 32)))):
             batch = torch.from_numpy(train[subset].astype(np.float32))
+            valid = torch.from_numpy(train_valid[subset].astype(np.float32))
             source, target = batch[:, :np_], batch[:, np_:]
             result = model([{"protein": source, "metab": None}],
                            [{"protein": 0, "metab": 1}],
                            recon_targets=[{"protein": source, "metab": target}])
             decoded = result["reconstructions"][0]
             penalty = result["losses"]
-            loss = (torch.mean((decoded["metab"] - target)**2)
-                    + .25 * torch.mean((decoded["protein"] - source)**2)
+            loss = (masked_mse(decoded["metab"], target, valid[:, np_:])
+                    + .25 * masked_mse(decoded["protein"], source, valid[:, :np_])
                     + .001 * penalty["kl_loss"] + .01 * penalty["alignment_loss"])
             optim.zero_grad()
             loss.backward()
             optim.step()
-        zval = np.mean((predict(validation) - validation[:, np_:])**2)
+        val_pred = predict(validation)
+        vmask = validation_valid[:, np_:]
+        zval = np.square(val_pred - validation[:, np_:])[vmask].mean()
         if zval < best-1e-6:
             best, stale = zval, 0
             best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
@@ -232,10 +263,9 @@ def evaluate_pulse(train: np.ndarray, validation: np.ndarray, test: np.ndarray,
             break
     if best_state is not None:
         model.load_state_dict(best_state)
-    estimate = predict(test)
-    return {"zmae": float(np.mean(np.abs(estimate - test[:, np_:]))),
-            "zmse": float(np.mean((estimate - test[:, np_:])**2)),
-            "epochs_max": epochs}
+    result = score_observed(predict(test), test[:, np_:], test_valid[:, np_:])
+    result["epochs_max"] = epochs
+    return result
 
 
 def draw_figures(out: Path, true: np.ndarray, synth: np.ndarray, np_: int) -> None:
@@ -274,14 +304,17 @@ def run(args: argparse.Namespace) -> dict:
         assay[part] = np.hstack((p, m))
         if len(metadata) < 8:
             raise ValueError(f"Too few paired measurements in {part}: {len(metadata)}")
-    center, sd = estimate_scaling(assay["train"])
-    x = {key: scale(value, center, sd) for key, value in assay.items()}
+    transformed, log1p_flags = apply_measurement_transform(assay, args.features)
+    center, sd = estimate_scaling(transformed["train"])
+    x = {key: scale(value, center, sd) for key, value in transformed.items()}
+    valid_cells = {key: np.isfinite(value) for key, value in assay.items()}
     gen = FactorCopula(args.factors, args.seed).fit(x["train"], rows["train"])
     rng = np.random.default_rng(args.seed + 999)
     synth_meta, synth = gen.sample(args.patients, rng)
     # Matched training patient count for fair synthetic-to-real prediction.
     eligible = max(12, len(partitions["train"]))
     matched_synth = synth[:min(len(synth), 2 * eligible)]
+    matched_synth_valid = np.ones_like(matched_synth, dtype=bool)
     # Validation in the synthetic domain is independent of training data.
     _, extra = gen.sample(max(16, len(partitions["val"])), rng)
     # Negative control: preserve all univariate marginals but remove dependence.
@@ -294,9 +327,11 @@ def run(args: argparse.Namespace) -> dict:
         "seed": args.seed,
         "n_features_each": args.features,
         "n_factors": gen.factor.n_components,
+        "log1p_metabolite_features": int(log1p_flags.sum()),
         "patients": {key: len(ids) for key, ids in partitions.items()},
         "paired_rows": {key: len(rows[key]) for key in rows},
         "paired_training_patients": len(gen.pairs),
+        "observed_target_fraction": {key: float(valid_cells[key][:, np_:].mean()) for key in valid_cells},
         "synthetic_patients": args.patients,
         "synthetic_rows": len(synth),
         "median_univariate_wasserstein": {
@@ -310,21 +345,29 @@ def run(args: argparse.Namespace) -> dict:
             "shuffled_control": correlation_gap(x["test"], shuffled, np_),
         },
         "conditional_prediction_on_real_test": {
-            "ridge_train_real": evaluate_ridge(x["train"], x["test"], np_),
-            "ridge_train_synthetic": evaluate_ridge(matched_synth, x["test"], np_),
-            "ridge_train_shuffled_control": evaluate_ridge(shuffled[:len(matched_synth)], x["test"], np_),
+            "ridge_train_real": evaluate_ridge(x["train"], x["test"], np_,
+                                               valid_cells["train"], valid_cells["test"]),
+            "ridge_train_synthetic": evaluate_ridge(matched_synth, x["test"], np_,
+                                                    matched_synth_valid, valid_cells["test"]),
+            "ridge_train_shuffled_control": evaluate_ridge(shuffled[:len(matched_synth)], x["test"], np_,
+                                                           matched_synth_valid, valid_cells["test"]),
         },
     }
     if not args.skip_pulse:
         metrics["conditional_prediction_on_real_test"]["pulse_train_real"] = evaluate_pulse(
-            x["train"], x["val"], x["test"], np_, args.seed, args.epochs)
+            x["train"], x["val"], x["test"], np_, args.seed, args.epochs,
+            valid_cells["train"], valid_cells["val"], valid_cells["test"])
         metrics["conditional_prediction_on_real_test"]["pulse_train_synthetic"] = evaluate_pulse(
-            matched_synth, extra, x["test"], np_, args.seed, args.epochs)
+            matched_synth, extra, x["test"], np_, args.seed, args.epochs,
+            matched_synth_valid, np.ones_like(extra, dtype=bool), valid_cells["test"])
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=2)+"\n")
     (args.output / "selected_features.json").write_text(json.dumps(features, ensure_ascii=False, indent=2)+"\n")
     (args.output / "patient_splits.json").write_text(json.dumps({k: sorted(v) for k, v in partitions.items()}, indent=2)+"\n")
-    output_frame = pd.DataFrame(synth * sd + center, columns=features["protein"] + features["metab"])
+    physical = synth * sd + center
+    physical[:, log1p_flags] = np.expm1(np.clip(physical[:, log1p_flags], None, 30))
+    physical[:, log1p_flags] = np.maximum(physical[:, log1p_flags], 0.0)
+    output_frame = pd.DataFrame(physical, columns=features["protein"] + features["metab"])
     pd.concat([synth_meta, output_frame], axis=1).to_csv(args.output / "generated_complete.csv", index=False)
     draw_figures(args.output, x["test"], synth, np_)
     return metrics
