@@ -1,0 +1,45 @@
+name: Su2020 synthetic pilot
+
+on:
+  push:
+    branches: [omics]
+    paths:
+      - external_validation/synthetic_pilot.py
+      - external_validation/tests/test_synthetic_pilot.py
+      - .github/workflows/su2020-synthetic-pilot.yml
+  workflow_dispatch:
+
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r external_validation/requirements-omics.txt scipy matplotlib
+      - name: Run data-free unit tests
+        run: python -m unittest external_validation.tests.test_synthetic_pilot -v
+      - name: Run real Su2020 generator pilot
+        run: |
+          python -m external_validation.synthetic_pilot \
+            --data-root "$RUNNER_TEMP/pulse_omics" \
+            --output "$RUNNER_TEMP/pilot_results" \
+            --prepare --features 50 --factors 6 --patients 200 --epochs 35
+      - name: Save numerical results, synthetic data, and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: su2020-synthetic-pilot
+          path: ${{ runner.temp }}/pilot_results/
+          if-no-files-found: warn
+          retention-days: 30
